@@ -1,20 +1,14 @@
 import React from 'react';
 import { BookOpen, Rocket, Briefcase, TrendingUp, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Logo from '../components/Logo';
 
 const GetStarted: React.FC = () => {
   return (
     <div className="min-h-screen bg-white pt-32 pb-20 relative overflow-hidden">
-        {/* Background Logo Watermark - Centered */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-[0.03] pointer-events-none z-0">
-             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-slate-900">
-                <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <circle cx="35" cy="62" r="22" />
-                  <circle cx="65" cy="62" r="22" />
-                  <circle cx="50" cy="36" r="22" />
-                </g>
-                <path d="M 65.55 20.44 A 22 22 0 0 1 72 36" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" />
-              </svg>
+        {/* Background Logo Watermark - Centered & Animated */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 opacity-[0.03]">
+             <Logo showText={false} animated={true} className="w-[800px] h-[800px]" />
         </div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">

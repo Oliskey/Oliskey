@@ -16,7 +16,8 @@ const Blog: React.FC = () => {
               <div className="overflow-hidden rounded-2xl mb-6 shadow-sm">
                 <img 
                   src={post.image} 
-                  alt={post.title} 
+                  alt={post.title}
+                  loading="lazy" 
                   className="w-full h-56 object-cover hover:scale-105 transition-transform duration-500"
                 />
               </div>

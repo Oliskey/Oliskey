@@ -30,10 +30,12 @@ const Contact: React.FC = () => {
 
       setStatus('success');
       (e.target as HTMLFormElement).reset();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error submitting form:', err);
       setStatus('error');
-      setErrorMessage(err.message || 'Something went wrong. Please try again.');
+      // Safer error message extraction
+      const msg = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      setErrorMessage(msg);
     } finally {
       setLoading(false);
     }

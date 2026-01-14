@@ -20,7 +20,8 @@ const Courses: React.FC = () => {
                 <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/0 transition-colors z-10"></div>
                 <img 
                   src={course.image} 
-                  alt={course.title} 
+                  alt={course.title}
+                  loading="lazy" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>

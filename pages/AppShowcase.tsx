@@ -39,7 +39,8 @@ const AppShowcase: React.FC = () => {
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/20 blur-[100px] rounded-full pointer-events-none"></div>
               <img 
                 src="https://picsum.photos/400/800" 
-                alt="App Screenshot" 
+                alt="App Screenshot"
+                loading="lazy" 
                 className="relative mx-auto border-[12px] border-slate-800 rounded-[3rem] shadow-2xl w-[300px] lg:w-[350px]"
               />
             </div>

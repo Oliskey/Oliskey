@@ -18,7 +18,8 @@ const About: React.FC = () => {
           <div>
             <img 
               src="https://picsum.photos/800/600" 
-              alt="Team collaborating" 
+              alt="Team collaborating"
+              loading="lazy" 
               className="rounded-2xl shadow-lg"
             />
           </div>

@@ -65,47 +65,47 @@ const Home: React.FC = () => {
     <div className="flex flex-col w-full bg-white text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900 overflow-hidden">
       
       {/* Hero Section */}
-      <section className="relative pt-40 pb-20 lg:pt-52 lg:pb-32 px-6 overflow-hidden">
+      <section className="relative pt-32 pb-16 sm:pt-40 sm:pb-20 lg:pt-52 lg:pb-32 px-4 sm:px-6 overflow-hidden">
         
         {/* Background Logo Watermark (Replacing text) */}
         {/* Visible on Mobile and Desktop, animated on both */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none z-0 opacity-[0.03]">
           <div className="animate-slow-spin">
-             <Logo showText={false} className="h-[400px] w-[400px] md:h-[800px] md:w-[800px]" />
+             <Logo showText={false} className="h-[300px] w-[300px] sm:h-[400px] sm:w-[400px] md:h-[800px] md:w-[800px]" />
           </div>
         </div>
 
         <div className="max-w-screen-xl mx-auto text-center relative z-10">
           
           {/* Centered Logo & Text Layout */}
-          <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-10 opacity-0 animate-[fadeIn_0.8s_ease-out_0.2s_forwards]">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-6 sm:gap-8 mb-8 sm:mb-12 opacity-0 animate-[fadeIn_0.8s_ease-out_0.2s_forwards]">
              <button 
                 onClick={scrollToProducts}
-                className="h-24 w-24 md:h-32 md:w-32 flex-shrink-0 relative group cursor-pointer focus:outline-none"
+                className="h-24 w-24 sm:h-32 sm:w-32 md:h-40 md:w-40 lg:h-48 lg:w-48 flex-shrink-0 relative group cursor-pointer focus:outline-none transition-transform duration-300 hover:scale-105"
                 aria-label="Scroll to products"
              >
                 <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/5 rounded-full transition-colors scale-125 duration-500"></div>
                 <Logo className="h-full w-full" variant="dark" showText={false} />
              </button>
-             <h1 className="text-6xl md:text-8xl font-bold tracking-tighter text-slate-900 leading-none">
+             <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-slate-900 leading-none text-center md:text-left">
                 Oliskey
              </h1>
           </div>
           
-          <p className="text-xl md:text-3xl text-slate-600 font-normal max-w-4xl mx-auto mb-12 leading-relaxed tracking-tight opacity-0 animate-[fadeIn_0.8s_ease-out_0.4s_forwards]">
+          <p className="text-lg sm:text-xl md:text-3xl text-slate-600 font-normal max-w-4xl mx-auto mb-10 sm:mb-12 leading-relaxed tracking-tight opacity-0 animate-[fadeIn_0.8s_ease-out_0.4s_forwards] px-4">
             Systems that work. Culture that lasts. Creativity that never ends.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center opacity-0 animate-[fadeIn_0.8s_ease-out_0.6s_forwards]">
             <button 
               onClick={scrollToProducts}
-              className="px-8 py-4 rounded-full bg-blue-600 text-white font-medium text-base hover:bg-blue-700 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:scale-105 flex items-center"
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-blue-600 text-white font-medium text-base hover:bg-blue-700 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:scale-105 flex items-center justify-center"
             >
               Explore Products <ArrowRight size={18} className="ml-2"/>
             </button>
             <Link 
               to="/investors" 
-              className="group flex items-center px-8 py-4 rounded-full text-slate-900 font-medium text-base hover:bg-gray-50 transition-all duration-300 border border-transparent hover:border-gray-200"
+              className="w-full sm:w-auto group flex items-center justify-center px-8 py-4 rounded-full text-slate-900 font-medium text-base hover:bg-gray-50 transition-all duration-300 border border-transparent hover:border-gray-200"
             >
               Investor Info <ChevronRight size={18} className="ml-1 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
             </Link>
@@ -114,9 +114,9 @@ const Home: React.FC = () => {
       </section>
 
       {/* Brand Manifesto */}
-      <section className="py-16 bg-white relative z-10">
+      <section className="py-12 sm:py-16 bg-white relative z-10">
          <div className="max-w-4xl mx-auto px-6 text-center">
-            <p className="text-2xl md:text-3xl leading-relaxed text-slate-800 font-light">
+            <p className="text-xl sm:text-2xl md:text-3xl leading-relaxed text-slate-800 font-light">
               <span className="font-semibold text-blue-600">Oliskey</span> is a global infrastructure brand powering products that scale. We combine rigor and imagination through our S.C.C framework — System, Culture, Creativity — to build platforms, education tools, AI services, and media that endure.
             </p>
          </div>
@@ -318,19 +318,19 @@ const Home: React.FC = () => {
                       <span className="font-medium">Subscribed successfully!</span>
                    </div>
                  ) : (
-                   <form onSubmit={handleSubscribe} className="flex gap-2">
+                   <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
                       <input 
                         type="email" 
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Enter your email" 
-                        className="flex-1 px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white focus:border-transparent transition-all" 
+                        className="flex-1 w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white focus:border-transparent transition-all" 
                       />
                       <button 
                         type="submit" 
                         disabled={subscribing}
-                        className="px-6 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 disabled:opacity-70 disabled:cursor-not-allowed flex items-center"
+                        className="w-full sm:w-auto px-6 py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center shadow-lg shadow-slate-900/10 transition-all"
                       >
                         {subscribing ? <Loader2 size={18} className="animate-spin" /> : 'Subscribe'}
                       </button>

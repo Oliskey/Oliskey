@@ -14,17 +14,40 @@ const Contact: React.FC = () => {
     setErrorMessage('');
 
     const formData = new FormData(e.currentTarget);
-    const submission = {
-      full_name: formData.get('full_name'),
-      company: formData.get('company'),
-      email: formData.get('email'),
-      message: formData.get('message'),
-    };
+    const full_name = formData.get('full_name') as string;
+    const company = formData.get('company') as string;
+    const email = formData.get('email') as string;
+    const message = formData.get('message') as string;
+
+    // --- SECURITY: INPUT VALIDATION ---
+    // Prevent payload stuffing or excessive data costs
+    if (message.length > 2000) {
+        setErrorMessage("Message exceeds 2000 characters limit.");
+        setLoading(false);
+        return;
+    }
+    if (full_name.length > 100) {
+        setErrorMessage("Name is too long.");
+        setLoading(false);
+        return;
+    }
+    // Basic regex for email sanitization
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        setErrorMessage("Please enter a valid email address.");
+        setLoading(false);
+        return;
+    }
 
     try {
       const { error } = await supabase
         .from('contact_submissions')
-        .insert([submission]);
+        .insert([{ 
+            full_name: full_name.trim(), // Trimming is basic sanitation
+            company: company ? company.trim().substring(0, 100) : null,
+            email: email.trim().toLowerCase(),
+            message: message.trim()
+        }]);
 
       if (error) throw error;
 
@@ -126,6 +149,7 @@ const Contact: React.FC = () => {
                         name="full_name" 
                         id="full_name" 
                         type="text" 
+                        maxLength={100}
                         className="w-full px-4 py-3 rounded-lg bg-gray-50 text-slate-900 placeholder-slate-400 border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:bg-white focus:border-transparent outline-none transition-all" 
                         placeholder="John Doe" 
                       />
@@ -136,6 +160,7 @@ const Contact: React.FC = () => {
                         name="company" 
                         id="company" 
                         type="text" 
+                        maxLength={100}
                         className="w-full px-4 py-3 rounded-lg bg-gray-50 text-slate-900 placeholder-slate-400 border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:bg-white focus:border-transparent outline-none transition-all" 
                         placeholder="Company Ltd" 
                       />
@@ -159,9 +184,11 @@ const Contact: React.FC = () => {
                       name="message" 
                       id="message" 
                       rows={5} 
+                      maxLength={2000}
                       className="w-full px-4 py-3 rounded-lg bg-gray-50 text-slate-900 placeholder-slate-400 border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:bg-white focus:border-transparent outline-none transition-all resize-none" 
                       placeholder="How can we help you?"
                     ></textarea>
+                    <p className="text-right text-xs text-slate-400 mt-1">Max 2000 characters</p>
                   </div>
                   <button 
                     type="submit" 

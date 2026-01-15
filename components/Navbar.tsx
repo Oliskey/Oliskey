@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Search } from 'lucide-react';
+import { Menu, X, Search, User, LogOut, LayoutDashboard } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import SearchModal from './SearchModal';
 import Logo from './Logo';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +11,7 @@ const Navbar: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   // Detect scroll for subtle border effect
   useEffect(() => {
@@ -47,6 +49,7 @@ const Navbar: React.FC = () => {
   const handleProductClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (location.pathname !== '/') {
+      // In v6, pass state via the second argument
       navigate('/', { state: { scrollToProducts: true } });
     } else {
       const element = document.getElementById('products');
@@ -57,8 +60,12 @@ const Navbar: React.FC = () => {
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    // Force a full page reload to the root URL
-    window.location.href = '/';
+    // Force a full page reload to the root URL if we are deep in the app
+    if (location.pathname === '/') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        navigate('/');
+    }
   };
 
   const toggleMenu = (e: React.MouseEvent) => {
@@ -71,7 +78,17 @@ const Navbar: React.FC = () => {
     setIsSearchOpen(true);
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
   const isActive = (path: string) => location.pathname === path;
+
+  // Don't show navbar on login/signup pages for cleaner look
+  if (location.pathname === '/login' || location.pathname === '/signup') {
+    return null;
+  }
 
   return (
     <>
@@ -82,7 +99,7 @@ const Navbar: React.FC = () => {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20 items-center">
-            {/* Logo - Uses anchor tag with full reload logic */}
+            {/* Logo */}
             <a 
               href="/" 
               onClick={handleLogoClick} 
@@ -130,12 +147,20 @@ const Navbar: React.FC = () => {
                 )
               ))}
               
-              <Link 
-                to="/get-started"
-                className="px-6 py-2.5 rounded-full bg-slate-900 text-white text-sm font-semibold tracking-wide hover:bg-blue-600 transition-colors duration-300 shadow-lg shadow-slate-900/20"
-              >
-                Get Started
-              </Link>
+              {user ? (
+                <div className="flex items-center gap-4 border-l border-gray-200 pl-6">
+                    <Link to="/dashboard" className="text-sm font-bold text-slate-900 hover:text-blue-600 transition-colors flex items-center gap-2">
+                        <LayoutDashboard size={18} /> Dashboard
+                    </Link>
+                </div>
+              ) : (
+                <Link 
+                  to="/login"
+                  className="px-6 py-2.5 rounded-full bg-slate-900 text-white text-sm font-semibold tracking-wide hover:bg-blue-600 transition-colors duration-300 shadow-lg shadow-slate-900/20"
+                >
+                  Sign In
+                </Link>
+              )}
             </div>
 
             {/* Mobile Actions - High Z-Index to ensure clickability */}
@@ -183,13 +208,39 @@ const Navbar: React.FC = () => {
                   </Link>
                 )
               ))}
-              <div className="pt-8 pb-12">
-                <Link 
-                  to="/get-started"
-                  className="inline-block w-full max-w-xs px-8 py-4 rounded-full bg-slate-900 text-white text-lg font-semibold tracking-wide hover:bg-blue-600 transition-colors"
-                >
-                  Get Started
-                </Link>
+              
+              <div className="pt-8 pb-12 border-t border-gray-100 mt-6">
+                {user ? (
+                   <div className="space-y-4">
+                      <Link 
+                        to="/dashboard"
+                        className="flex items-center justify-center gap-2 w-full px-8 py-4 rounded-full bg-blue-600 text-white text-lg font-semibold tracking-wide hover:bg-blue-700 transition-colors"
+                      >
+                        <LayoutDashboard size={20} /> Dashboard
+                      </Link>
+                      <button 
+                        onClick={handleSignOut}
+                        className="flex items-center justify-center gap-2 w-full px-8 py-4 rounded-full bg-slate-100 text-slate-700 text-lg font-semibold tracking-wide hover:bg-slate-200 transition-colors"
+                      >
+                        <LogOut size={20} /> Sign Out
+                      </button>
+                   </div>
+                ) : (
+                  <div className="space-y-4">
+                    <Link 
+                      to="/login"
+                      className="inline-block w-full max-w-xs px-8 py-4 rounded-full bg-slate-900 text-white text-lg font-semibold tracking-wide hover:bg-blue-600 transition-colors"
+                    >
+                      Sign In
+                    </Link>
+                     <Link 
+                      to="/signup"
+                      className="inline-block w-full max-w-xs px-8 py-4 rounded-full bg-white border border-gray-200 text-slate-900 text-lg font-semibold tracking-wide hover:bg-gray-50 transition-colors"
+                    >
+                      Create Account
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -52,13 +52,14 @@ const Login: React.FC = () => {
   const handleGoogleLogin = async () => {
     setError(null);
     try {
-      // Simplified OAuth call to reduce configuration friction
+      // Get the current origin (e.g., https://your-site.com)
+      const origin = window.location.origin;
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          // Using origin only prevents mismatch errors if /dashboard isn't explicitly whitelisted
-          redirectTo: window.location.origin,
-          // Force the account selection screen every time
+          // Redirect to /login so the useEffect above handles the user state and forwards to dashboard
+          redirectTo: `${origin}/login`,
           queryParams: {
             prompt: 'select_account',
           }

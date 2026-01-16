@@ -8,6 +8,8 @@ import PageLoader from './components/PageLoader';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DataProvider, useData } from './context/DataContext'; // Import DataProvider
 import ProtectedRoute from './components/ProtectedRoute';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 
 // Lazy load pages for performance optimization
 const Home = lazy(() => import('./pages/Home'));
@@ -22,10 +24,6 @@ const Investors = lazy(() => import('./pages/Investors'));
 const GetStarted = lazy(() => import('./pages/GetStarted'));
 const Pricing = lazy(() => import('./pages/Pricing'));
 const NotFound = lazy(() => import('./pages/NotFound'));
-
-// Auth Pages
-const Login = lazy(() => import('./pages/Login'));
-const Signup = lazy(() => import('./pages/Signup'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 // Scroll to top on route change

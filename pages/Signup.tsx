@@ -50,6 +50,7 @@ const Signup: React.FC = () => {
           setSuccess(true);
       }
     } catch (err: any) {
+      console.error("Signup Error:", err);
       setError(err.message || 'Failed to sign up');
     } finally {
       setLoading(false);

@@ -150,8 +150,20 @@ const Navbar: React.FC = () => {
               
               {user ? (
                 <div className="flex items-center gap-4 border-l border-gray-200 pl-6">
-                    <Link to="/dashboard" className="text-sm font-bold text-slate-900 hover:text-blue-600 transition-colors flex items-center gap-2">
-                        <LayoutDashboard size={18} /> Dashboard
+                    <Link to="/dashboard" className="flex items-center gap-2 group" aria-label="Dashboard">
+                        {user.user_metadata?.avatar_url ? (
+                           <img 
+                              src={user.user_metadata.avatar_url} 
+                              alt={user.user_metadata?.full_name || "User Profile"}
+                              className="w-10 h-10 rounded-full border-2 border-gray-100 hover:border-blue-500 transition-all object-cover shadow-sm"
+                           />
+                        ) : (
+                           <div className="w-10 h-10 rounded-full bg-slate-100 border-2 border-gray-100 flex items-center justify-center text-slate-600 group-hover:border-blue-500 group-hover:text-blue-600 transition-all shadow-sm">
+                              <span className="font-bold text-sm">
+                                {user.email?.charAt(0).toUpperCase()}
+                              </span>
+                           </div>
+                        )}
                     </Link>
                 </div>
               ) : (
@@ -212,7 +224,23 @@ const Navbar: React.FC = () => {
               
               <div className="pt-8 pb-12 border-t border-gray-100 mt-6">
                 {user ? (
-                   <div className="space-y-4">
+                   <div className="space-y-6">
+                      <div className="flex flex-col items-center gap-2 mb-4">
+                         {user.user_metadata?.avatar_url ? (
+                           <img 
+                              src={user.user_metadata.avatar_url} 
+                              alt="Profile"
+                              className="w-16 h-16 rounded-full border-2 border-gray-200 object-cover mb-2"
+                           />
+                         ) : (
+                           <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 mb-2">
+                              <span className="font-bold text-2xl">
+                                {user.email?.charAt(0).toUpperCase()}
+                              </span>
+                           </div>
+                         )}
+                         <p className="font-medium text-slate-900">{user.user_metadata?.full_name || user.email}</p>
+                      </div>
                       <Link 
                         to="/dashboard"
                         className="flex items-center justify-center gap-2 w-full px-8 py-4 rounded-full bg-blue-600 text-white text-lg font-semibold tracking-wide hover:bg-blue-700 transition-colors"

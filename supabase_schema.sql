@@ -76,14 +76,26 @@ create policy "System can insert logs"
   with check (auth.uid() = user_id);
 
 -- Trigger for Auto-Profile Creation
+-- UPDATED: Added EXCEPTION handling to ensure auth user creation never fails even if profile creation errors.
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
   insert into public.profiles (id, full_name, avatar_url)
-  values (new.id, new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'avatar_url');
+  values (
+    new.id, 
+    coalesce(new.raw_user_meta_data->>'full_name', ''), 
+    coalesce(new.raw_user_meta_data->>'avatar_url', '')
+  )
+  on conflict (id) do update set
+    full_name = excluded.full_name,
+    avatar_url = excluded.avatar_url;
+  return new;
+exception when others then
+  -- Log error but allow the user to be created in auth.users
+  raise warning 'Error in handle_new_user trigger: %', SQLERRM;
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = public;
 
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
@@ -105,6 +117,9 @@ create table if not exists public.services (
   sort_order integer default 0
 );
 alter table public.services enable row level security;
+
+-- Drop existing policy to prevent duplication errors
+drop policy if exists "Public can view services" on public.services;
 create policy "Public can view services" on public.services for select using (true);
 
 -- Courses
@@ -119,6 +134,9 @@ create table if not exists public.courses (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 alter table public.courses enable row level security;
+
+-- Drop existing policy to prevent duplication errors
+drop policy if exists "Public can view courses" on public.courses;
 create policy "Public can view courses" on public.courses for select using (true);
 
 -- Portfolio Projects
@@ -130,6 +148,9 @@ create table if not exists public.projects (
   description text
 );
 alter table public.projects enable row level security;
+
+-- Drop existing policy to prevent duplication errors
+drop policy if exists "Public can view projects" on public.projects;
 create policy "Public can view projects" on public.projects for select using (true);
 
 -- Blog Posts
@@ -143,6 +164,9 @@ create table if not exists public.blog_posts (
   image_url text not null
 );
 alter table public.blog_posts enable row level security;
+
+-- Drop existing policy to prevent duplication errors
+drop policy if exists "Public can view blog posts" on public.blog_posts;
 create policy "Public can view blog posts" on public.blog_posts for select using (true);
 
 -- Ecosystem Items
@@ -158,6 +182,9 @@ create table if not exists public.ecosystem (
   sort_order integer default 0
 );
 alter table public.ecosystem enable row level security;
+
+-- Drop existing policy to prevent duplication errors
+drop policy if exists "Public can view ecosystem" on public.ecosystem;
 create policy "Public can view ecosystem" on public.ecosystem for select using (true);
 
 

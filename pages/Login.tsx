@@ -16,6 +16,7 @@ const Login: React.FC = () => {
   const location = useLocation();
   const { user } = useAuth();
 
+  // Default to '/' (Home) unless 'from' state is explicitly set
   const from = (location.state as any)?.from?.pathname || '/';
 
   // Redirect if already logged in (e.g. returned from Google Auth)
@@ -58,7 +59,7 @@ const Login: React.FC = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          // Redirect to /login so the useEffect above handles the user state and forwards to Home (via the 'from' variable logic)
+          // Redirect to /login so the useEffect above handles the user state and forwards to Home
           redirectTo: `${origin}/login`,
           queryParams: {
             prompt: 'select_account',

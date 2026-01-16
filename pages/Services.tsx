@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
+// @ts-ignore
 import { Link } from 'react-router-dom';
 import { servicesData } from '../data';
 

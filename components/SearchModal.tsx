@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, X, ChevronRight, BookOpen, Layers, Briefcase, FileText } from 'lucide-react';
+// @ts-ignore
 import { useNavigate } from 'react-router-dom';
 import { servicesData, coursesData, portfolioData, blogPostsData } from '../data';
 

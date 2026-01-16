@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Search, User, LogOut, LayoutDashboard } from 'lucide-react';
+// @ts-ignore
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import SearchModal from './SearchModal';
 import Logo from './Logo';

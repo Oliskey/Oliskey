@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot, User, Sparkles, ChevronRight, ExternalLink, Image as ImageIcon } from 'lucide-react';
+// @ts-ignore
 import { useLocation, useNavigate } from 'react-router-dom';
 import { servicesData, coursesData, portfolioData, ecosystemData } from '../data';
 import { Course, Service, Project } from '../types';

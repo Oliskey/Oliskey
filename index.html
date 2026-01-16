@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>Oliskey — System. Culture. Creativity.</title>
     <meta name="description" content="Oliskey builds reliable systems, enduring culture, and limitless creativity. Platform for products in SaaS, AI, EdTech, media and ventures. Discover our products, team, and investor opportunities." />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -60,6 +61,11 @@
         background: #94a3b8;
       }
 
+      /* Ensure keyframes exist for custom classes */
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
       /* Logo Animation Utility */
       .animate-slow-spin-reverse {
         animation: spin 25s linear infinite reverse;
@@ -68,14 +74,14 @@
   <script type="importmap">
 {
   "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
     "react": "https://esm.sh/react@^19.2.3",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "vite": "https://esm.sh/vite@^7.3.1",
+    "react/": "https://esm.sh/react@^19.2.3/",
     "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "react-router-dom": "https://esm.sh/react-router-dom@^6.22.0",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
-    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.90.1"
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.12.0",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.90.1",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
   }
 }
 </script>

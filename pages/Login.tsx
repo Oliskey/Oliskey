@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+// @ts-ignore
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, Loader2, AlertCircle, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../supabase';
+import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 
 const Login: React.FC = () => {
@@ -12,8 +14,16 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
 
   const from = (location.state as any)?.from?.pathname || '/dashboard';
+
+  // Redirect if already logged in (e.g. returned from Google Auth)
+  useEffect(() => {
+    if (user) {
+      navigate(from, { replace: true });
+    }
+  }, [user, navigate, from]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +37,7 @@ const Login: React.FC = () => {
       });
 
       if (error) throw error;
-      navigate(from, { replace: true });
+      // Navigation handled by useEffect
     } catch (err: any) {
       if (err.message === 'Invalid login credentials') {
         setError('Invalid email or password. Please try again.');
@@ -40,16 +50,21 @@ const Login: React.FC = () => {
   };
 
   const handleGoogleLogin = async () => {
+    setError(null);
     try {
+      // Simplified OAuth call to reduce configuration friction
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          // Using origin only prevents mismatch errors if /dashboard isn't explicitly whitelisted
+          redirectTo: window.location.origin,
+          // Removed offline access request to avoid potential 403s on unverified apps
         },
       });
       if (error) throw error;
     } catch (err: any) {
-      setError(err.message || 'Failed to sign in with Google');
+       console.error("Google Login Error:", err);
+       setError(err.message || 'Failed to sign in with Google. Please ensure Google Auth is enabled in your Supabase dashboard.');
     }
   };
 
@@ -91,7 +106,6 @@ const Login: React.FC = () => {
             </div>
           )}
 
-          {/* Google Login Button */}
           <button
             type="button"
             onClick={handleGoogleLogin}

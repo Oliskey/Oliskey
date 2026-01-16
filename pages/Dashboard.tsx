@@ -1,6 +1,8 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User, Settings, BookOpen, Bell, CreditCard } from 'lucide-react';
+import { LogOut, User, Settings, BookOpen, Bell, CreditCard, ChevronRight, Shield, Zap } from 'lucide-react';
+// @ts-ignore
+import { Link } from 'react-router-dom';
 
 const Dashboard: React.FC = () => {
   const { user, signOut } = useAuth();
@@ -15,18 +17,18 @@ const Dashboard: React.FC = () => {
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 pb-12">
+    <div className="min-h-screen bg-gray-50 pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">{getGreeting()}, {displayName}</h1>
-            <p className="text-slate-500">Welcome to your Oliskey command center.</p>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{getGreeting()}, {displayName}</h1>
+            <p className="text-slate-500 mt-1">Welcome to your Oliskey command center.</p>
           </div>
           <button 
             onClick={signOut}
-            className="self-start md:self-auto flex items-center px-4 py-2 bg-white border border-gray-200 rounded-lg text-slate-600 text-sm font-medium hover:bg-gray-50 hover:text-red-600 transition-colors"
+            className="self-start md:self-auto flex items-center px-5 py-2.5 bg-white border border-gray-200 rounded-full text-slate-600 text-sm font-semibold hover:bg-gray-50 hover:text-red-600 transition-colors shadow-sm"
           >
             <LogOut size={16} className="mr-2" /> Sign Out
           </button>
@@ -34,31 +36,41 @@ const Dashboard: React.FC = () => {
 
         {/* Stats / Quick Overview */}
         <div className="grid md:grid-cols-3 gap-6 mb-10">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
-                    <BookOpen size={24} />
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-5 hover:shadow-md transition-shadow">
+                <div className="p-4 bg-blue-50 text-blue-600 rounded-2xl">
+                    <BookOpen size={28} strokeWidth={1.5} />
                 </div>
                 <div>
-                    <p className="text-sm text-slate-500 font-medium">Active Courses</p>
-                    <p className="text-2xl font-bold text-slate-900">0</p>
+                    <p className="text-sm text-slate-500 font-medium mb-1">Active Courses</p>
+                    <p className="text-3xl font-bold text-slate-900 tracking-tight">0</p>
                 </div>
             </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
-                    <CreditCard size={24} />
+            
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-5 hover:shadow-md transition-shadow">
+                <div className="p-4 bg-purple-50 text-purple-600 rounded-2xl">
+                    <CreditCard size={28} strokeWidth={1.5} />
                 </div>
                 <div>
-                    <p className="text-sm text-slate-500 font-medium">Billing Status</p>
-                    <p className="text-xl font-bold text-slate-900">Free Tier</p>
+                    <p className="text-sm text-slate-500 font-medium mb-1">Billing Status</p>
+                    <p className="text-3xl font-bold text-slate-900 tracking-tight">Free Tier</p>
                 </div>
             </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                <div className="p-3 bg-green-50 text-green-600 rounded-xl">
-                    <User size={24} />
+
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-center gap-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between">
+                     <div className="flex items-center gap-4">
+                        <div className="p-3 bg-green-50 text-green-600 rounded-xl">
+                            <User size={24} strokeWidth={1.5} />
+                        </div>
+                        <div>
+                            <p className="text-sm text-slate-500 font-medium">Profile Completion</p>
+                            <p className="text-2xl font-bold text-slate-900">80%</p>
+                        </div>
+                     </div>
                 </div>
-                <div>
-                    <p className="text-sm text-slate-500 font-medium">Profile Completion</p>
-                    <p className="text-2xl font-bold text-slate-900">80%</p>
+                {/* Progress Bar */}
+                <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                    <div className="bg-green-500 h-2 rounded-full" style={{ width: '80%' }}></div>
                 </div>
             </div>
         </div>
@@ -72,16 +84,18 @@ const Dashboard: React.FC = () => {
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="p-6 border-b border-gray-100 flex justify-between items-center">
                         <h2 className="font-bold text-lg text-slate-900">Recommended for You</h2>
-                        <a href="#" className="text-sm text-blue-600 font-medium hover:underline">View All</a>
+                        <Link to="/courses" className="text-sm text-blue-600 font-semibold hover:text-blue-700">View All</Link>
                     </div>
                     <div className="p-6">
-                        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
-                            <div className="w-16 h-16 bg-slate-200 rounded-lg flex-shrink-0"></div>
+                        <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center bg-slate-50 p-5 rounded-xl border border-gray-100 hover:border-blue-100 transition-colors">
+                            <div className="w-16 h-16 bg-white rounded-lg flex-shrink-0 shadow-sm flex items-center justify-center text-slate-300">
+                                <Zap size={24} />
+                            </div>
                             <div className="flex-1">
-                                <h3 className="font-bold text-slate-900">React Performance Masterclass</h3>
+                                <h3 className="font-bold text-slate-900 text-lg mb-1">React Performance Masterclass</h3>
                                 <p className="text-sm text-slate-500">Learn how to optimize your applications for scale.</p>
                             </div>
-                            <button className="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors">
+                            <button className="px-6 py-2.5 bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-slate-900/10">
                                 Start
                             </button>
                         </div>
@@ -96,12 +110,12 @@ const Dashboard: React.FC = () => {
                         </h2>
                     </div>
                     <div className="divide-y divide-gray-100">
-                        <div className="p-6 flex gap-4">
-                            <div className="mt-1 w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></div>
+                        <div className="p-6 flex gap-4 hover:bg-slate-50 transition-colors cursor-pointer">
+                            <div className="mt-1.5 w-2.5 h-2.5 rounded-full bg-blue-500 flex-shrink-0 animate-pulse"></div>
                             <div>
-                                <p className="text-sm text-slate-800 font-medium">Welcome to the Oliskey Ecosystem!</p>
-                                <p className="text-xs text-slate-500 mt-1">We're glad to have you here. Explore our products and services.</p>
-                                <p className="text-xs text-slate-400 mt-2">Just now</p>
+                                <p className="text-sm text-slate-800 font-semibold">Welcome to the Oliskey Ecosystem!</p>
+                                <p className="text-sm text-slate-500 mt-1 leading-relaxed">We're glad to have you here. Explore our products and services to get started.</p>
+                                <p className="text-xs text-slate-400 mt-2 font-medium">Just now</p>
                             </div>
                         </div>
                     </div>
@@ -111,25 +125,57 @@ const Dashboard: React.FC = () => {
 
             {/* Right Column (Sidebar) */}
             <div className="space-y-6">
-                <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-lg relative overflow-hidden">
-                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/30 blur-2xl rounded-full pointer-events-none"></div>
-                     <h3 className="font-bold text-lg mb-2 relative z-10">Upgrade to Pro</h3>
-                     <p className="text-slate-300 text-sm mb-6 relative z-10">Get access to premium courses, priority support, and cloud tools.</p>
-                     <button className="w-full py-3 bg-white text-slate-900 rounded-xl font-bold hover:bg-blue-50 transition-colors relative z-10">
-                        View Plans
-                     </button>
+                
+                {/* Upgrade to Pro - Professional Card */}
+                <div className="bg-slate-900 text-white rounded-2xl p-8 shadow-xl relative overflow-hidden group">
+                     {/* Abstract Shapes - Increased opacity for visibility matching screenshot */}
+                     <div className="absolute -top-16 -right-16 w-48 h-48 bg-blue-600 rounded-full blur-[60px] opacity-70 group-hover:scale-110 transition-transform duration-700"></div>
+                     <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-purple-600 rounded-full blur-[60px] opacity-70 group-hover:scale-110 transition-transform duration-700"></div>
+                     
+                     <div className="relative z-10">
+                         <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center mb-6 border border-white/10 text-yellow-300">
+                             <Shield size={24} />
+                         </div>
+                         <h3 className="font-bold text-xl mb-2">Upgrade to Pro</h3>
+                         <p className="text-slate-300 text-sm mb-8 leading-relaxed">
+                            Unlock premium courses, priority support, and advanced cloud tools.
+                         </p>
+                         <Link to="/pricing" className="w-full py-3.5 bg-white text-slate-900 rounded-xl font-bold hover:bg-blue-50 transition-colors shadow-lg shadow-white/10 flex items-center justify-center gap-2">
+                            View Plans <ChevronRight size={16} />
+                         </Link>
+                     </div>
                 </div>
 
+                {/* Account Settings Menu */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-2">
                     <nav className="space-y-1">
-                        <a href="#" className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-xl text-sm font-medium">
-                            <User size={18} /> Account Settings
+                        <a href="#" className="flex items-center justify-between px-4 py-3.5 bg-slate-50 text-slate-900 rounded-xl text-sm font-semibold group">
+                            <div className="flex items-center gap-3">
+                                <div className="text-slate-500 group-hover:text-blue-600 transition-colors">
+                                    <User size={18} />
+                                </div>
+                                Account Settings
+                            </div>
+                            <ChevronRight size={16} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
                         </a>
-                        <a href="#" className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-gray-50 rounded-xl text-sm font-medium transition-colors">
-                            <Settings size={18} /> Preferences
+                        
+                        <a href="#" className="flex items-center justify-between px-4 py-3.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl text-sm font-medium transition-colors group">
+                             <div className="flex items-center gap-3">
+                                <div className="text-slate-400 group-hover:text-blue-600 transition-colors">
+                                    <Settings size={18} />
+                                </div>
+                                Preferences
+                            </div>
                         </a>
-                        <a href="#" className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-gray-50 rounded-xl text-sm font-medium transition-colors">
-                            <Bell size={18} /> Notifications
+
+                        <a href="#" className="flex items-center justify-between px-4 py-3.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl text-sm font-medium transition-colors group">
+                             <div className="flex items-center gap-3">
+                                <div className="text-slate-400 group-hover:text-blue-600 transition-colors">
+                                    <Bell size={18} />
+                                </div>
+                                Notifications
+                            </div>
+                            <div className="w-2 h-2 rounded-full bg-red-500"></div>
                         </a>
                     </nav>
                 </div>

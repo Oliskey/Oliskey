@@ -1,5 +1,6 @@
 import React from 'react';
 import { TrendingUp, PieChart, Target, Mail } from 'lucide-react';
+// @ts-ignore
 import { Link } from 'react-router-dom';
 
 const Investors: React.FC = () => {

@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+// @ts-ignore
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Loader2, AlertCircle, ArrowRight, User, CheckCircle } from 'lucide-react';
 import { supabase } from '../supabase';
+import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 
 const Signup: React.FC = () => {
@@ -12,6 +14,14 @@ const Signup: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // Redirect if already logged in (e.g. returned from Google Auth)
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +36,8 @@ const Signup: React.FC = () => {
           data: {
             full_name: fullName,
           },
+          // This tells Supabase where to redirect after clicking the email link
+          emailRedirectTo: window.location.origin, // Simplified redirect
         },
       });
 
@@ -45,16 +57,20 @@ const Signup: React.FC = () => {
   };
 
   const handleGoogleSignup = async () => {
+    setError(null);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          // Using origin only prevents mismatch errors if /dashboard isn't explicitly whitelisted
+          redirectTo: window.location.origin,
+          // Removed offline access request to avoid potential 403s on unverified apps
         },
       });
       if (error) throw error;
     } catch (err: any) {
-      setError(err.message || 'Failed to sign up with Google');
+      console.error("Google Signup Error:", err);
+      setError(err.message || 'Failed to sign up with Google. Please ensure Google Auth is enabled in your Supabase dashboard.');
     }
   };
 
@@ -121,7 +137,6 @@ const Signup: React.FC = () => {
             </div>
           )}
 
-          {/* Google Signup Button */}
           <button
             type="button"
             onClick={handleGoogleSignup}

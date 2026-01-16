@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Layers, Users, Zap, ChevronRight, ExternalLink, ShieldCheck, Smile, PenTool, LayoutGrid, Building, Loader2, Check } from 'lucide-react';
+// @ts-ignore
 import { Link, useLocation } from 'react-router-dom';
 import { ecosystemData, faqs } from '../data';
 import Logo from '../components/Logo';

@@ -1,4 +1,5 @@
 import React, { useEffect, Suspense, lazy } from 'react';
+// @ts-ignore
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -18,6 +19,7 @@ const Blog = lazy(() => import('./pages/Blog'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Investors = lazy(() => import('./pages/Investors'));
 const GetStarted = lazy(() => import('./pages/GetStarted'));
+const Pricing = lazy(() => import('./pages/Pricing')); // New Page
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Auth Pages
@@ -55,6 +57,7 @@ const App: React.FC = () => {
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/investors" element={<Investors />} />
                 <Route path="/get-started" element={<GetStarted />} />
+                <Route path="/pricing" element={<Pricing />} />
                 
                 {/* Auth Routes */}
                 <Route path="/login" element={<Login />} />

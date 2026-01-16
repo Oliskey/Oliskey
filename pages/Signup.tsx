@@ -19,7 +19,7 @@ const Signup: React.FC = () => {
   // Redirect if already logged in (e.g. returned from Google Auth)
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate('/');
     }
   }, [user, navigate]);
 
@@ -37,7 +37,7 @@ const Signup: React.FC = () => {
             full_name: fullName,
           },
           // This tells Supabase where to redirect after clicking the email link
-          emailRedirectTo: window.location.origin, 
+          emailRedirectTo: window.location.origin, // Simplified redirect
         },
       });
 
@@ -45,7 +45,7 @@ const Signup: React.FC = () => {
 
       // Check if session is null (implies email verification is required)
       if (data.session) {
-          navigate('/dashboard');
+          navigate('/');
       } else {
           setSuccess(true);
       }
@@ -59,14 +59,12 @@ const Signup: React.FC = () => {
   const handleGoogleSignup = async () => {
     setError(null);
     try {
-      // Get the current origin (e.g., https://your-site.com)
-      const origin = window.location.origin;
-
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          // Redirect to /login so the useEffect on that page handles the user state and forwards to dashboard
-          redirectTo: `${origin}/login`,
+          // Using origin only prevents mismatch errors if /dashboard isn't explicitly whitelisted
+          redirectTo: window.location.origin,
+          // Force the account selection screen every time
           queryParams: {
             prompt: 'select_account',
           }

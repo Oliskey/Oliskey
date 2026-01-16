@@ -16,7 +16,7 @@ const Login: React.FC = () => {
   const location = useLocation();
   const { user } = useAuth();
 
-  const from = (location.state as any)?.from?.pathname || '/dashboard';
+  const from = (location.state as any)?.from?.pathname || '/';
 
   // Redirect if already logged in (e.g. returned from Google Auth)
   useEffect(() => {
@@ -58,7 +58,7 @@ const Login: React.FC = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          // Redirect to /login so the useEffect above handles the user state and forwards to dashboard
+          // Redirect to /login so the useEffect above handles the user state and forwards to Home (via the 'from' variable logic)
           redirectTo: `${origin}/login`,
           queryParams: {
             prompt: 'select_account',
@@ -154,7 +154,7 @@ const Login: React.FC = () => {
             <div>
               <div className="flex justify-between items-center mb-1.5">
                 <label className="block text-sm font-medium text-slate-700">Password</label>
-                <a href="#" className="text-sm text-blue-600 hover:underline font-medium">Forgot password?</a>
+                <a href="#" className="text-sm font-semibold text-blue-600 hover:text-blue-500">Forgot password?</a>
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -166,13 +166,12 @@ const Login: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-10 pr-12 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-slate-400"
-                  placeholder="••••••••"
+                  placeholder="Enter your password"
                 />
-                <button
+                <button 
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -182,12 +181,12 @@ const Login: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl hover:bg-slate-800 transition-colors shadow-lg shadow-slate-900/10 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed mt-2"
+              className="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl hover:bg-slate-800 transition-colors shadow-lg shadow-slate-900/20 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed mt-2"
             >
               {loading ? <Loader2 size={20} className="animate-spin" /> : 'Sign In'}
             </button>
           </form>
-
+          
           <div className="mt-8 text-center">
             <Link to="/" className="inline-flex items-center text-sm text-slate-400 hover:text-slate-600 transition-colors">
                  <ArrowRight className="rotate-180 mr-2" size={16} /> Back to Home

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Search, X, ChevronRight, BookOpen, Layers, Briefcase, FileText } from 'lucide-react';
 // @ts-ignore
 import { useNavigate } from 'react-router-dom';
-import { servicesData, coursesData, portfolioData, blogPostsData } from '../data';
+import { useData } from '../context/DataContext';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -22,6 +22,8 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [results, setResults] = useState<SearchResult[]>([]);
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  const { services, courses, portfolio, blogPosts } = useData();
 
   // Focus input when opened
   useEffect(() => {
@@ -43,24 +45,24 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
 
     const lowerQuery = query.toLowerCase();
 
-    const matchedServices = servicesData
+    const matchedServices = services
       .filter(s => s.title.toLowerCase().includes(lowerQuery) || s.description.toLowerCase().includes(lowerQuery))
       .map(s => ({ id: s.title, title: s.title, description: s.description, type: 'Service' as const, url: '/services' }));
 
-    const matchedCourses = coursesData
+    const matchedCourses = courses
       .filter(c => c.title.toLowerCase().includes(lowerQuery) || c.description.toLowerCase().includes(lowerQuery))
       .map(c => ({ id: c.id, title: c.title, description: c.description, type: 'Course' as const, url: '/courses' }));
 
-    const matchedProjects = portfolioData
+    const matchedProjects = portfolio
       .filter(p => p.title.toLowerCase().includes(lowerQuery) || p.category.toLowerCase().includes(lowerQuery) || (p.description && p.description.toLowerCase().includes(lowerQuery)))
       .map(p => ({ id: p.id, title: p.title, description: p.category, type: 'Project' as const, url: '/portfolio' }));
 
-    const matchedPosts = blogPostsData
+    const matchedPosts = blogPosts
       .filter(b => b.title.toLowerCase().includes(lowerQuery) || b.excerpt.toLowerCase().includes(lowerQuery))
       .map(b => ({ id: b.id, title: b.title, description: b.excerpt, type: 'Blog' as const, url: '/blog' }));
 
     setResults([...matchedServices, ...matchedCourses, ...matchedProjects, ...matchedPosts]);
-  }, [query]);
+  }, [query, services, courses, portfolio, blogPosts]);
 
   const handleNavigate = (url: string) => {
     navigate(url);

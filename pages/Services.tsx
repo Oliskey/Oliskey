@@ -1,10 +1,11 @@
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
 // @ts-ignore
 import { Link } from 'react-router-dom';
-import { servicesData } from '../data';
+import { useData } from '../context/DataContext';
 
 const Services: React.FC = () => {
+  const { services } = useData();
+
   return (
     <div className="pt-28 pb-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -16,7 +17,7 @@ const Services: React.FC = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {servicesData.map((service, index) => (
+          {services.map((service, index) => (
             <div key={index} className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
               <div className={`w-14 h-14 ${service.color} text-white rounded-xl flex items-center justify-center mb-6 shadow-md transform group-hover:-translate-y-1 transition-transform`}>
                 {service.icon}

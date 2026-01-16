@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { ArrowRight, Layers, Users, Zap, ChevronRight, ExternalLink, ShieldCheck, Smile, PenTool, LayoutGrid, Building, Loader2, Check } from 'lucide-react';
 // @ts-ignore
 import { Link, useLocation } from 'react-router-dom';
-import { ecosystemData, faqs } from '../data';
+import { useData } from '../context/DataContext';
 import Logo from '../components/Logo';
 import { supabase } from '../supabase';
 
 const Home: React.FC = () => {
   const location = useLocation();
+  const { ecosystem, faqs } = useData(); // Use Data Context
   const [email, setEmail] = useState('');
   const [subscribing, setSubscribing] = useState(false);
   const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -44,9 +45,8 @@ const Home: React.FC = () => {
         .insert([{ email }]);
 
       if (error) {
-        // Handle unique constraint violation (already subscribed) gracefully
         if (error.code === '23505') {
-            setSubscribeStatus('success'); // Treat duplicate as success for UX
+            setSubscribeStatus('success');
         } else {
             throw error;
         }
@@ -68,8 +68,6 @@ const Home: React.FC = () => {
       {/* Hero Section */}
       <section className="relative pt-32 pb-16 sm:pt-40 sm:pb-20 lg:pt-52 lg:pb-32 px-4 sm:px-6 overflow-hidden">
         
-        {/* Background Logo Watermark (Replacing text) */}
-        {/* Visible on Mobile and Desktop, animated on both */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none z-0 opacity-[0.03]">
           <div className="animate-slow-spin">
              <Logo showText={false} className="h-[300px] w-[300px] sm:h-[400px] sm:w-[400px] md:h-[800px] md:w-[800px]" />
@@ -78,7 +76,6 @@ const Home: React.FC = () => {
 
         <div className="max-w-screen-xl mx-auto text-center relative z-10">
           
-          {/* Centered Logo & Text Layout */}
           <div className="flex flex-col md:flex-row justify-center items-center gap-6 sm:gap-8 mb-8 sm:mb-12 opacity-0 animate-[fadeIn_0.8s_ease-out_0.2s_forwards]">
              <button 
                 onClick={scrollToProducts}
@@ -128,7 +125,6 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
             
-            {/* System */}
             <div className="group bg-slate-50/50 rounded-3xl p-10 shadow-sm transition-all duration-500 border border-transparent hover:border-gray-200">
               <div className="w-14 h-14 rounded-2xl bg-white text-slate-900 flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500 shadow-sm">
                 <Layers size={28} strokeWidth={1.5} />
@@ -137,7 +133,6 @@ const Home: React.FC = () => {
               <p className="text-2xl font-bold text-slate-900 leading-tight mb-4">Reliable, scalable platforms engineered for real-world use.</p>
             </div>
 
-            {/* Culture */}
             <div className="group bg-slate-50/50 rounded-3xl p-10 shadow-sm transition-all duration-500 border border-transparent hover:border-gray-200">
               <div className="w-14 h-14 rounded-2xl bg-white text-slate-900 flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500 shadow-sm">
                 <Users size={28} strokeWidth={1.5} />
@@ -146,7 +141,6 @@ const Home: React.FC = () => {
               <p className="text-2xl font-bold text-slate-900 leading-tight mb-4">Designs and communities that outlast trends.</p>
             </div>
 
-            {/* Creativity */}
             <div className="group bg-slate-50/50 rounded-3xl p-10 shadow-sm transition-all duration-500 border border-transparent hover:border-gray-200">
               <div className="w-14 h-14 rounded-2xl bg-white text-slate-900 flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500 shadow-sm">
                 <Zap size={28} strokeWidth={1.5} />
@@ -170,7 +164,7 @@ const Home: React.FC = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {ecosystemData.map((item) => (
+            {ecosystem.map((item) => (
               <div 
                 key={item.id} 
                 className={`relative flex flex-col p-8 rounded-2xl bg-white border transition-all duration-300 ${
@@ -277,7 +271,6 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 text-center">
           <p className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-8">Trusted by</p>
           <div className="flex flex-wrap justify-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-             {/* Placeholders for logos */}
              <div className="h-8 w-24 bg-slate-200 rounded"></div>
              <div className="h-8 w-24 bg-slate-200 rounded"></div>
              <div className="h-8 w-24 bg-slate-200 rounded"></div>
@@ -360,7 +353,6 @@ const Home: React.FC = () => {
         </div>
       </section>
       
-      {/* Global CSS for fade animation */}
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(20px); }

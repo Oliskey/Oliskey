@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot, User, Sparkles, ChevronRight, ExternalLink, Image as ImageIcon } from 'lucide-react';
 // @ts-ignore
 import { useLocation, useNavigate } from 'react-router-dom';
-import { servicesData, coursesData, portfolioData, ecosystemData } from '../data';
+import { useData } from '../context/DataContext';
 import { Course, Service, Project } from '../types';
 import Logo from './Logo';
 
@@ -31,6 +31,8 @@ const ChatBot: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
+  
+  const { services, courses, portfolio, ecosystem } = useData();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -46,28 +48,28 @@ const ChatBot: React.FC = () => {
     const lower = query.toLowerCase();
 
     // 1. Search Courses
-    const course = coursesData.find(c => 
+    const course = courses.find(c => 
       c.title.toLowerCase().includes(lower) || 
       c.tags.some(t => lower.includes(t.toLowerCase()))
     );
     if (course) return { type: 'course', data: course };
 
     // 2. Search Services
-    const service = servicesData.find(s => 
+    const service = services.find(s => 
       s.title.toLowerCase().includes(lower) || 
       s.description.toLowerCase().includes(lower)
     );
     if (service) return { type: 'service', data: service };
 
     // 3. Search Portfolio
-    const project = portfolioData.find(p => 
+    const project = portfolio.find(p => 
       p.title.toLowerCase().includes(lower) || 
       p.category.toLowerCase().includes(lower)
     );
     if (project) return { type: 'project', data: project };
 
     // 4. Search Ecosystem/Products
-    const product = ecosystemData.find(e => e.title.toLowerCase().includes(lower));
+    const product = ecosystem.find(e => e.title.toLowerCase().includes(lower));
     if (product) return { type: 'product', data: product };
 
     return null;

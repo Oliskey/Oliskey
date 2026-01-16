@@ -1,7 +1,9 @@
 import React from 'react';
-import { blogPostsData } from '../data';
+import { useData } from '../context/DataContext';
 
 const Blog: React.FC = () => {
+  const { blogPosts } = useData();
+
   return (
     <div className="pt-28 pb-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -11,7 +13,7 @@ const Blog: React.FC = () => {
         </div>
 
         <div className="grid gap-12 lg:grid-cols-3">
-          {blogPostsData.map((post) => (
+          {blogPosts.map((post) => (
             <article key={post.id} className="flex flex-col group cursor-pointer">
               <div className="overflow-hidden rounded-2xl mb-6 shadow-sm">
                 <img 

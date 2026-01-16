@@ -1,8 +1,10 @@
 import React from 'react';
 import { Clock, BarChart, Star } from 'lucide-react';
-import { coursesData } from '../data';
+import { useData } from '../context/DataContext';
 
 const Courses: React.FC = () => {
+  const { courses } = useData();
+
   return (
     <div className="pt-28 pb-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,7 +16,7 @@ const Courses: React.FC = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {coursesData.map((course) => (
+          {courses.map((course) => (
             <div key={course.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group">
               <div className="h-48 overflow-hidden relative">
                 <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/0 transition-colors z-10"></div>

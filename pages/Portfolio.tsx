@@ -1,7 +1,9 @@
 import React from 'react';
-import { portfolioData } from '../data';
+import { useData } from '../context/DataContext';
 
 const Portfolio: React.FC = () => {
+  const { portfolio } = useData();
+
   return (
     <div className="pt-28 pb-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,7 +15,7 @@ const Portfolio: React.FC = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {portfolioData.map((project) => (
+          {portfolio.map((project) => (
             <div key={project.id} className="group relative overflow-hidden rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer aspect-[4/3]">
               <img 
                 src={project.image} 

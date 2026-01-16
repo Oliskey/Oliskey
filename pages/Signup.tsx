@@ -64,7 +64,10 @@ const Signup: React.FC = () => {
         options: {
           // Using origin only prevents mismatch errors if /dashboard isn't explicitly whitelisted
           redirectTo: window.location.origin,
-          // Removed offline access request to avoid potential 403s on unverified apps
+          // Force the account selection screen every time
+          queryParams: {
+            prompt: 'select_account',
+          }
         },
       });
       if (error) throw error;

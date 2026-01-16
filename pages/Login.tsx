@@ -40,8 +40,11 @@ const Login: React.FC = () => {
       if (error) throw error;
       // Navigation handled by useEffect
     } catch (err: any) {
+      console.error("Login Error:", err);
       if (err.message === 'Invalid login credentials') {
         setError('Invalid email or password. Please try again.');
+      } else if (err.message.includes('Email not confirmed')) {
+        setError('Please confirm your email address before signing in. Check your spam folder if you missed the link.');
       } else {
         setError(err.message || 'Failed to sign in');
       }

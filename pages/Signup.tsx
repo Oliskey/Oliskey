@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // @ts-ignore
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Loader2, AlertCircle, ArrowRight, User, CheckCircle } from 'lucide-react';
+import { Mail, Lock, Loader2, AlertCircle, ArrowRight, User, CheckCircle, RefreshCw } from 'lucide-react';
 import { supabase } from '../supabase';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
@@ -11,8 +11,11 @@ const Signup: React.FC = () => {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [resendStatus, setResendStatus] = useState<'idle' | 'sent' | 'error'>('idle');
+  
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -37,7 +40,7 @@ const Signup: React.FC = () => {
             full_name: fullName,
           },
           // This tells Supabase where to redirect after clicking the email link
-          emailRedirectTo: window.location.origin, // Simplified redirect
+          emailRedirectTo: window.location.origin, 
         },
       });
 
@@ -45,13 +48,20 @@ const Signup: React.FC = () => {
 
       // Check if session is null (implies email verification is required)
       if (data.session) {
+          // If auto-confirm is enabled or session exists, go to dashboard
           navigate('/');
       } else {
           setSuccess(true);
       }
     } catch (err: any) {
       console.error("Signup Error:", err);
-      setError(err.message || 'Failed to sign up');
+      
+      // Handle specific SMTP configuration errors gracefully
+      if (err.message && err.message.includes("Error sending confirmation email")) {
+        setError("System Error: Unable to send verification email. This is often due to invalid SMTP configuration (e.g., missing App Password).");
+      } else {
+        setError(err.message || 'Failed to sign up');
+      }
     } finally {
       setLoading(false);
     }
@@ -78,6 +88,27 @@ const Signup: React.FC = () => {
     }
   };
 
+  const handleResendEmail = async () => {
+    setResending(true);
+    setResendStatus('idle');
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email.trim(),
+        options: {
+          emailRedirectTo: window.location.origin,
+        }
+      });
+      if (error) throw error;
+      setResendStatus('sent');
+    } catch (err) {
+      console.error(err);
+      setResendStatus('error');
+    } finally {
+      setResending(false);
+    }
+  };
+
   if (success) {
     return (
         <div className="min-h-screen flex items-center justify-center bg-white px-6">
@@ -86,14 +117,30 @@ const Signup: React.FC = () => {
                     <CheckCircle size={40} />
                 </div>
                 <h2 className="text-3xl font-bold text-slate-900 mb-4">Check your email</h2>
-                <p className="text-slate-600 mb-8 text-lg">
-                    We've sent a verification link to <span className="font-semibold text-slate-900">{email}</span>. Please click the link to confirm your account.
+                <p className="text-slate-600 mb-6 text-lg">
+                    We've sent a verification link to <span className="font-semibold text-slate-900">{email}</span>.
                 </p>
+                
+                <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-8 text-sm text-blue-800 text-left">
+                  <strong>Tip:</strong> If you don't see the email in your inbox, please check your spam folder.
+                </div>
+
                 <div className="flex flex-col gap-3">
                     <Link to="/login" className="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl hover:bg-slate-800 transition-colors">
                         Proceed to Login
                     </Link>
-                    <button onClick={() => setSuccess(false)} className="text-sm text-slate-500 hover:text-slate-900 mt-2">
+                    
+                    <button 
+                      onClick={handleResendEmail} 
+                      disabled={resending || resendStatus === 'sent'}
+                      className="text-sm text-slate-500 hover:text-slate-900 mt-2 flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                        {resending ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                        {resendStatus === 'sent' ? 'Email Resent!' : 'Resend Verification Email'}
+                    </button>
+                    {resendStatus === 'error' && <span className="text-xs text-red-500">Failed to resend. Please try again.</span>}
+                    
+                    <button onClick={() => setSuccess(false)} className="text-sm text-slate-400 hover:text-slate-600">
                         Use a different email
                     </button>
                 </div>

@@ -45,55 +45,57 @@ const AppContent: React.FC = () => {
   // Determine if the app is fully ready
   const isAppReady = !authLoading && !dataLoading;
 
-  if (showSplash) {
-    return (
-      <SplashScreen 
-        isReady={isAppReady} 
-        onComplete={() => setShowSplash(false)} 
-      />
-    );
-  }
-
   return (
-    <Router>
-      <ScrollToTop />
-      <div className="flex flex-col min-h-screen relative bg-white">
-        <Navbar />
-        <main className="flex-grow">
-          <Suspense fallback={<div className="min-h-screen bg-white"></div>}>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/courses" element={<Courses />} />
-              <Route path="/portfolio" element={<Portfolio />} />
-              <Route path="/app" element={<AppShowcase />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/investors" element={<Investors />} />
-              <Route path="/get-started" element={<GetStarted />} />
-              <Route path="/pricing" element={<Pricing />} />
-              
-              {/* Auth Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
+    <>
+      {/* Splash Screen Overlay - Stays mounted until onComplete triggers (after fade out) */}
+      {showSplash && (
+        <SplashScreen 
+          isReady={isAppReady} 
+          onComplete={() => setShowSplash(false)} 
+        />
+      )}
 
-              {/* Protected Routes */}
-              <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } />
+      {/* Main Application Structure - Rendered immediately so it's ready behind the splash */}
+      <Router>
+        <ScrollToTop />
+        <div className={`flex flex-col min-h-screen relative bg-white ${showSplash ? 'h-screen overflow-hidden' : ''}`}>
+          <Navbar />
+          <main className="flex-grow">
+            <Suspense fallback={<div className="min-h-screen bg-white"></div>}>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/courses" element={<Courses />} />
+                <Route path="/portfolio" element={<Portfolio />} />
+                <Route path="/app" element={<AppShowcase />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/investors" element={<Investors />} />
+                <Route path="/get-started" element={<GetStarted />} />
+                <Route path="/pricing" element={<Pricing />} />
+                
+                {/* Auth Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
 
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </main>
-        <Footer />
-        <ChatBot />
-      </div>
-    </Router>
+                {/* Protected Routes */}
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </main>
+          <Footer />
+          <ChatBot />
+        </div>
+      </Router>
+    </>
   );
 };
 

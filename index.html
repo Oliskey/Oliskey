@@ -64,6 +64,11 @@
         -moz-osx-font-smoothing: grayscale;
         overflow-x: hidden;
         width: 100%;
+        background-color: #ffffff; /* Explicitly set white background to prevent black flashes */
+      }
+      
+      html {
+        background-color: #ffffff;
       }
       
       /* Custom Scrollbar */
@@ -94,7 +99,7 @@
   <script type="importmap">
 {
   "imports": {
-    "@google/genai": "https://esm.sh/@google/genai@^1.38.0",
+    "@google/genai": "https://esm.sh/@google/genai",
     "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
     "vite": "https://esm.sh/vite@^7.3.1",
     "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.91.0",

@@ -94,7 +94,8 @@ const Login: React.FC = () => {
 
       {/* Right Side - Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-12 lg:px-24 py-12 relative">
-        <div className="absolute top-8 left-8 lg:hidden">
+        {/* Changed from absolute to flow-based for mobile */}
+        <div className="lg:hidden mb-10 self-start">
              <Logo variant="dark" className="h-8" />
         </div>
         

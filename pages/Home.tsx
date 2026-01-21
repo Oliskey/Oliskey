@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Layers, Users, Zap, ChevronRight, ExternalLink, ShieldCheck, Smile, PenTool, LayoutGrid, Building, Loader2, Check, Bell } from 'lucide-react';
+import { ArrowRight, Layers, Users, Zap, ChevronRight, ExternalLink, ShieldCheck, Smile, PenTool, LayoutGrid, Building, Loader2, Check, Bell, User } from 'lucide-react';
 // @ts-ignore
 import { Link, useLocation } from 'react-router-dom';
 import { useData } from '../context/DataContext';
@@ -12,6 +12,7 @@ const Home: React.FC = () => {
   const [email, setEmail] = useState('');
   const [subscribing, setSubscribing] = useState(false);
   const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     if (location.state && (location.state as any).scrollToProducts) {
@@ -120,8 +121,62 @@ const Home: React.FC = () => {
          </div>
       </section>
 
+      {/* Founder Spotlight (MOVED TO TOP FOR VISIBILITY) */}
+      <section className="py-24 bg-slate-50 border-y border-gray-200 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-100 rounded-full blur-[100px] opacity-50 pointer-events-none"></div>
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
+           <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-20">
+              <div className="md:w-5/12 relative">
+                 <div className="absolute inset-0 bg-blue-600 rounded-2xl transform rotate-3 scale-[1.02] opacity-10"></div>
+                 {/* 
+                     NOTE: YOU MUST SAVE YOUR PHOTO AS 'public/co-founder.jpg'
+                     Aspect Ratio 3/4 (Portrait)
+                 */}
+                 {!imgError ? (
+                   <img 
+                      src="/co-founder.jpg?v=4" 
+                      onError={() => setImgError(true)}
+                      alt="Oliskey Lee - Co-Founder" 
+                      className="relative rounded-2xl shadow-2xl w-full object-cover aspect-[3/4] bg-gray-200"
+                   />
+                 ) : (
+                   <div className="relative rounded-2xl shadow-xl w-full aspect-[3/4] bg-slate-100 flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-slate-300">
+                      <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mb-4">
+                        <User size={32} className="text-slate-400" />
+                      </div>
+                      <h3 className="font-bold text-slate-800 mb-2">Image Not Found</h3>
+                      <p className="text-sm text-slate-500 mb-4">
+                        Save your new photo to:<br/>
+                        <code className="bg-slate-200 px-2 py-1 rounded text-xs font-mono">public/co-founder.jpg</code>
+                      </p>
+                      <button 
+                        onClick={() => setImgError(false)} 
+                        className="text-xs text-blue-600 hover:underline"
+                      >
+                        I've saved it, reload
+                      </button>
+                   </div>
+                 )}
+              </div>
+              <div className="md:w-7/12">
+                 <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-widest mb-6">Leadership</span>
+                 <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6">Meet the Creator</h2>
+                 <p className="text-xl text-slate-600 leading-relaxed mb-8 italic">
+                    "I started Oliskey with a single mission: to bridge the gap between complex engineering and human creativity. We aren't just building software; we are building the infrastructure for the next generation of African innovation."
+                 </p>
+                 <div className="flex items-center gap-4">
+                    <div className="border-l-4 border-blue-600 pl-4">
+                       <h3 className="text-xl font-bold text-slate-900">Oliskey Lee</h3>
+                       <p className="text-slate-500">Co-Founder & Lead Architect</p>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </section>
+
       {/* The Pillars (S.C.C.) */}
-      <section className="py-24 bg-white border-y border-slate-100 relative z-10">
+      <section className="py-24 bg-white border-b border-slate-100 relative z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
             

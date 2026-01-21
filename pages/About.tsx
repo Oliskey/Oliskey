@@ -1,7 +1,9 @@
-import React from 'react';
-import { Target, Users, Award } from 'lucide-react';
+import React, { useState } from 'react';
+import { Target, Users, Award, User } from 'lucide-react';
 
 const About: React.FC = () => {
+  const [imgError, setImgError] = useState(false);
+
   return (
     <div className="pt-24 pb-24">
       {/* Header */}
@@ -33,6 +35,56 @@ const About: React.FC = () => {
             </p>
           </div>
         </div>
+      </section>
+
+      {/* Leadership / Co-Founder Section */}
+      <section className="bg-white py-16 border-t border-gray-100">
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+               <h2 className="text-3xl font-bold text-slate-900">Leadership</h2>
+               <p className="text-slate-500 mt-2">Visionaries driving the future of infrastructure.</p>
+            </div>
+            
+            <div className="flex justify-center">
+               <div className="group relative max-w-lg w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-all hover:shadow-2xl">
+                  {/* Image Container - Aspect Ratio tailored for PORTRAIT photo (3:4) */}
+                  <div className="aspect-[3/4] overflow-hidden bg-slate-200 relative">
+                     {/* 
+                         NOTE: Please ensure 'co-founder.jpg' exists in your /public folder.
+                     */}
+                     {!imgError ? (
+                        <img 
+                            src="/co-founder.jpg?v=4" 
+                            onError={() => setImgError(true)}
+                            alt="Oliskey Lee"
+                            className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                        />
+                     ) : (
+                        <div className="w-full h-full bg-slate-100 flex flex-col items-center justify-center p-8 text-center">
+                            <User size={48} className="text-slate-300 mb-4" />
+                            <p className="text-slate-400 font-bold">Image Missing</p>
+                            <p className="text-slate-400 text-xs mt-2">
+                                Save photo to<br/>
+                                <code className="bg-white px-1 py-0.5 rounded border border-gray-200">public/co-founder.jpg</code>
+                            </p>
+                        </div>
+                     )}
+                     
+                     {/* Gradient Overlay for text readability (Only if image loaded or just over placeholder for style) */}
+                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90 pointer-events-none"></div>
+                     
+                     {/* Text Content Overlay */}
+                     <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                        <h3 className="text-2xl font-bold mb-1">Oliskey Lee</h3>
+                        <p className="text-blue-400 font-bold tracking-wide uppercase text-sm mb-3">Co-Founder</p>
+                        <p className="text-slate-200 text-sm leading-relaxed opacity-90">
+                           Architecting the systems and culture that drive our global vision.
+                        </p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
       </section>
 
       {/* Values */}

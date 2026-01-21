@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot, User, Sparkles, ChevronRight, ExternalLink, Image as ImageIcon } from 'lucide-react';
 // @ts-ignore
 import { useLocation, useNavigate } from 'react-router-dom';
+import { GoogleGenAI, Type, Chat, GenerateContentResponse } from "@google/genai";
 import { useData } from '../context/DataContext';
-import { Course, Service, Project } from '../types';
 import Logo from './Logo';
 
 interface Message {
@@ -32,7 +32,11 @@ const ChatBot: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  const { services, courses, portfolio, ecosystem } = useData();
+  // Refs for AI persistence
+  const chatRef = useRef<Chat | null>(null);
+  const aiRef = useRef<GoogleGenAI | null>(null);
+  
+  const { services, courses, portfolio, ecosystem, faqs } = useData();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,139 +46,117 @@ const ChatBot: React.FC = () => {
     scrollToBottom();
   }, [messages, isOpen, isTyping]);
 
-  // --- AI LOGIC CORE ---
+  // Initialize AI Client
+  useEffect(() => {
+    if (!aiRef.current) {
+        // @ts-ignore
+        const apiKey = process.env.API_KEY;
+        if (apiKey) {
+            aiRef.current = new GoogleGenAI({ apiKey: apiKey });
+        } else {
+            console.warn("Gemini API Key is missing.");
+        }
+    }
+  }, []);
 
-  const findBestMatch = (query: string) => {
-    const lower = query.toLowerCase();
+  const getSystemInstruction = () => {
+    const servicesList = services.map(s => `- ${s.title}: ${s.description}`).join('\n');
+    const coursesList = courses.map(c => `- ${c.title} (${c.price}, ${c.level})`).join('\n');
+    const projectsList = portfolio.map(p => `- ${p.title} (${p.category})`).join('\n');
+    const ecosystemList = ecosystem.map(e => `- ${e.title} (${e.status})`).join('\n');
+    const faqsList = faqs.map(f => `Q: ${f.question} A: ${f.answer}`).join('\n');
 
-    // 1. Search Courses
-    const course = courses.find(c => 
-      c.title.toLowerCase().includes(lower) || 
-      c.tags.some(t => lower.includes(t.toLowerCase()))
-    );
-    if (course) return { type: 'course', data: course };
+    return `You are Oliskey's AI Agent. You are helpful, professional, and concise.
+You help users navigate the Oliskey platform and answer questions about our products.
 
-    // 2. Search Services
-    const service = services.find(s => 
-      s.title.toLowerCase().includes(lower) || 
-      s.description.toLowerCase().includes(lower)
-    );
-    if (service) return { type: 'service', data: service };
+Oliskey Vision: Systems that work. Culture that lasts. Creativity that never ends.
+We build platforms, education tools, AI services, and media.
 
-    // 3. Search Portfolio
-    const project = portfolio.find(p => 
-      p.title.toLowerCase().includes(lower) || 
-      p.category.toLowerCase().includes(lower)
-    );
-    if (project) return { type: 'project', data: project };
+CORE IDENTITY & LEADERSHIP:
+- Founder & Lead Architect: Oliskey Lee.
+- Mission: To bridge the gap between complex engineering and human creativity. Building the infrastructure for the next generation of African innovation.
+- Location: Lagos, Nigeria.
+- Contact: oliskeylee@gmail.com | 09049417103
+- Values: Reliability, Human-centered design, Endless innovation.
 
-    // 4. Search Ecosystem/Products
-    const product = ecosystem.find(e => e.title.toLowerCase().includes(lower));
-    if (product) return { type: 'product', data: product };
+HERE IS THE CURRENT SITE DATA:
+Services:
+${servicesList}
 
-    return null;
+Courses:
+${coursesList}
+
+Portfolio Projects:
+${projectsList}
+
+Ecosystem Products:
+${ecosystemList}
+
+FAQs:
+${faqsList}
+
+NAVIGATION PATHS:
+- Home: /
+- About: /about
+- Services: /services
+- Courses: /courses
+- Portfolio: /portfolio
+- Blog: /blog
+- Contact: /contact
+- Investors: /investors
+- App: /app
+
+INSTRUCTIONS:
+1. Answer user questions based on the data above.
+2. If the user explicitly asks to go to a page or your response implies looking at a specific section, use the 'navigate' tool.
+3. If the user asks to generate, draw, or create an image, use the 'create_image' tool.
+4. Keep responses short and engaging.
+`;
   };
 
-  const processQuery = (query: string): { text: string, path?: string, label?: string, imageUrl?: string } => {
-    const lower = query.toLowerCase();
+  const initChat = () => {
+    if (!aiRef.current) return;
 
-    // --- IMAGE GENERATION (Simulated) ---
-    if (lower.startsWith('generate') || lower.startsWith('draw') || lower.startsWith('create image') || lower.includes('picture of') || lower.includes('image of')) {
-        const subject = query.replace(/(generate|draw|create|picture|image|of|an|a|show|me)/gi, '').trim();
-        // Use a random seed based on time to simulate a unique generation each time
-        const randomSeed = Date.now(); 
-        return {
-            text: `I've generated a concept image based on "${subject || 'your request'}". Here is the visual representation:`,
-            imageUrl: `https://picsum.photos/seed/${randomSeed}/800/600` // High quality random image
-        };
-    }
+    const navigateTool = {
+      name: 'navigate',
+      description: 'Navigate the user to a specific path/URL in the application.',
+      parameters: {
+        type: Type.OBJECT,
+        properties: {
+          path: {
+            type: Type.STRING,
+            description: 'The internal route path (e.g., /courses, /contact)',
+          },
+        },
+        required: ['path'],
+      },
+    };
 
-    // --- NAVIGATION COMMANDS (Agent Capabilities) ---
-    if (lower.includes('go to') || lower.includes('open') || lower.includes('take me') || lower.includes('show me')) {
-      if (lower.includes('home')) return { text: "Navigating to Home...", path: '/' };
-      if (lower.includes('about')) return { text: "Opening About page.", path: '/about' };
-      if (lower.includes('service')) return { text: "Taking you to Services.", path: '/services' };
-      if (lower.includes('course')) return { text: "Opening Courses catalog.", path: '/courses' };
-      if (lower.includes('portfolio') || lower.includes('work')) return { text: "Showing our Portfolio.", path: '/portfolio' };
-      if (lower.includes('blog')) return { text: "Loading the Blog.", path: '/blog' };
-      if (lower.includes('contact')) return { text: "Opening Contact page.", path: '/contact' };
-      if (lower.includes('invest')) return { text: "Opening Investor Relations.", path: '/investors' };
-      if (lower.includes('app')) return { text: "Showing App details.", path: '/app' };
-    }
+    const createImageTool = {
+      name: 'create_image',
+      description: 'Generate an image based on a prompt.',
+      parameters: {
+        type: Type.OBJECT,
+        properties: {
+          prompt: {
+            type: Type.STRING,
+            description: 'The detailed description of the image to generate.',
+          },
+        },
+        required: ['prompt'],
+      },
+    };
 
-    // --- VISION & IDENTITY ---
-    if (lower.includes('vision') || lower.includes('mission') || lower.includes('who are you') || lower.includes('scc')) {
-      return { 
-        text: "Oliskey is a global infrastructure brand built on the S.C.C framework: System (Reliable platforms), Culture (Enduring communities), and Creativity (Limitless innovation). We build products that last.",
-        path: '/about',
-        label: "Read Manifesto"
-      };
-    }
-
-    // --- REAL WORLD PROBLEMS ---
-    if (lower.includes('scale') || lower.includes('slow') || lower.includes('performance') || lower.includes('traffic')) {
-      return { 
-        text: "Scalability is a core pillar of our 'System' philosophy. We engineer architectures that handle massive growth without compromising performance. Our Custom Software and AI solutions are built for this.",
-        path: '/services',
-        label: "View Solutions"
-      };
-    }
-    if (lower.includes('design') || lower.includes('ugly') || lower.includes('user experience') || lower.includes('ux')) {
-      return {
-        text: "Great products need 'Culture' and 'Creativity'. We focus on human-centered design to ensure your users love the product. Our UI/UX Design service specifically solves retention and engagement problems.",
-        path: '/services',
-        label: "See Design Services"
-      };
-    }
-
-    // --- SPECIFIC DATA LOOKUP ---
-    const match = findBestMatch(query);
-    if (match) {
-      if (match.type === 'course') {
-        const course = match.data as Course;
-        return { 
-          text: `I found the "${course.title}" course. It's a ${course.level} level course covering ${course.tags.join(', ')}. Price: ${course.price}.`,
-          path: '/courses',
-          label: "View Course"
-        };
-      }
-      if (match.type === 'service') {
-        const service = match.data as Service;
-        return { 
-          text: `Yes, we specialize in ${service.title}. ${service.description} We can help you implement this.`,
-          path: '/services',
-          label: "View Services"
-        };
-      }
-      if (match.type === 'project') {
-        const project = match.data as Project;
-        return { 
-          text: `We built "${project.title}", a ${project.category}. You can see the case study details in our portfolio.`,
-          path: '/portfolio',
-          label: "View Portfolio"
-        };
-      }
-    }
-
-    // --- CATEGORY SEARCH ---
-    if (lower.includes('learn') || lower.includes('teach') || lower.includes('study')) {
-      return { text: "We offer project-based courses in Web Dev, Python, Flutter, and Design. Our goal is to get you hired or help you build a startup.", path: '/courses', label: "Browse Courses" };
-    }
-    if (lower.includes('build') || lower.includes('develop') || lower.includes('app') || lower.includes('website')) {
-      return { text: "We can build that for you. From simple websites to complex AI-powered apps, our engineering team is ready.", path: '/services', label: "Our Services" };
-    }
-    if (lower.includes('invest') || lower.includes('partner') || lower.includes('funding')) {
-      return { text: "We are currently onboarding strategic partners. We have 3 MVPs live and over 10k waitlist users. View our pitch deck info here.", path: '/investors', label: "Investor Info" };
-    }
-    if (lower.includes('contact') || lower.includes('hire') || lower.includes('email') || lower.includes('phone')) {
-      return { text: "You can reach us at oliskeylee@gmail.com or call 09049417103. We are based in Lagos but work globally.", path: '/contact', label: "Contact Us" };
-    }
-
-    // --- FALLBACK ---
-    return { text: "I can help you navigate our Services, Courses, Portfolio, or Investor information. You can also ask me to 'generate an image' of something." };
+    chatRef.current = aiRef.current.chats.create({
+      model: 'gemini-3-flash-preview',
+      config: {
+        systemInstruction: getSystemInstruction(),
+        tools: [{ functionDeclarations: [navigateTool, createImageTool] }],
+      },
+    });
   };
 
-  const handleSend = (e: React.FormEvent) => {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
@@ -184,50 +166,132 @@ const ChatBot: React.FC = () => {
     setInput('');
     setIsTyping(true);
 
-    // 2. Simulate AI Processing Delay (Dynamic)
-    const delay = Math.max(1000, Math.floor(Math.random() * 2000));
+    try {
+      // Lazy init chat if not exists
+      if (!chatRef.current) {
+        initChat();
+      }
 
-    setTimeout(() => {
-        const result = processQuery(userMsg.text);
-        
-        const botMsg: Message = {
-            id: (Date.now() + 1).toString(),
-            text: result.text,
-            sender: 'bot',
-            timestamp: new Date(),
-            actionPath: result.path,
-            actionLabel: result.label,
-            imageUrl: result.imageUrl
-        };
-        
-        setMessages(prev => [...prev, botMsg]);
-        setIsTyping(false);
+      if (!chatRef.current || !aiRef.current) {
+        // If still null, API key might be missing
+        throw new Error("AI not initialized. Check API Key.");
+      }
 
-        // 3. Auto-Navigation (AI Agent Behavior)
-        // Only navigate if path is valid and we aren't already there
-        if (result.path && location.pathname !== result.path) {
-            setTimeout(() => {
-                navigate(result.path!);
-            }, 1200); // Slight delay after message so user can read "Navigating..."
-        }
-    }, delay);
+      // 2. Send Message to Model
+      let response = await chatRef.current.sendMessage({ message: userMsg.text });
+      
+      // 3. Handle Function Calls Loop
+      while (response.candidates?.[0]?.content?.parts?.some(p => p.functionCall)) {
+         const parts = response.candidates[0].content.parts;
+         const functionResponseParts = [];
+
+         for (const part of parts) {
+            if (part.functionCall) {
+                const call = part.functionCall;
+                let resultString = "Function executed successfully.";
+                
+                // --- NAVIGATE TOOL ---
+                if (call.name === 'navigate') {
+                    const path = call.args['path'] as string;
+                    if (path) {
+                        // We execute the navigation on the client
+                        navigate(path);
+                        resultString = `Navigated user to ${path}`;
+                    }
+                }
+                
+                // --- CREATE IMAGE TOOL ---
+                if (call.name === 'create_image') {
+                    const prompt = call.args['prompt'] as string;
+                    try {
+                        // Use a dedicated image model
+                        const imgResponse = await aiRef.current.models.generateContent({
+                            model: 'gemini-2.5-flash-image',
+                            contents: { parts: [{ text: prompt }] },
+                        });
+                        
+                        // Extract Image
+                        let foundImage = false;
+                        for (const p of imgResponse.candidates[0].content.parts) {
+                            if (p.inlineData) {
+                                const base64 = p.inlineData.data;
+                                const mimeType = p.inlineData.mimeType;
+                                const imageUrl = `data:${mimeType};base64,${base64}`;
+                                
+                                // Add Image Message to UI immediately
+                                setMessages(prev => [...prev, {
+                                    id: Date.now().toString(),
+                                    text: `I've generated an image for: "${prompt}"`,
+                                    sender: 'bot',
+                                    timestamp: new Date(),
+                                    imageUrl: imageUrl
+                                }]);
+                                foundImage = true;
+                                resultString = "Image generated and displayed to user.";
+                            }
+                        }
+                        if (!foundImage) resultString = "Failed to generate image content.";
+                    } catch (err) {
+                        console.error("Image gen error", err);
+                        resultString = "Error generating image.";
+                    }
+                }
+
+                functionResponseParts.push({
+                    functionResponse: {
+                        name: call.name,
+                        response: { result: resultString },
+                        id: call.id // Important: map response to the call ID
+                    }
+                });
+            }
+         }
+
+         // Send the results back to the model so it can formulate a final text response
+         if (functionResponseParts.length > 0) {
+             response = await chatRef.current.sendMessage(functionResponseParts);
+         } else {
+             break; // Should not happen if loop condition is true
+         }
+      }
+
+      // 4. Display Final Text Response
+      const text = response.text;
+      if (text) {
+         setMessages(prev => [...prev, {
+             id: Date.now().toString(),
+             text: text,
+             sender: 'bot',
+             timestamp: new Date()
+         }]);
+      }
+
+    } catch (err) {
+      console.error("Chat Error:", err);
+      setMessages(prev => [...prev, {
+          id: Date.now().toString(),
+          text: "I'm having trouble connecting to the Oliskey brain right now. Please try again later.",
+          sender: 'bot',
+          timestamp: new Date()
+      }]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   return (
     <div className="fixed bottom-6 right-6 z-[100] font-sans">
-      {/* Toggle Button - NOW USES OLISKEY LOGO */}
+      {/* Toggle Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
           className="group flex items-center justify-center w-16 h-16 bg-slate-900 text-white rounded-full shadow-2xl hover:bg-blue-600 transition-all duration-300 hover:scale-110 relative overflow-hidden"
           aria-label="Open Chat"
         >
-          {/* Logo Component as Icon */}
           <div className="relative z-10 group-hover:rotate-12 transition-transform duration-500">
              <Logo showText={false} variant="light" className="h-8 w-8" animated={false} />
           </div>
           
-          {/* Notification Dot */}
           <span className="absolute top-3 right-3 flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500 border-2 border-slate-900"></span>
@@ -248,7 +312,7 @@ const ChatBot: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-bold text-sm flex items-center gap-1">
-                   Oliskey Intelligence <span className="px-1.5 py-0.5 rounded text-[9px] bg-blue-500/30 border border-blue-400/30 text-blue-200 font-medium">BETA</span>
+                   Oliskey Intelligence <span className="px-1.5 py-0.5 rounded text-[9px] bg-blue-500/30 border border-blue-400/30 text-blue-200 font-medium">GEMINI</span>
                 </h3>
                 <p className="text-xs text-slate-300 flex items-center gap-1.5">
                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span> Online
@@ -302,21 +366,12 @@ const ChatBot: React.FC = () => {
                         )}
                     </div>
                     
-                    {/* Action Button/Link if provided by Bot */}
-                    {msg.sender === 'bot' && msg.actionPath && (
+                    {/* Visual Action Indicator for Navigation */}
+                    {msg.actionPath && (
                         <div className="mt-1.5 ml-1">
-                            {msg.actionLabel ? (
-                                <button 
-                                    onClick={() => navigate(msg.actionPath!)}
-                                    className="text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full flex items-center gap-1 transition-colors"
-                                >
-                                    {msg.actionLabel} <ChevronRight size={12} />
-                                </button>
-                            ) : (
-                                <span className="text-[10px] text-slate-400 flex items-center gap-1">
-                                    <ExternalLink size={10} /> Navigating...
-                                </span>
-                            )}
+                             <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                                <ExternalLink size={10} /> Navigating...
+                            </span>
                         </div>
                     )}
                 </div>
@@ -347,12 +402,12 @@ const ChatBot: React.FC = () => {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Type 'draw a car' or 'go to services'..."
+                placeholder="Ask Oliskey or type 'draw a car'..."
                 className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm placeholder:text-slate-400"
               />
               <button 
                 type="submit"
-                disabled={!input.trim()}
+                disabled={!input.trim() || isTyping}
                 className="p-3 bg-slate-900 text-white rounded-xl hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-slate-900/10"
               >
                 <Send size={18} />
@@ -360,7 +415,7 @@ const ChatBot: React.FC = () => {
             </div>
             <div className="flex justify-center mt-2 gap-3">
                 <span className="text-[10px] text-slate-400 flex items-center gap-1">
-                    <Sparkles size={8} /> Powered by Oliskey GenAI
+                    <Sparkles size={8} /> Powered by Gemini
                 </span>
             </div>
           </form>

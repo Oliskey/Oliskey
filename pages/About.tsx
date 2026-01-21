@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Target, Users, Award, User } from 'lucide-react';
+import OptimizedImage from '../components/OptimizedImage';
 
 const About: React.FC = () => {
-  const [imgError, setImgError] = useState(false);
 
   return (
     <div className="pt-24 pb-24">
@@ -18,11 +18,11 @@ const About: React.FC = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <img 
+            <OptimizedImage
               src="https://picsum.photos/800/600" 
               alt="Team collaborating"
-              loading="lazy" 
-              className="rounded-2xl shadow-lg"
+              className="rounded-2xl shadow-lg aspect-[4/3]"
+              priority={true}
             />
           </div>
           <div>
@@ -49,31 +49,18 @@ const About: React.FC = () => {
                <div className="group relative max-w-lg w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-all hover:shadow-2xl">
                   {/* Image Container - Aspect Ratio tailored for PORTRAIT photo (3:4) */}
                   <div className="aspect-[3/4] overflow-hidden bg-slate-200 relative">
-                     {/* 
-                         Using local image from public folder
-                     */}
-                     {!imgError ? (
-                        <img 
-                            src="/co-founder.jpg" 
-                            onError={() => setImgError(true)}
-                            alt="Oliskey Lee"
-                            className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                        />
-                     ) : (
-                        <div className="w-full h-full bg-slate-100 flex flex-col items-center justify-center p-8 text-center">
-                            <User size={48} className="text-slate-300 mb-4" />
-                            <p className="text-slate-400 font-bold">Image Missing</p>
-                            <p className="text-slate-400 text-xs mt-2">
-                                Could not load <strong>co-founder.jpg</strong>.
-                            </p>
-                        </div>
-                     )}
+                     <OptimizedImage 
+                         src="/co-founder.jpg" 
+                         alt="Oliskey Lee"
+                         className="w-full h-full"
+                         imgClassName="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                     />
                      
                      {/* Gradient Overlay for text readability (Only if image loaded or just over placeholder for style) */}
-                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90 pointer-events-none"></div>
+                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90 pointer-events-none z-10"></div>
                      
                      {/* Text Content Overlay */}
-                     <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                     <div className="absolute bottom-0 left-0 right-0 p-8 text-white z-20">
                         <h3 className="text-2xl font-bold mb-1">Oliskey Lee</h3>
                         <p className="text-blue-400 font-bold tracking-wide uppercase text-sm mb-3">Co-Founder</p>
                         <p className="text-slate-200 text-sm leading-relaxed opacity-90">

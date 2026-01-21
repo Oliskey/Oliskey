@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { ImageOff, FileText } from 'lucide-react';
+import OptimizedImage from '../components/OptimizedImage';
 
 const Blog: React.FC = () => {
   const { blogPosts } = useData();
-  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
-
-  const handleImageError = (id: string) => {
-    setImageErrors(prev => ({ ...prev, [id]: true }));
-  };
 
   return (
     <div className="pt-28 pb-24 bg-white">
@@ -22,22 +18,12 @@ const Blog: React.FC = () => {
           {blogPosts.map((post) => (
             <article key={post.id} className="flex flex-col group cursor-pointer">
               <div className="overflow-hidden rounded-2xl mb-6 shadow-sm bg-gray-100 relative h-56">
-                {!imageErrors[post.id] ? (
-                  <img 
+                <OptimizedImage
                     src={post.image} 
                     alt={post.title}
-                    loading="lazy" 
-                    onError={() => handleImageError(post.id)}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                  />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 text-slate-400 p-8 text-center border border-slate-100">
-                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm">
-                        <FileText size={20} className="text-slate-300" />
-                      </div>
-                      <span className="text-xs font-medium uppercase tracking-wider text-slate-300">Image not available</span>
-                  </div>
-                )}
+                    className="w-full h-full"
+                    imgClassName="object-cover hover:scale-105 transition-transform duration-500"
+                />
               </div>
               <div>
                 <div className="flex items-center text-xs font-bold text-blue-600 uppercase tracking-wider mb-3">

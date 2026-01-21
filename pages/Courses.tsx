@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import { Clock, BarChart, Star, BookOpen } from 'lucide-react';
 import { useData } from '../context/DataContext';
+import OptimizedImage from '../components/OptimizedImage';
 
 const Courses: React.FC = () => {
   const { courses } = useData();
-  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
-
-  const handleImageError = (id: string) => {
-    setImageErrors(prev => ({ ...prev, [id]: true }));
-  };
 
   return (
     <div className="pt-28 pb-24 bg-white">
@@ -25,19 +21,12 @@ const Courses: React.FC = () => {
             <div key={course.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
               <div className="h-48 overflow-hidden relative bg-gray-50">
                 <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/0 transition-colors z-10 pointer-events-none"></div>
-                {!imageErrors[course.id] ? (
-                  <img 
+                <OptimizedImage
                     src={course.image} 
                     alt={course.title}
-                    loading="lazy" 
-                    onError={() => handleImageError(course.id)}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-300">
-                    <BookOpen size={48} opacity={0.2} />
-                  </div>
-                )}
+                    className="w-full h-full"
+                    imgClassName="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div className="flex justify-between items-center mb-3">

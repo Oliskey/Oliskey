@@ -314,7 +314,7 @@ INSTRUCTIONS:
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[100] font-sans">
+    <div className="fixed bottom-6 right-6 z-[50] font-sans">
       {/* Toggle Button */}
       {!isOpen && (
         <button
@@ -440,7 +440,7 @@ INSTRUCTIONS:
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask Oliskey or type 'draw a car'..."
-                className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm placeholder:text-slate-400"
+                className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-base placeholder:text-slate-400"
               />
               <button 
                 type="submit"

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useData } from '../context/DataContext';
+import OptimizedImage from '../components/OptimizedImage';
 
 const Portfolio: React.FC = () => {
   const { portfolio } = useData();
@@ -17,13 +18,13 @@ const Portfolio: React.FC = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {portfolio.map((project) => (
             <div key={project.id} className="group relative overflow-hidden rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer aspect-[4/3]">
-              <img 
+              <OptimizedImage
                 src={project.image} 
                 alt={project.title}
-                loading="lazy" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                className="w-full h-full"
+                imgClassName="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8">
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8 z-20">
                 <h3 className="text-white text-2xl font-bold translate-y-4 group-hover:translate-y-0 transition-transform duration-300">{project.title}</h3>
                 <p className="text-blue-300 font-medium translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">{project.category}</p>
                 {project.description && (

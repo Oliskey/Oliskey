@@ -1,12 +1,13 @@
-import React, { useEffect, Suspense, lazy } from 'react';
+import React, { useEffect, Suspense, lazy, useState } from 'react';
 // @ts-ignore
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ChatBot from './components/ChatBot';
 import PageLoader from './components/PageLoader';
+import SplashScreen from './components/SplashScreen'; 
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { DataProvider, useData } from './context/DataContext'; // Import DataProvider
+import { DataProvider, useData } from './context/DataContext'; 
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -39,20 +40,27 @@ const ScrollToTop = () => {
 const AppContent: React.FC = () => {
   const { loading: authLoading } = useAuth();
   const { loading: dataLoading } = useData();
+  const [showSplash, setShowSplash] = useState(true);
 
-  // STAGE 1: Check Auth & Data Loading
-  // This ensures the app doesn't render until we know the user's status AND have the content
-  if (authLoading || dataLoading) {
-    return <PageLoader />;
+  // Determine if the app is fully ready
+  const isAppReady = !authLoading && !dataLoading;
+
+  if (showSplash) {
+    return (
+      <SplashScreen 
+        isReady={isAppReady} 
+        onComplete={() => setShowSplash(false)} 
+      />
+    );
   }
 
   return (
     <Router>
       <ScrollToTop />
-      <div className="flex flex-col min-h-screen relative">
+      <div className="flex flex-col min-h-screen relative bg-white">
         <Navbar />
         <main className="flex-grow">
-          <Suspense fallback={<PageLoader />}>
+          <Suspense fallback={<div className="min-h-screen bg-white"></div>}>
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Home />} />

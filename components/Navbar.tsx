@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Search, User, LogOut, LayoutDashboard } from 'lucide-react';
+import { Search, User, LogOut, LayoutDashboard, ChevronRight, ArrowRight } from 'lucide-react';
 // @ts-ignore
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import SearchModal from './SearchModal';
@@ -50,7 +50,6 @@ const Navbar: React.FC = () => {
   const handleProductClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (location.pathname !== '/') {
-      // In v6, pass state via the second argument
       navigate('/', { state: { scrollToProducts: true } });
     } else {
       const element = document.getElementById('products');
@@ -61,12 +60,12 @@ const Navbar: React.FC = () => {
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    // Force a full page reload to the root URL if we are deep in the app
     if (location.pathname === '/') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
         navigate('/');
     }
+    setIsOpen(false);
   };
 
   const toggleMenu = (e: React.MouseEvent) => {
@@ -82,6 +81,7 @@ const Navbar: React.FC = () => {
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
+    setIsOpen(false);
   };
 
   const isActive = (path: string) => location.pathname === path;
@@ -94,7 +94,7 @@ const Navbar: React.FC = () => {
   return (
     <>
       <nav 
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-300 ${
           scrolled || isOpen ? 'bg-white/95 backdrop-blur-xl border-b border-gray-100 shadow-sm' : 'bg-white/0 backdrop-blur-none border-transparent'
         }`}
       >
@@ -104,7 +104,7 @@ const Navbar: React.FC = () => {
             <a 
               href="/" 
               onClick={handleLogoClick} 
-              className="flex items-center flex-shrink-0 mr-8 z-50 cursor-pointer select-none"
+              className="flex items-center flex-shrink-0 mr-8 z-[70] cursor-pointer select-none relative"
             >
               <Logo className="h-10 md:h-12" variant="dark" animated={true} />
             </a>
@@ -176,108 +176,164 @@ const Navbar: React.FC = () => {
               )}
             </div>
 
-            {/* Mobile Actions - High Z-Index to ensure clickability */}
-            <div className="md:hidden flex items-center gap-4 z-[60] relative">
+            {/* Mobile Actions */}
+            <div className="md:hidden flex items-center gap-4 z-[70]">
                <button
                 onClick={openSearch}
-                className="p-2 text-slate-600 hover:text-blue-600 transition-colors active:scale-95 touch-manipulation"
+                className={`p-2 transition-all duration-300 active:scale-95 touch-manipulation ${isOpen ? 'opacity-0 translate-x-4 pointer-events-none' : 'text-slate-600 hover:text-blue-600 opacity-100 translate-x-0'}`}
                 aria-label="Search"
               >
                 <Search size={24} strokeWidth={2} />
               </button>
               
+              {/* Animated Hamburger Icon */}
               <button
                 onClick={toggleMenu}
-                className="p-2 text-slate-900 hover:text-blue-600 transition-colors focus:outline-none active:scale-95 touch-manipulation"
-                aria-label="Toggle menu"
+                className="p-2 text-slate-900 focus:outline-none active:scale-95 touch-manipulation"
+                aria-label={isOpen ? "Close menu" : "Open menu"}
               >
-                {isOpen ? <X size={28} strokeWidth={1.5} /> : <Menu size={28} strokeWidth={1.5} />}
+                <div className="w-6 h-5 relative flex flex-col justify-between">
+                    <span className={`w-full h-[2.5px] bg-slate-900 rounded-full transform transition-all duration-300 ease-in-out origin-center ${isOpen ? 'rotate-45 translate-y-[9px]' : ''}`} />
+                    <span className={`w-full h-[2.5px] bg-slate-900 rounded-full transition-all duration-300 ease-in-out ${isOpen ? 'opacity-0 translate-x-4' : 'opacity-100'}`} />
+                    <span className={`w-full h-[2.5px] bg-slate-900 rounded-full transform transition-all duration-300 ease-in-out origin-center ${isOpen ? '-rotate-45 -translate-y-[9px]' : ''}`} />
+                </div>
               </button>
             </div>
           </div>
         </div>
+      </nav>
 
-        {/* Mobile Menu Overlay */}
-        {isOpen && (
-          <div className="md:hidden absolute top-20 left-0 right-0 bg-white border-b border-gray-100 px-6 py-8 shadow-xl animate-fade-in h-[calc(100vh-5rem)] overflow-y-auto z-40">
-            <div className="flex flex-col space-y-6 text-center pt-8">
-              {navLinks.map((link) => (
-                link.name === 'Products' ? (
-                  <a
+        {/* Mobile Menu Full Screen Overlay */}
+        <div 
+          className={`fixed inset-0 bg-white z-[55] md:hidden flex flex-col transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+            isOpen 
+              ? 'opacity-100 translate-y-0 visible' 
+              : 'opacity-0 -translate-y-4 invisible pointer-events-none'
+          }`}
+        >
+          {/* Menu Background Decoration */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] opacity-[0.02] pointer-events-none z-0">
+             <Logo showText={false} className="w-full h-full" animated={true} />
+          </div>
+
+          <div className="flex flex-col h-full relative z-10 overflow-y-auto">
+             {/* Spacer for Header */}
+             <div className="h-24 flex-shrink-0"></div>
+
+             {/* Search in Menu */}
+             <div className="px-6 mb-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                <button 
+                  onClick={() => { setIsOpen(false); setIsSearchOpen(true); }}
+                  className="w-full flex items-center px-5 py-4 bg-slate-50 text-slate-500 rounded-2xl border border-gray-100 hover:border-blue-200 transition-colors"
+                >
+                  <Search size={20} className="mr-3 text-slate-400" />
+                  <span className="text-base">Search...</span>
+                </button>
+             </div>
+
+             {/* Main Links */}
+             <div className="px-6 flex flex-col space-y-4 flex-grow">
+                {navLinks.map((link, index) => (
+                  <div 
                     key={link.name}
-                    href="#products"
-                    onClick={handleProductClick}
-                    className="text-2xl font-medium text-slate-800 hover:text-blue-600 transition-colors"
+                    className="animate-fade-in-up"
+                    style={{ animationDelay: `${0.1 + (index * 0.05)}s` }}
                   >
-                     {link.name}
-                  </a>
-                ) : (
-                  <Link
-                    key={link.name}
-                    to={link.path}
-                    className="text-2xl font-medium text-slate-800 hover:text-blue-600 transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                )
-              ))}
-              
-              <div className="pt-8 pb-12 border-t border-gray-100 mt-6">
+                    {link.name === 'Products' ? (
+                      <a
+                        href="#products"
+                        onClick={handleProductClick}
+                        className="group flex items-center justify-between py-3 border-b border-gray-50"
+                      >
+                         <span className="text-3xl font-bold text-slate-900 group-active:text-blue-600 tracking-tight transition-colors">{link.name}</span>
+                         <ChevronRight size={24} className="text-slate-300 group-active:text-blue-600 transition-colors" />
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.path}
+                        className={`group flex items-center justify-between py-3 border-b border-gray-50 ${
+                          isActive(link.path) ? 'text-blue-600' : 'text-slate-900'
+                        }`}
+                      >
+                        <span className="text-3xl font-bold tracking-tight group-active:text-blue-600 transition-colors">{link.name}</span>
+                        {isActive(link.path) && <div className="w-2.5 h-2.5 bg-blue-600 rounded-full shadow-sm"></div>}
+                      </Link>
+                    )}
+                  </div>
+                ))}
+             </div>
+
+             {/* Footer Actions */}
+             <div className="p-6 bg-white mt-auto animate-fade-in-up border-t border-gray-50" style={{ animationDelay: '0.4s' }}>
                 {user ? (
-                   <div className="space-y-6">
-                      <div className="flex flex-col items-center gap-2 mb-4">
+                   <div className="space-y-4">
+                      <div className="flex items-center gap-4 mb-6 p-4 bg-slate-50 rounded-2xl border border-gray-100">
                          {user.user_metadata?.avatar_url ? (
                            <img 
                               src={user.user_metadata.avatar_url} 
                               alt="Profile"
-                              className="w-16 h-16 rounded-full border-2 border-gray-200 object-cover mb-2"
+                              className="w-14 h-14 rounded-full border-2 border-white shadow-sm object-cover"
                            />
                          ) : (
-                           <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 mb-2">
-                              <span className="font-bold text-2xl">
+                           <div className="w-14 h-14 rounded-full bg-white border border-gray-200 flex items-center justify-center text-slate-600 shadow-sm">
+                              <span className="font-bold text-xl">
                                 {user.email?.charAt(0).toUpperCase()}
                               </span>
                            </div>
                          )}
-                         <p className="font-medium text-slate-900">{user.user_metadata?.full_name || user.email}</p>
+                         <div>
+                            <p className="font-bold text-slate-900 text-base">{user.user_metadata?.full_name || 'User'}</p>
+                            <p className="text-sm text-slate-500 truncate max-w-[200px]">{user.email}</p>
+                         </div>
                       </div>
-                      <Link 
-                        to="/dashboard"
-                        className="flex items-center justify-center gap-2 w-full px-8 py-4 rounded-full bg-blue-600 text-white text-lg font-semibold tracking-wide hover:bg-blue-700 transition-colors"
-                      >
-                        <LayoutDashboard size={20} /> Dashboard
-                      </Link>
-                      <button 
-                        onClick={handleSignOut}
-                        className="flex items-center justify-center gap-2 w-full px-8 py-4 rounded-full bg-slate-100 text-slate-700 text-lg font-semibold tracking-wide hover:bg-slate-200 transition-colors"
-                      >
-                        <LogOut size={20} /> Sign Out
-                      </button>
+                      <div className="grid grid-cols-2 gap-4">
+                        <Link 
+                          to="/dashboard"
+                          className="flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-blue-600 text-white font-bold text-base tracking-wide active:scale-95 transition-all shadow-lg shadow-blue-500/20"
+                        >
+                          <LayoutDashboard size={20} /> Dashboard
+                        </Link>
+                        <button 
+                          onClick={handleSignOut}
+                          className="flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-white text-slate-700 font-bold text-base border-2 border-gray-100 tracking-wide active:scale-95 transition-all hover:bg-gray-50"
+                        >
+                          <LogOut size={20} /> Sign Out
+                        </button>
+                      </div>
                    </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <Link 
                       to="/login"
-                      className="inline-block w-full max-w-xs px-8 py-4 rounded-full bg-slate-900 text-white text-lg font-semibold tracking-wide hover:bg-blue-600 transition-colors"
+                      className="flex items-center justify-center w-full py-4 rounded-xl bg-white text-slate-900 border-2 border-gray-100 font-bold text-base tracking-wide active:scale-95 transition-all hover:bg-gray-50"
                     >
                       Sign In
                     </Link>
                      <Link 
                       to="/signup"
-                      className="inline-block w-full max-w-xs px-8 py-4 rounded-full bg-white border border-gray-200 text-slate-900 text-lg font-semibold tracking-wide hover:bg-gray-50 transition-colors"
+                      className="flex items-center justify-center w-full py-4 rounded-xl bg-slate-900 text-white font-bold text-base tracking-wide active:scale-95 transition-all shadow-xl shadow-slate-900/20 group"
                     >
-                      Create Account
+                      Sign Up <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </div>
                 )}
-              </div>
-            </div>
+             </div>
           </div>
-        )}
-      </nav>
+        </div>
 
       {/* Search Modal */}
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+          animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          opacity: 0; /* Start hidden for stagger */
+        }
+      `}</style>
     </>
   );
 };

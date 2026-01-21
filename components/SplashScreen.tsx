@@ -52,6 +52,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ isReady, onComplete }) => {
       className={`fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center transition-opacity duration-500 ${
         isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
+      style={{ backgroundColor: '#ffffff' }}
     >
       <div className="flex flex-col items-center">
         {/* Logo Section */}

@@ -58,10 +58,13 @@ const AppContent: React.FC = () => {
       {/* Main Application Structure - Rendered immediately so it's ready behind the splash */}
       <Router>
         <ScrollToTop />
-        <div className={`flex flex-col min-h-screen relative bg-white ${showSplash ? 'h-screen overflow-hidden' : ''}`}>
+        <div 
+          className={`flex flex-col min-h-screen relative bg-white ${showSplash ? 'h-screen overflow-hidden' : ''}`}
+          style={{ backgroundColor: '#ffffff' }}
+        >
           <Navbar />
           <main className="flex-grow">
-            <Suspense fallback={<div className="min-h-screen bg-white"></div>}>
+            <Suspense fallback={<div className="min-h-screen bg-white" style={{ backgroundColor: '#ffffff' }}></div>}>
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Home />} />

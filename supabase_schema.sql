@@ -1,5 +1,32 @@
 -- Enable Row Level Security (RLS) on all tables by default
--- Security Requirement: Zero-Trust Architecture
+-- Security Requirement: Zero-Trust Architecture & XSS Prevention
+
+-- ==========================================
+-- 0. SECURITY FUNCTIONS
+-- ==========================================
+
+-- Function to sanitize text input (Basic XSS Prevention at DB Level)
+-- This strips <script> tags to prevent stored XSS.
+CREATE OR REPLACE FUNCTION public.sanitize_input()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Iterate over columns to sanitize (simplified for specific tables/columns)
+  IF TG_TABLE_NAME = 'contact_submissions' THEN
+      -- Remove script tags from message and name
+      NEW.message := REGEXP_REPLACE(NEW.message, '<script\b[^>]*>(.*?)</script>', '[BLOCKED SCRIPT]', 'gi');
+      NEW.full_name := REGEXP_REPLACE(NEW.full_name, '<script\b[^>]*>(.*?)</script>', '', 'gi');
+      -- Remove javascript: protocol from input
+      NEW.message := REGEXP_REPLACE(NEW.message, 'javascript:', '', 'gi');
+  END IF;
+  
+  IF TG_TABLE_NAME = 'newsletter_subscribers' THEN
+      -- Basic sanitization for email
+      NEW.email := REGEXP_REPLACE(NEW.email, '<[^>]+>', '', 'gi');
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
 -- ==========================================
 -- 1. USER & SYSTEM TABLES
@@ -13,9 +40,21 @@ create table if not exists public.newsletter_subscribers (
 );
 alter table public.newsletter_subscribers enable row level security;
 
+-- RLS: Public can insert (subscribe), but ONLY Admins/Service Role can view list
 drop policy if exists "Allow public subscription" on public.newsletter_subscribers;
 create policy "Allow public subscription"
   on public.newsletter_subscribers for insert with check (true);
+
+drop policy if exists "Admins view subscribers" on public.newsletter_subscribers;
+create policy "Admins view subscribers"
+  on public.newsletter_subscribers for select using (auth.role() = 'service_role');
+
+-- Trigger: Sanitize XSS
+drop trigger if exists sanitize_newsletter on public.newsletter_subscribers;
+create trigger sanitize_newsletter
+  before insert or update on public.newsletter_subscribers
+  for each row execute procedure public.sanitize_input();
+
 
 -- Contact Submissions
 create table if not exists public.contact_submissions (
@@ -28,9 +67,21 @@ create table if not exists public.contact_submissions (
 );
 alter table public.contact_submissions enable row level security;
 
+-- RLS: Public can insert (contact form), Only Admins can view
 drop policy if exists "Allow public contact submission" on public.contact_submissions;
 create policy "Allow public contact submission"
   on public.contact_submissions for insert with check (true);
+
+drop policy if exists "Admins view messages" on public.contact_submissions;
+create policy "Admins view messages"
+  on public.contact_submissions for select using (auth.role() = 'service_role');
+
+-- Trigger: Sanitize XSS
+drop trigger if exists sanitize_contact on public.contact_submissions;
+create trigger sanitize_contact
+  before insert or update on public.contact_submissions
+  for each row execute procedure public.sanitize_input();
+
 
 -- User Profiles
 create table if not exists public.profiles (
@@ -54,6 +105,7 @@ drop policy if exists "Users can update own profile" on public.profiles;
 create policy "Users can update own profile"
   on public.profiles for update using (auth.uid() = id);
 
+
 -- Audit Logs
 create table if not exists public.audit_logs (
   id uuid default gen_random_uuid() primary key,
@@ -76,7 +128,6 @@ create policy "System can insert logs"
   with check (auth.uid() = user_id);
 
 -- Trigger for Auto-Profile Creation
--- UPDATED: Added EXCEPTION handling to ensure auth user creation never fails even if profile creation errors.
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
@@ -91,7 +142,6 @@ begin
     avatar_url = excluded.avatar_url;
   return new;
 exception when others then
-  -- Log error but allow the user to be created in auth.users
   raise warning 'Error in handle_new_user trigger: %', SQLERRM;
   return new;
 end;
@@ -106,27 +156,28 @@ create trigger on_auth_user_created
 -- ==========================================
 -- 2. CONTENT TABLES (Backend Driven UI)
 -- ==========================================
+-- Strict Policies: Public Read Only, Admin Write Only
 
 -- Services
 create table if not exists public.services (
   id uuid default gen_random_uuid() primary key,
   title text not null,
   description text not null,
-  icon_name text not null, -- Stores the Lucide icon name (e.g. 'Brain')
-  color_class text not null, -- e.g. 'bg-purple-600'
+  icon_name text not null,
+  color_class text not null,
   sort_order integer default 0
 );
 alter table public.services enable row level security;
 
--- Drop existing policy to prevent duplication errors
 drop policy if exists "Public can view services" on public.services;
 create policy "Public can view services" on public.services for select using (true);
+-- Implicitly denies insert/update/delete for anon/authenticated (good security)
 
 -- Courses
 create table if not exists public.courses (
   id text primary key,
   title text not null,
-  level text not null, -- 'Beginner', 'Intermediate', 'Advanced'
+  level text not null,
   description text not null,
   price text not null,
   image_url text not null,
@@ -135,7 +186,6 @@ create table if not exists public.courses (
 );
 alter table public.courses enable row level security;
 
--- Drop existing policy to prevent duplication errors
 drop policy if exists "Public can view courses" on public.courses;
 create policy "Public can view courses" on public.courses for select using (true);
 
@@ -149,7 +199,6 @@ create table if not exists public.projects (
 );
 alter table public.projects enable row level security;
 
--- Drop existing policy to prevent duplication errors
 drop policy if exists "Public can view projects" on public.projects;
 create policy "Public can view projects" on public.projects for select using (true);
 
@@ -158,14 +207,13 @@ create table if not exists public.blog_posts (
   id text primary key,
   title text not null,
   excerpt text not null,
-  date_published text not null, -- Keeping as text for simplicity based on existing format, could be date
+  date_published text not null,
   author text not null,
   category text not null,
   image_url text not null
 );
 alter table public.blog_posts enable row level security;
 
--- Drop existing policy to prevent duplication errors
 drop policy if exists "Public can view blog posts" on public.blog_posts;
 create policy "Public can view blog posts" on public.blog_posts for select using (true);
 
@@ -174,7 +222,7 @@ create table if not exists public.ecosystem (
   id text primary key,
   title text not null,
   description text not null,
-  status text not null, -- 'Live' or 'Coming Soon'
+  status text not null,
   icon_name text not null,
   color_class text not null,
   link text,
@@ -183,14 +231,32 @@ create table if not exists public.ecosystem (
 );
 alter table public.ecosystem enable row level security;
 
--- Drop existing policy to prevent duplication errors
 drop policy if exists "Public can view ecosystem" on public.ecosystem;
 create policy "Public can view ecosystem" on public.ecosystem for select using (true);
+
+-- Notifications (New Table for Dashboard)
+create table if not exists public.notifications (
+  id uuid default gen_random_uuid() primary key,
+  title text not null,
+  message text not null,
+  type text default 'info', -- info, alert, success
+  is_global boolean default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+alter table public.notifications enable row level security;
+
+drop policy if exists "Users view notifications" on public.notifications;
+create policy "Users view notifications" on public.notifications for select using (true);
 
 
 -- ==========================================
 -- 3. SEED DATA (Initial Content)
 -- ==========================================
+
+-- Seed Notifications (The School App Announcement)
+INSERT INTO public.notifications (title, message, type, is_global) VALUES
+('Product Launch Update', 'I''ll be publishing my School app February 15, 2026. Stay tuned!', 'success', true)
+ON CONFLICT DO NOTHING;
 
 -- Seed Services
 INSERT INTO public.services (title, description, icon_name, color_class, sort_order) VALUES

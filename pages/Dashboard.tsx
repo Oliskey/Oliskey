@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User, Settings, BookOpen, Bell, CreditCard, ChevronRight, Shield, Zap } from 'lucide-react';
+import { LogOut, User, Settings, BookOpen, Bell, CreditCard, ChevronRight, Shield, Zap, Calendar } from 'lucide-react';
 // @ts-ignore
 import { Link } from 'react-router-dom';
 
@@ -110,6 +110,20 @@ const Dashboard: React.FC = () => {
                         </h2>
                     </div>
                     <div className="divide-y divide-gray-100">
+                        {/* New School App Announcement */}
+                        <div className="p-6 flex gap-4 hover:bg-green-50/50 transition-colors cursor-pointer border-l-4 border-green-500">
+                            <div className="mt-1.5 w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0">
+                                <Calendar size={16} />
+                            </div>
+                            <div>
+                                <p className="text-sm text-slate-900 font-bold">Product Roadmap Update</p>
+                                <p className="text-sm text-slate-600 mt-1 leading-relaxed">
+                                    <strong>Announcement:</strong> I'll be publishing my School app on <strong>February 15, 2026</strong>. 
+                                </p>
+                                <p className="text-xs text-slate-400 mt-2 font-medium">Pinned • Today</p>
+                            </div>
+                        </div>
+
                         <div className="p-6 flex gap-4 hover:bg-slate-50 transition-colors cursor-pointer">
                             <div className="mt-1.5 w-2.5 h-2.5 rounded-full bg-blue-500 flex-shrink-0 animate-pulse"></div>
                             <div>

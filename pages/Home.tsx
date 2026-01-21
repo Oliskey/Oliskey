@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Layers, Users, Zap, ChevronRight, ExternalLink, ShieldCheck, Smile, PenTool, LayoutGrid, Building, Loader2, Check } from 'lucide-react';
+import { ArrowRight, Layers, Users, Zap, ChevronRight, ExternalLink, ShieldCheck, Smile, PenTool, LayoutGrid, Building, Loader2, Check, Bell } from 'lucide-react';
 // @ts-ignore
 import { Link, useLocation } from 'react-router-dom';
 import { useData } from '../context/DataContext';
@@ -307,9 +307,17 @@ const Home: React.FC = () => {
                  <h3 className="font-bold text-lg mb-2">Subscribe to our newsletter</h3>
                  <p className="text-slate-500 text-sm mb-4">Get the latest updates directly to your inbox.</p>
                  {subscribeStatus === 'success' ? (
-                   <div className="flex items-center text-green-600 bg-green-50 p-4 rounded-lg">
-                      <Check size={20} className="mr-2" />
-                      <span className="font-medium">Subscribed successfully!</span>
+                   <div className="flex flex-col gap-3 p-4 bg-green-50 border border-green-100 rounded-lg animate-fade-in">
+                      <div className="flex items-center text-green-700 font-bold">
+                        <Check size={20} className="mr-2" /> Subscribed successfully!
+                      </div>
+                      {/* NOTIFICATION: Push message for new subscribers */}
+                      <div className="flex items-start gap-2 text-sm text-green-800 bg-white/50 p-3 rounded border border-green-200/50">
+                         <Bell size={16} className="mt-0.5 flex-shrink-0 text-green-600" />
+                         <span>
+                           <strong>Note:</strong> I'll be publishing my School app <strong>February 15, 2026</strong>. Stay tuned!
+                         </span>
+                      </div>
                    </div>
                  ) : (
                    <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">

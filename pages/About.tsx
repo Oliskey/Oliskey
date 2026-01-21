@@ -50,11 +50,11 @@ const About: React.FC = () => {
                   {/* Image Container - Aspect Ratio tailored for PORTRAIT photo (3:4) */}
                   <div className="aspect-[3/4] overflow-hidden bg-slate-200 relative">
                      {/* 
-                         NOTE: Please ensure 'co-founder.jpg' exists in your /public folder.
+                         Using local image from public folder
                      */}
                      {!imgError ? (
                         <img 
-                            src="/co-founder.jpg?v=4" 
+                            src="/co-founder.jpg" 
                             onError={() => setImgError(true)}
                             alt="Oliskey Lee"
                             className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
@@ -64,8 +64,7 @@ const About: React.FC = () => {
                             <User size={48} className="text-slate-300 mb-4" />
                             <p className="text-slate-400 font-bold">Image Missing</p>
                             <p className="text-slate-400 text-xs mt-2">
-                                Save photo to<br/>
-                                <code className="bg-white px-1 py-0.5 rounded border border-gray-200">public/co-founder.jpg</code>
+                                Could not load <strong>co-founder.jpg</strong>.
                             </p>
                         </div>
                      )}

@@ -2,7 +2,7 @@ import React from 'react';
 import { 
   Globe, Smartphone, Code, BarChart, Layout, Brain, 
   FlaskConical, Server, GraduationCap, Video, Rocket, 
-  HelpCircle 
+  HelpCircle, School
 } from 'lucide-react';
 
 export const getIconByName = (name: string, size: number = 24): React.ReactNode => {
@@ -20,6 +20,7 @@ export const getIconByName = (name: string, size: number = 24): React.ReactNode 
     case 'GraduationCap': return <GraduationCap {...props} />;
     case 'Video': return <Video {...props} />;
     case 'Rocket': return <Rocket {...props} />;
+    case 'School': return <School {...props} />;
     default: return <HelpCircle {...props} />;
   }
 };

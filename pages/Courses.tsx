@@ -1,9 +1,14 @@
-import React from 'react';
-import { Clock, BarChart, Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { Clock, BarChart, Star, BookOpen } from 'lucide-react';
 import { useData } from '../context/DataContext';
 
 const Courses: React.FC = () => {
   const { courses } = useData();
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
+  const handleImageError = (id: string) => {
+    setImageErrors(prev => ({ ...prev, [id]: true }));
+  };
 
   return (
     <div className="pt-28 pb-24 bg-white">
@@ -17,17 +22,24 @@ const Courses: React.FC = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {courses.map((course) => (
-            <div key={course.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group">
-              <div className="h-48 overflow-hidden relative">
-                <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/0 transition-colors z-10"></div>
-                <img 
-                  src={course.image} 
-                  alt={course.title}
-                  loading="lazy" 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
+            <div key={course.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
+              <div className="h-48 overflow-hidden relative bg-gray-50">
+                <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/0 transition-colors z-10 pointer-events-none"></div>
+                {!imageErrors[course.id] ? (
+                  <img 
+                    src={course.image} 
+                    alt={course.title}
+                    loading="lazy" 
+                    onError={() => handleImageError(course.id)}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-slate-300">
+                    <BookOpen size={48} opacity={0.2} />
+                  </div>
+                )}
               </div>
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-grow">
                 <div className="flex justify-between items-center mb-3">
                   <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-50 text-blue-700 uppercase tracking-wide">
                     {course.level}
@@ -39,12 +51,12 @@ const Courses: React.FC = () => {
                 <h3 className="text-xl font-bold text-slate-900 mb-2 line-clamp-2">{course.title}</h3>
                 <p className="text-slate-600 text-sm mb-4 line-clamp-2 leading-relaxed">{course.description}</p>
                 
-                <div className="flex items-center text-slate-500 text-xs font-medium space-x-4 mb-6">
+                <div className="flex items-center text-slate-500 text-xs font-medium space-x-4 mb-6 mt-auto">
                   <div className="flex items-center"><Clock size={14} className="mr-1.5"/> 20h Content</div>
                   <div className="flex items-center"><BarChart size={14} className="mr-1.5"/> {course.tags[0]}</div>
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
                   <span className="text-2xl font-bold text-slate-900">{course.price}</span>
                   <button className="bg-slate-900 text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-slate-900/10">
                     Enroll Now

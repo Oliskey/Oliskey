@@ -261,12 +261,12 @@ ON CONFLICT DO NOTHING;
 -- Seed Services
 INSERT INTO public.services (title, description, icon_name, color_class, sort_order) VALUES
 ('AI Solutions', 'We integrate intelligent AI models into your websites and apps to automate workflows and personalize user experiences.', 'Brain', 'bg-purple-600', 1),
-('Web Development', 'High-performance, responsive websites built with React and Next.js.', 'Globe', 'bg-blue-500', 2),
-('Mobile App Development', 'Native and cross-platform mobile apps for iOS and Android.', 'Smartphone', 'bg-indigo-500', 3),
-('Custom Software', 'Tailored software solutions to automate your business processes.', 'Code', 'bg-violet-500', 4),
-('SEO & Analytics', 'Data-driven strategies to improve your visibility and conversion rates.', 'BarChart', 'bg-green-500', 5),
+('SaaS Development', 'We build scalable Software-as-a-Service platforms from scratch, handling multi-tenancy and billing.', 'Server', 'bg-indigo-600', 2),
+('Web Development', 'High-performance, responsive websites built with React and Next.js.', 'Globe', 'bg-blue-500', 3),
+('Mobile App Development', 'Native and cross-platform mobile apps for iOS and Android.', 'Smartphone', 'bg-indigo-500', 4),
+('Custom Software', 'Tailored software solutions to automate your business processes.', 'Code', 'bg-violet-500', 5),
 ('UI/UX Design', 'User-centric design that looks beautiful and functions perfectly.', 'Layout', 'bg-pink-500', 6)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description;
 
 -- Seed Courses
 INSERT INTO public.courses (id, title, level, description, price, image_url, tags) VALUES
@@ -295,13 +295,13 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Seed Ecosystem
 INSERT INTO public.ecosystem (id, title, description, status, icon_name, color_class, link, action_text, sort_order) VALUES
-('labs', 'Oliskey Labs', 'Product innovation and design.', 'Coming Soon', 'FlaskConical', 'bg-pink-500', null, null, 1),
-('systems', 'Oliskey Systems', 'SaaS platforms and infrastructure.', 'Coming Soon', 'Server', 'bg-blue-500', null, null, 2),
-('ai', 'Oliskey AI', 'Intelligent tools and integrations.', 'Coming Soon', 'Brain', 'bg-purple-600', null, null, 3),
-('education', 'Oliskey Education', 'School platforms, courses, and learning tools.', 'Live', 'GraduationCap', 'bg-green-500', '/app', 'Check the App', 4),
-('media', 'Oliskey Media', 'Tutorials, videos, and creator-first content.', 'Coming Soon', 'Video', 'bg-red-500', null, null, 5),
-('ventures', 'Oliskey Ventures', 'Incubation and strategic investments.', 'Coming Soon', 'Rocket', 'bg-orange-500', null, null, 6)
-ON CONFLICT (id) DO NOTHING;
+('schools_app', 'Schools App', 'The all-in-one management platform for schools.', 'Coming Soon', 'School', 'bg-indigo-600', null, null, 1),
+('labs', 'Oliskey Labs', 'Product innovation and design.', 'Coming Soon', 'FlaskConical', 'bg-pink-500', null, null, 2),
+('systems', 'Oliskey Systems', 'SaaS platforms and infrastructure.', 'Coming Soon', 'Server', 'bg-blue-500', null, null, 3),
+('ai', 'Oliskey AI', 'Intelligent tools and integrations.', 'Coming Soon', 'Brain', 'bg-purple-600', null, null, 4),
+('education', 'Oliskey Education', 'School platforms, courses, and learning tools.', 'Live', 'GraduationCap', 'bg-green-500', '/app', 'Check the App', 5),
+('media', 'Oliskey Media', 'Tutorials, videos, and creator-first content.', 'Coming Soon', 'Video', 'bg-red-500', null, null, 6)
+ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, icon_name = EXCLUDED.icon_name, color_class = EXCLUDED.color_class;
 
 -- 4. Permissions
 alter default privileges revoke execute on functions from public;

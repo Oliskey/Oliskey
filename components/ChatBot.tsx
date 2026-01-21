@@ -36,6 +36,9 @@ const ChatBot: React.FC = () => {
   const chatRef = useRef<Chat | null>(null);
   const aiRef = useRef<GoogleGenAI | null>(null);
   
+  // Ref for Chat Container to handle click outside
+  const containerRef = useRef<HTMLDivElement>(null);
+  
   const { services, courses, portfolio, ecosystem, faqs } = useData();
 
   const scrollToBottom = () => {
@@ -58,6 +61,23 @@ const ChatBot: React.FC = () => {
         }
     }
   }, []);
+
+  // Handle click outside to close chat
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isOpen && containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const getSystemInstruction = () => {
     const servicesList = services.map(s => `- ${s.title}: ${s.description}`).join('\n');
@@ -110,7 +130,7 @@ INSTRUCTIONS:
 1. Answer user questions based on the data above.
 2. If the user explicitly asks to go to a page or your response implies looking at a specific section, use the 'navigate' tool.
 3. If the user asks to generate, draw, or create an image, use the 'create_image' tool.
-4. Keep responses short and engaging.
+4. Keep responses short and engaging. Use **bold** for emphasis, but do not use headers (#).
 `;
   };
 
@@ -153,6 +173,19 @@ INSTRUCTIONS:
         systemInstruction: getSystemInstruction(),
         tools: [{ functionDeclarations: [navigateTool, createImageTool] }],
       },
+    });
+  };
+
+  // Helper to render text with bold formatting
+  const formatMessage = (text: string) => {
+    // Split text by markdown bold markers (**)
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        // Remove asterisks and wrap in strong tag
+        return <strong key={index} className="font-semibold text-slate-900">{part.slice(2, -2)}</strong>;
+      }
+      return <span key={index}>{part}</span>;
     });
   };
 
@@ -249,7 +282,8 @@ INSTRUCTIONS:
 
          // Send the results back to the model so it can formulate a final text response
          if (functionResponseParts.length > 0) {
-             response = await chatRef.current.sendMessage(functionResponseParts);
+             // @ts-ignore
+             response = await chatRef.current.sendMessage({ message: functionResponseParts });
          } else {
              break; // Should not happen if loop condition is true
          }
@@ -301,7 +335,10 @@ INSTRUCTIONS:
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="bg-white w-[90vw] sm:w-[380px] h-[550px] max-h-[80vh] rounded-2xl shadow-2xl flex flex-col border border-gray-200 animate-in slide-in-from-bottom-5 fade-in duration-300 overflow-hidden">
+        <div 
+          ref={containerRef}
+          className="bg-white w-[90vw] sm:w-[380px] h-[550px] max-h-[80vh] rounded-2xl shadow-2xl flex flex-col border border-gray-200 animate-in slide-in-from-bottom-5 fade-in duration-300 overflow-hidden"
+        >
           
           {/* Header */}
           <div className="bg-slate-900 p-4 flex justify-between items-center text-white relative overflow-hidden">
@@ -342,13 +379,13 @@ INSTRUCTIONS:
                 
                 <div className={`flex flex-col items-start max-w-[85%] ${msg.sender === 'user' ? 'items-end' : ''}`}>
                     <div 
-                    className={`p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
+                    className={`p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm whitespace-pre-wrap ${
                         msg.sender === 'user' 
                         ? 'bg-slate-900 text-white rounded-tr-none' 
                         : 'bg-white border border-gray-100 text-slate-700 rounded-tl-none'
                     }`}
                     >
-                        {msg.text}
+                        {formatMessage(msg.text)}
                         
                         {/* Render Generated Image */}
                         {msg.imageUrl && (

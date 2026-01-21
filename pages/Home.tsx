@@ -129,12 +129,12 @@ const Home: React.FC = () => {
               <div className="md:w-5/12 relative">
                  <div className="absolute inset-0 bg-blue-600 rounded-2xl transform rotate-3 scale-[1.02] opacity-10"></div>
                  {/* 
-                     NOTE: YOU MUST SAVE YOUR PHOTO AS 'public/co-founder.jpg'
+                     Using local image from public folder
                      Aspect Ratio 3/4 (Portrait)
                  */}
                  {!imgError ? (
                    <img 
-                      src="/co-founder.jpg?v=4" 
+                      src="/co-founder.jpg" 
                       onError={() => setImgError(true)}
                       alt="Oliskey Lee - Co-Founder" 
                       className="relative rounded-2xl shadow-2xl w-full object-cover aspect-[3/4] bg-gray-200"
@@ -146,15 +146,8 @@ const Home: React.FC = () => {
                       </div>
                       <h3 className="font-bold text-slate-800 mb-2">Image Not Found</h3>
                       <p className="text-sm text-slate-500 mb-4">
-                        Save your new photo to:<br/>
-                        <code className="bg-slate-200 px-2 py-1 rounded text-xs font-mono">public/co-founder.jpg</code>
+                        Could not load <strong>co-founder.jpg</strong>.
                       </p>
-                      <button 
-                        onClick={() => setImgError(false)} 
-                        className="text-xs text-blue-600 hover:underline"
-                      >
-                        I've saved it, reload
-                      </button>
                    </div>
                  )}
               </div>
@@ -359,19 +352,25 @@ const Home: React.FC = () => {
            </div>
            <div className="md:w-1/2 w-full">
               <div className="bg-white p-8 rounded-2xl shadow-sm border border-blue-100">
+                 {/* Visible Announcement for everyone */}
+                 <div className="mb-6 bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex gap-3 items-start animate-fade-in">
+                    <div className="bg-blue-100 p-2 rounded-full text-blue-600 shrink-0">
+                        <Bell size={16} />
+                    </div>
+                    <div>
+                        <p className="text-sm font-bold text-slate-900">Coming Soon: All-in-one School App</p>
+                        <p className="text-sm text-slate-600 mt-1">
+                          We're building the ultimate SaaS platform for schools. Launching <span className="font-semibold text-slate-900">February 15, 2026</span>. Subscribe below for updates.
+                        </p>
+                    </div>
+                 </div>
+
                  <h3 className="font-bold text-lg mb-2">Subscribe to our newsletter</h3>
                  <p className="text-slate-500 text-sm mb-4">Get the latest updates directly to your inbox.</p>
                  {subscribeStatus === 'success' ? (
                    <div className="flex flex-col gap-3 p-4 bg-green-50 border border-green-100 rounded-lg animate-fade-in">
                       <div className="flex items-center text-green-700 font-bold">
                         <Check size={20} className="mr-2" /> Subscribed successfully!
-                      </div>
-                      {/* NOTIFICATION: Push message for new subscribers */}
-                      <div className="flex items-start gap-2 text-sm text-green-800 bg-white/50 p-3 rounded border border-green-200/50">
-                         <Bell size={16} className="mt-0.5 flex-shrink-0 text-green-600" />
-                         <span>
-                           <strong>Note:</strong> I'll be publishing my School app <strong>February 15, 2026</strong>. Stay tuned!
-                         </span>
                       </div>
                    </div>
                  ) : (

@@ -319,11 +319,13 @@ INSTRUCTIONS:
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="group flex items-center justify-center w-16 h-16 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full shadow-2xl hover:bg-blue-600 dark:hover:bg-blue-300 transition-all duration-300 hover:scale-110 relative overflow-hidden"
+          className="group flex items-center justify-center w-16 h-16 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full shadow-2xl hover:bg-blue-600 dark:hover:bg-blue-50 transition-all duration-300 hover:scale-110 relative overflow-hidden"
           aria-label="Open Chat"
         >
           <div className="relative z-10 group-hover:rotate-12 transition-transform duration-500">
-             <Logo showText={false} variant="light" className="h-8 w-8 hidden dark:block" animated={false} />
+             {/* Dark Mode: Button is White, so we use variant="dark" (Slate Rings) */}
+             <Logo showText={false} variant="dark" className="h-8 w-8 hidden dark:block" animated={false} />
+             {/* Light Mode: Button is Dark, so we use variant="light" (White Rings) */}
              <Logo showText={false} variant="light" className="h-8 w-8 dark:hidden" animated={false} />
           </div>
           

@@ -8,6 +8,7 @@ import PageLoader from './components/PageLoader';
 import SplashScreen from './components/SplashScreen'; 
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DataProvider, useData } from './context/DataContext'; 
+import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -59,12 +60,11 @@ const AppContent: React.FC = () => {
       <Router>
         <ScrollToTop />
         <div 
-          className={`flex flex-col min-h-screen relative bg-white ${showSplash ? 'h-screen overflow-hidden' : ''}`}
-          style={{ backgroundColor: '#ffffff' }}
+          className={`flex flex-col min-h-screen relative bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-300 ${showSplash ? 'h-screen overflow-hidden' : ''}`}
         >
           <Navbar />
           <main className="flex-grow">
-            <Suspense fallback={<div className="min-h-screen bg-white" style={{ backgroundColor: '#ffffff' }}></div>}>
+            <Suspense fallback={<div className="min-h-screen bg-white dark:bg-slate-950"></div>}>
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Home />} />
@@ -104,11 +104,13 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <DataProvider>
-        <AppContent />
-      </DataProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <DataProvider>
+          <AppContent />
+        </DataProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 

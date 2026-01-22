@@ -4,7 +4,7 @@ import OptimizedImage from '../components/OptimizedImage';
 
 const AppShowcase: React.FC = () => {
   return (
-    <div className="bg-white">
+    <div className="bg-white dark:bg-slate-950 transition-colors duration-300">
       {/* Product Hero */}
       <section className="pt-28 pb-16 sm:pt-32 sm:pb-32 bg-slate-900 text-white overflow-hidden relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -58,30 +58,30 @@ const AppShowcase: React.FC = () => {
       <section className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 sm:mb-20">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Why use the Oliskey App?</h2>
-            <p className="text-slate-500 max-w-2xl mx-auto">Everything you need to accelerate your learning and development workflow.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Why use the Oliskey App?</h2>
+            <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">Everything you need to accelerate your learning and development workflow.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-12">
             <div className="text-center group">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8 group-hover:scale-110 transition-transform duration-300">
                 <Zap size={32} className="sm:w-9 sm:h-9" />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-slate-900">Instant Reference</h3>
-              <p className="text-slate-600 leading-relaxed">Access syntax guides and documentation offline, anywhere you go. Never lose your flow.</p>
+              <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Instant Reference</h3>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Access syntax guides and documentation offline, anywhere you go. Never lose your flow.</p>
             </div>
             <div className="text-center group">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-50 text-green-600 rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8 group-hover:scale-110 transition-transform duration-300">
                 <Smartphone size={32} className="sm:w-9 sm:h-9" />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-slate-900">Mobile Editor</h3>
-              <p className="text-slate-600 leading-relaxed">Write and test code snippets directly on your phone with our lightweight compiler.</p>
+              <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Mobile Editor</h3>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Write and test code snippets directly on your phone with our lightweight compiler.</p>
             </div>
             <div className="text-center group">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-purple-50 text-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8 group-hover:scale-110 transition-transform duration-300">
                 <Shield size={32} className="sm:w-9 sm:h-9" />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-slate-900">Cloud Sync</h3>
-              <p className="text-slate-600 leading-relaxed">Your progress and snippets are safely backed up and synced instantly to the web dashboard.</p>
+              <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Cloud Sync</h3>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Your progress and snippets are safely backed up and synced instantly to the web dashboard.</p>
             </div>
           </div>
         </div>

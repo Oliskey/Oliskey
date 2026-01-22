@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
     <title>Oliskey — System. Culture. Creativity.</title>
     <meta name="description" content="Oliskey builds reliable systems, enduring culture, and limitless creativity. Platform for products in SaaS, AI, EdTech, media and ventures. Discover our products, team, and investor opportunities." />
     
@@ -21,6 +21,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
+        darkMode: 'class', // Enable manual toggle
         theme: {
           extend: {
             colors: {
@@ -31,6 +32,10 @@
                 600: '#2563eb',
                 700: '#1d4ed8',
                 900: '#1e3a8a',
+              },
+              slate: {
+                850: '#151e2e', // Custom dark shade between 800 and 900
+                950: '#020617', // Deepest background
               }
             },
             fontFamily: {
@@ -65,18 +70,11 @@
         -moz-osx-font-smoothing: grayscale;
         overflow-x: hidden;
         width: 100%;
-        background-color: #ffffff; /* Explicitly set white background to prevent black flashes */
         margin: 0;
+        transition: background-color 0.3s ease, color 0.3s ease;
       }
       
-      html {
-        background-color: #ffffff;
-      }
-
-      #root {
-        background-color: #ffffff;
-        min-height: 100vh;
-      }
+      /* Base styles handled by React root classes now */
       
       /* Custom Scrollbar */
       ::-webkit-scrollbar {
@@ -85,9 +83,15 @@
       ::-webkit-scrollbar-track {
         background: #f1f5f9;
       }
+      .dark ::-webkit-scrollbar-track {
+        background: #0f172a;
+      }
       ::-webkit-scrollbar-thumb {
         background: #cbd5e1;
         border-radius: 5px;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #334155;
       }
       ::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;

@@ -6,11 +6,11 @@ const Portfolio: React.FC = () => {
   const { portfolio } = useData();
 
   return (
-    <div className="pt-28 pb-24 bg-white">
+    <div className="pt-28 pb-24 bg-white dark:bg-slate-950 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">Our Portfolio</h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">Our Portfolio</h1>
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
             A selection of projects we've built for clients across various industries, showcasing our commitment to quality and innovation.
           </p>
         </div>

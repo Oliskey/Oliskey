@@ -5,11 +5,11 @@ import OptimizedImage from '../components/OptimizedImage';
 const About: React.FC = () => {
 
   return (
-    <div className="pt-24 pb-24">
+    <div className="pt-24 pb-24 bg-white dark:bg-slate-950 transition-colors duration-300">
       {/* Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 text-center">
-        <h1 className="text-4xl font-bold text-slate-900 mb-4">Built by engineers, designers, and storytellers.</h1>
-        <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Built by engineers, designers, and storytellers.</h1>
+        <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
           Oliskey’s leadership combines product engineering, academic partnerships, and creative media experience.
         </p>
       </div>
@@ -26,11 +26,11 @@ const About: React.FC = () => {
             />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">Our Mission</h2>
-            <p className="text-slate-600 mb-4 leading-relaxed">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Our Mission</h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
                Oliskey is a global infrastructure brand powering products that scale. We combine rigor and imagination through our S.C.C framework — System, Culture, Creativity — to build platforms, education tools, AI services, and media that endure.
             </p>
-            <p className="text-slate-600 leading-relaxed">
+            <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
               Whether it's a small business needing a digital presence or a student wanting to learn code, we provide the tools and expertise to make it happen. We believe in reliability, human-centered design, and endless innovation.
             </p>
           </div>
@@ -38,17 +38,17 @@ const About: React.FC = () => {
       </section>
 
       {/* Leadership / Co-Founder Section */}
-      <section className="bg-white py-16 border-t border-gray-100">
+      <section className="bg-white dark:bg-slate-950 py-16 border-t border-gray-100 dark:border-slate-800 transition-colors">
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-               <h2 className="text-3xl font-bold text-slate-900">Leadership</h2>
-               <p className="text-slate-500 mt-2">Visionaries driving the future of infrastructure.</p>
+               <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Leadership</h2>
+               <p className="text-slate-500 dark:text-slate-400 mt-2">Visionaries driving the future of infrastructure.</p>
             </div>
             
             <div className="flex justify-center">
-               <div className="group relative max-w-lg w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-all hover:shadow-2xl">
+               <div className="group relative max-w-lg w-full bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-slate-800 transition-all hover:shadow-2xl">
                   {/* Image Container - Aspect Ratio tailored for PORTRAIT photo (3:4) */}
-                  <div className="aspect-[3/4] overflow-hidden bg-slate-200 relative">
+                  <div className="aspect-[3/4] overflow-hidden bg-slate-200 dark:bg-slate-800 relative">
                      <OptimizedImage 
                          src="/co-founder.jpg" 
                          alt="Oliskey Lee"
@@ -74,29 +74,29 @@ const About: React.FC = () => {
       </section>
 
       {/* Values */}
-      <section className="bg-slate-50 py-16">
+      <section className="bg-slate-50 dark:bg-slate-900 py-16 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center p-6">
-              <div className="w-16 h-16 bg-blue-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-primary-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Target size={32} />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">System</h3>
-              <p className="text-slate-600">Reliable, scalable platforms engineered for real-world use.</p>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">System</h3>
+              <p className="text-slate-600 dark:text-slate-400">Reliable, scalable platforms engineered for real-world use.</p>
             </div>
             <div className="text-center p-6">
-              <div className="w-16 h-16 bg-blue-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-primary-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Users size={32} />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Culture</h3>
-              <p className="text-slate-600">Designs and communities that outlast trends.</p>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">Culture</h3>
+              <p className="text-slate-600 dark:text-slate-400">Designs and communities that outlast trends.</p>
             </div>
             <div className="text-center p-6">
-              <div className="w-16 h-16 bg-blue-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-primary-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Award size={32} />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Creativity</h3>
-              <p className="text-slate-600">Endless innovation that moves people and product forward.</p>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">Creativity</h3>
+              <p className="text-slate-600 dark:text-slate-400">Endless innovation that moves people and product forward.</p>
             </div>
           </div>
         </div>

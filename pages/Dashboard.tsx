@@ -17,18 +17,18 @@ const Dashboard: React.FC = () => {
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 pt-24 pb-12 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">{getGreeting()}, {displayName}</h1>
-            <p className="text-slate-500 mt-1 text-sm sm:text-base">Welcome to your Oliskey command center.</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{getGreeting()}, {displayName}</h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm sm:text-base">Welcome to your Oliskey command center.</p>
           </div>
           <button 
             onClick={signOut}
-            className="self-start md:self-auto flex items-center px-4 py-2 sm:px-5 sm:py-2.5 bg-white border border-gray-200 rounded-full text-slate-600 text-sm font-semibold hover:bg-gray-50 hover:text-red-600 transition-colors shadow-sm"
+            className="self-start md:self-auto flex items-center px-4 py-2 sm:px-5 sm:py-2.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-full text-slate-600 dark:text-slate-300 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-red-600 dark:hover:text-red-400 transition-colors shadow-sm"
           >
             <LogOut size={16} className="mr-2" /> Sign Out
           </button>
@@ -36,40 +36,40 @@ const Dashboard: React.FC = () => {
 
         {/* Stats / Quick Overview */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
-            <div className="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-5 hover:shadow-md transition-shadow">
-                <div className="p-3 sm:p-4 bg-blue-50 text-blue-600 rounded-2xl">
+            <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-5 hover:shadow-md transition-all">
+                <div className="p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl">
                     <BookOpen size={24} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
                 </div>
                 <div>
-                    <p className="text-xs sm:text-sm text-slate-500 font-medium mb-1">Active Courses</p>
-                    <p className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">0</p>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mb-1">Active Courses</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">0</p>
                 </div>
             </div>
             
-            <div className="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-5 hover:shadow-md transition-shadow">
-                <div className="p-3 sm:p-4 bg-purple-50 text-purple-600 rounded-2xl">
+            <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex items-center gap-5 hover:shadow-md transition-all">
+                <div className="p-3 sm:p-4 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-2xl">
                     <CreditCard size={24} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
                 </div>
                 <div>
-                    <p className="text-xs sm:text-sm text-slate-500 font-medium mb-1">Billing Status</p>
-                    <p className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Free Tier</p>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mb-1">Billing Status</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Free Tier</p>
                 </div>
             </div>
 
-            <div className="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-center gap-4 hover:shadow-md transition-shadow sm:col-span-2 md:col-span-1">
+            <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col justify-center gap-4 hover:shadow-md transition-all sm:col-span-2 md:col-span-1">
                 <div className="flex items-center justify-between">
                      <div className="flex items-center gap-4">
-                        <div className="p-3 bg-green-50 text-green-600 rounded-xl">
+                        <div className="p-3 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-xl">
                             <User size={20} strokeWidth={1.5} className="sm:w-6 sm:h-6" />
                         </div>
                         <div>
-                            <p className="text-xs sm:text-sm text-slate-500 font-medium">Profile Completion</p>
-                            <p className="text-xl sm:text-2xl font-bold text-slate-900">80%</p>
+                            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">Profile Completion</p>
+                            <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">80%</p>
                         </div>
                      </div>
                 </div>
                 {/* Progress Bar */}
-                <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
                     <div className="bg-green-500 h-2 rounded-full" style={{ width: '80%' }}></div>
                 </div>
             </div>
@@ -81,21 +81,21 @@ const Dashboard: React.FC = () => {
             <div className="lg:col-span-2 space-y-8">
                 
                 {/* Recommended Section */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-5 sm:p-6 border-b border-gray-100 flex justify-between items-center">
-                        <h2 className="font-bold text-base sm:text-lg text-slate-900">Recommended for You</h2>
-                        <Link to="/courses" className="text-xs sm:text-sm text-blue-600 font-semibold hover:text-blue-700">View All</Link>
+                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden transition-all">
+                    <div className="p-5 sm:p-6 border-b border-gray-100 dark:border-slate-800 flex justify-between items-center">
+                        <h2 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white">Recommended for You</h2>
+                        <Link to="/courses" className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300">View All</Link>
                     </div>
                     <div className="p-5 sm:p-6">
-                        <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center bg-slate-50 p-5 rounded-xl border border-gray-100 hover:border-blue-100 transition-colors">
-                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-lg flex-shrink-0 shadow-sm flex items-center justify-center text-slate-300">
+                        <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center bg-slate-50 dark:bg-slate-800 p-5 rounded-xl border border-gray-100 dark:border-slate-700 hover:border-blue-100 dark:hover:border-blue-900 transition-colors">
+                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white dark:bg-slate-700 rounded-lg flex-shrink-0 shadow-sm flex items-center justify-center text-slate-300 dark:text-slate-500">
                                 <Zap size={24} />
                             </div>
                             <div className="flex-1">
-                                <h3 className="font-bold text-slate-900 text-base sm:text-lg mb-1">React Performance Masterclass</h3>
-                                <p className="text-xs sm:text-sm text-slate-500">Learn how to optimize your applications for scale.</p>
+                                <h3 className="font-bold text-slate-900 dark:text-white text-base sm:text-lg mb-1">React Performance Masterclass</h3>
+                                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Learn how to optimize your applications for scale.</p>
                             </div>
-                            <button className="w-full sm:w-auto px-6 py-2.5 bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-slate-900/10">
+                            <button className="w-full sm:w-auto px-6 py-2.5 bg-slate-900 dark:bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors shadow-lg shadow-slate-900/10 dark:shadow-blue-500/20">
                                 Start
                             </button>
                         </div>
@@ -103,33 +103,33 @@ const Dashboard: React.FC = () => {
                 </div>
 
                  {/* Notifications */}
-                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-                    <div className="p-5 sm:p-6 border-b border-gray-100">
-                        <h2 className="font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                 <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 transition-all">
+                    <div className="p-5 sm:p-6 border-b border-gray-100 dark:border-slate-800">
+                        <h2 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white flex items-center gap-2">
                              Notifications
                         </h2>
                     </div>
-                    <div className="divide-y divide-gray-100">
+                    <div className="divide-y divide-gray-100 dark:divide-slate-800">
                         {/* New School App Announcement */}
-                        <div className="p-5 sm:p-6 flex gap-4 hover:bg-green-50/50 transition-colors cursor-pointer border-l-4 border-green-500">
-                            <div className="mt-1.5 w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0">
+                        <div className="p-5 sm:p-6 flex gap-4 hover:bg-green-50/50 dark:hover:bg-green-900/10 transition-colors cursor-pointer border-l-4 border-green-500">
+                            <div className="mt-1.5 w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center flex-shrink-0">
                                 <Calendar size={16} />
                             </div>
                             <div>
-                                <p className="text-sm text-slate-900 font-bold">Product Roadmap Update</p>
-                                <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+                                <p className="text-sm text-slate-900 dark:text-white font-bold">Product Roadmap Update</p>
+                                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
                                     <strong>Announcement:</strong> I'll be publishing my School app on <strong>February 15, 2026</strong>. 
                                 </p>
-                                <p className="text-[10px] sm:text-xs text-slate-400 mt-2 font-medium">Pinned • Today</p>
+                                <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Pinned • Today</p>
                             </div>
                         </div>
 
-                        <div className="p-5 sm:p-6 flex gap-4 hover:bg-slate-50 transition-colors cursor-pointer">
+                        <div className="p-5 sm:p-6 flex gap-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                             <div className="mt-1.5 w-2.5 h-2.5 rounded-full bg-blue-500 flex-shrink-0 animate-pulse"></div>
                             <div>
-                                <p className="text-sm text-slate-800 font-semibold">Welcome to the Oliskey Ecosystem!</p>
-                                <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">We're glad to have you here. Explore our products and services to get started.</p>
-                                <p className="text-[10px] sm:text-xs text-slate-400 mt-2 font-medium">Just now</p>
+                                <p className="text-sm text-slate-800 dark:text-slate-200 font-semibold">Welcome to the Oliskey Ecosystem!</p>
+                                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">We're glad to have you here. Explore our products and services to get started.</p>
+                                <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Just now</p>
                             </div>
                         </div>
                     </div>
@@ -141,7 +141,7 @@ const Dashboard: React.FC = () => {
             <div className="space-y-6">
                 
                 {/* Upgrade to Pro - Professional Card */}
-                <div className="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden group">
+                <div className="bg-slate-900 dark:bg-black text-white rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden group border border-transparent dark:border-slate-800">
                      {/* Abstract Shapes */}
                      <div className="absolute -top-16 -right-16 w-48 h-48 bg-blue-600 rounded-full blur-[60px] opacity-70 group-hover:scale-110 transition-transform duration-700"></div>
                      <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-purple-600 rounded-full blur-[60px] opacity-70 group-hover:scale-110 transition-transform duration-700"></div>
@@ -161,30 +161,30 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Account Settings Menu */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-2">
+                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-2 transition-all">
                     <nav className="space-y-1">
-                        <a href="#" className="flex items-center justify-between px-4 py-3.5 bg-slate-50 text-slate-900 rounded-xl text-sm font-semibold group">
+                        <a href="#" className="flex items-center justify-between px-4 py-3.5 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-sm font-semibold group">
                             <div className="flex items-center gap-3">
-                                <div className="text-slate-500 group-hover:text-blue-600 transition-colors">
+                                <div className="text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                     <User size={18} />
                                 </div>
                                 Account Settings
                             </div>
-                            <ChevronRight size={16} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
+                            <ChevronRight size={16} className="text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
                         </a>
                         
-                        <a href="#" className="flex items-center justify-between px-4 py-3.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl text-sm font-medium transition-colors group">
+                        <a href="#" className="flex items-center justify-between px-4 py-3.5 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-xl text-sm font-medium transition-colors group">
                              <div className="flex items-center gap-3">
-                                <div className="text-slate-400 group-hover:text-blue-600 transition-colors">
+                                <div className="text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                     <Settings size={18} />
                                 </div>
                                 Preferences
                             </div>
                         </a>
 
-                        <a href="#" className="flex items-center justify-between px-4 py-3.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl text-sm font-medium transition-colors group">
+                        <a href="#" className="flex items-center justify-between px-4 py-3.5 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-xl text-sm font-medium transition-colors group">
                              <div className="flex items-center gap-3">
-                                <div className="text-slate-400 group-hover:text-blue-600 transition-colors">
+                                <div className="text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                     <Bell size={18} />
                                 </div>
                                 Notifications

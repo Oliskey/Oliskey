@@ -18,6 +18,17 @@ const Contact: React.FC = () => {
     const company = formData.get('company') as string;
     const email = formData.get('email') as string;
     const message = formData.get('message') as string;
+    const website = formData.get('website') as string; // Honeypot field
+
+    // --- SPAM CHECK (Client-side optimization) ---
+    // If honeypot is filled, simulate success but do nothing.
+    if (website) {
+        // Pretend it worked to confuse bots
+        setStatus('success');
+        setLoading(false);
+        (e.target as HTMLFormElement).reset();
+        return;
+    }
 
     // --- SECURITY: INPUT VALIDATION ---
     // Prevent payload stuffing or excessive data costs
@@ -43,10 +54,11 @@ const Contact: React.FC = () => {
       const { error } = await supabase
         .from('contact_submissions')
         .insert([{ 
-            full_name: full_name.trim(), // Trimming is basic sanitation
+            full_name: full_name.trim(), 
             company: company ? company.trim().substring(0, 100) : null,
             email: email.trim().toLowerCase(),
-            message: message.trim()
+            message: message.trim(),
+            website: website // Send empty string/null to pass DB spam check
         }]);
 
       if (error) throw error;
@@ -56,9 +68,8 @@ const Contact: React.FC = () => {
     } catch (err: unknown) {
       console.error('Error submitting form:', err);
       setStatus('error');
-      // Safer error message extraction
-      const msg = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
-      setErrorMessage(msg);
+      // Generic error message for security
+      setErrorMessage('Something went wrong. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -141,6 +152,12 @@ const Contact: React.FC = () => {
                     </div>
                   )}
                   
+                  {/* Honeypot Field - Hidden from humans, visible to bots */}
+                  <div className="hidden">
+                      <label htmlFor="website">Website</label>
+                      <input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" />
+                  </div>
+
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label htmlFor="full_name" className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>

@@ -56,9 +56,15 @@ const Signup: React.FC = () => {
     } catch (err: any) {
       console.error("Signup Error:", err);
       
-      // Handle specific SMTP configuration errors gracefully
-      if (err.message && err.message.includes("Error sending confirmation email")) {
-        setError("System Error: Unable to send verification email. This is often due to invalid SMTP configuration (e.g., missing App Password).");
+      // SECURITY: PREVENT ENUMERATION
+      // If the error is 'User already registered', do NOT tell the user. 
+      // Instead, pretend we sent the verification email.
+      if (err.message === 'User already registered') {
+         setSuccess(true); 
+      } else if (err.message && err.message.includes("Error sending confirmation email")) {
+        // System errors (like SMTP config) should probably be generic too in production, but helpful for dev debugging if needed.
+        // For strict security, we'd say "Something went wrong".
+        setError("Unable to create account. Please try again later.");
       } else {
         setError(err.message || 'Failed to sign up');
       }
@@ -84,7 +90,7 @@ const Signup: React.FC = () => {
       if (error) throw error;
     } catch (err: any) {
       console.error("Google Signup Error:", err);
-      setError(err.message || 'Failed to sign up with Google. Please ensure Google Auth is enabled in your Supabase dashboard.');
+      setError('Failed to sign up with Google. Please try again.');
     }
   };
 

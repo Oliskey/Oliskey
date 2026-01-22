@@ -5,25 +5,36 @@
 -- 0. SECURITY FUNCTIONS
 -- ==========================================
 
--- Function to sanitize text input (Basic XSS Prevention at DB Level)
--- This strips <script> tags to prevent stored XSS.
+-- 1. XSS PREVENTION: Aggressive HTML Stripping
+-- We strip ALL HTML tags, not just scripts, to prevent Stored XSS vectors (e.g., <img onerror>).
 CREATE OR REPLACE FUNCTION public.sanitize_input()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- Iterate over columns to sanitize (simplified for specific tables/columns)
   IF TG_TABLE_NAME = 'contact_submissions' THEN
-      -- Remove script tags from message and name
-      NEW.message := REGEXP_REPLACE(NEW.message, '<script\b[^>]*>(.*?)</script>', '[BLOCKED SCRIPT]', 'gi');
-      NEW.full_name := REGEXP_REPLACE(NEW.full_name, '<script\b[^>]*>(.*?)</script>', '', 'gi');
-      -- Remove javascript: protocol from input
-      NEW.message := REGEXP_REPLACE(NEW.message, 'javascript:', '', 'gi');
+      -- Remove all HTML tags
+      NEW.message := REGEXP_REPLACE(NEW.message, '<[^>]+>', '', 'gi');
+      NEW.full_name := REGEXP_REPLACE(NEW.full_name, '<[^>]+>', '', 'gi');
+      NEW.company := REGEXP_REPLACE(NEW.company, '<[^>]+>', '', 'gi');
   END IF;
   
   IF TG_TABLE_NAME = 'newsletter_subscribers' THEN
-      -- Basic sanitization for email
+      -- Remove all HTML tags
       NEW.email := REGEXP_REPLACE(NEW.email, '<[^>]+>', '', 'gi');
   END IF;
 
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 2. SPAM PROTECTION: Honeypot Logic
+-- If the hidden 'website' field is filled, it's likely a bot. Reject silently or with error.
+CREATE OR REPLACE FUNCTION public.check_spam_honeypot()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- 'website' is the honeypot column. It must be null or empty.
+  IF NEW.website IS NOT NULL AND NEW.website <> '' THEN
+     RAISE EXCEPTION 'Spam detected';
+  END IF;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -36,7 +47,9 @@ $$ LANGUAGE plpgsql;
 create table if not exists public.newsletter_subscribers (
   id uuid default gen_random_uuid() primary key,
   email text not null unique,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+  website text, -- Honeypot column (hidden in UI)
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  CONSTRAINT email_format CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$')
 );
 alter table public.newsletter_subscribers enable row level security;
 
@@ -55,6 +68,12 @@ create trigger sanitize_newsletter
   before insert or update on public.newsletter_subscribers
   for each row execute procedure public.sanitize_input();
 
+-- Trigger: Honeypot Spam Check
+drop trigger if exists check_spam_newsletter on public.newsletter_subscribers;
+create trigger check_spam_newsletter
+  before insert on public.newsletter_subscribers
+  for each row execute procedure public.check_spam_honeypot();
+
 
 -- Contact Submissions
 create table if not exists public.contact_submissions (
@@ -63,7 +82,9 @@ create table if not exists public.contact_submissions (
   company text,
   email text not null,
   message text not null,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+  website text, -- Honeypot column (hidden in UI)
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  CONSTRAINT email_format CHECK (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$')
 );
 alter table public.contact_submissions enable row level security;
 
@@ -81,6 +102,12 @@ drop trigger if exists sanitize_contact on public.contact_submissions;
 create trigger sanitize_contact
   before insert or update on public.contact_submissions
   for each row execute procedure public.sanitize_input();
+
+-- Trigger: Honeypot Spam Check
+drop trigger if exists check_spam_contact on public.contact_submissions;
+create trigger check_spam_contact
+  before insert on public.contact_submissions
+  for each row execute procedure public.check_spam_honeypot();
 
 
 -- User Profiles

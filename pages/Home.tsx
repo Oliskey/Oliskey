@@ -11,6 +11,7 @@ const Home: React.FC = () => {
   const location = useLocation();
   const { ecosystem, faqs } = useData(); // Use Data Context
   const [email, setEmail] = useState('');
+  const [website, setWebsite] = useState(''); // Honeypot
   const [subscribing, setSubscribing] = useState(false);
   const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
@@ -36,6 +37,15 @@ const Home: React.FC = () => {
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
+
+    // SPAM CHECK: Honeypot
+    if (website) {
+        // Pretend success
+        setSubscribeStatus('success');
+        setEmail('');
+        setWebsite('');
+        return;
+    }
     
     setSubscribing(true);
     setSubscribeStatus('idle');
@@ -43,9 +53,13 @@ const Home: React.FC = () => {
     try {
       const { error } = await supabase
         .from('newsletter_subscribers')
-        .insert([{ email }]);
+        .insert([{ 
+            email,
+            website // Send empty field to DB
+        }]);
 
       if (error) {
+        // 23505 is Unique Violation (Email already exists). Treat as success to prevent enumeration.
         if (error.code === '23505') {
             setSubscribeStatus('success');
         } else {
@@ -361,6 +375,16 @@ const Home: React.FC = () => {
                    </div>
                  ) : (
                    <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
+                      {/* Honeypot Field */}
+                      <input 
+                        type="text" 
+                        name="website" 
+                        value={website}
+                        onChange={(e) => setWebsite(e.target.value)}
+                        className="hidden" 
+                        autoComplete="off" 
+                      />
+
                       <input 
                         type="email" 
                         required

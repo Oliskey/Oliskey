@@ -95,7 +95,7 @@ const AppContent: React.FC = () => {
             </Suspense>
           </main>
           <Footer />
-          {/* <ChatBot /> */}
+          <ChatBot />
         </div>
       </Router>
     </>

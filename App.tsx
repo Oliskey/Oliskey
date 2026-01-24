@@ -20,6 +20,7 @@ const Services = lazy(() => import('./pages/Services'));
 const Courses = lazy(() => import('./pages/Courses'));
 const Portfolio = lazy(() => import('./pages/Portfolio'));
 const AppShowcase = lazy(() => import('./pages/AppShowcase'));
+const SchoolApp = lazy(() => import('./pages/SchoolApp')); // New Page
 const Blog = lazy(() => import('./pages/Blog'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Investors = lazy(() => import('./pages/Investors'));
@@ -73,6 +74,7 @@ const AppContent: React.FC = () => {
                 <Route path="/courses" element={<Courses />} />
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/app" element={<AppShowcase />} />
+                <Route path="/school-app" element={<SchoolApp />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/investors" element={<Investors />} />

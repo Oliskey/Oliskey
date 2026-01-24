@@ -83,16 +83,31 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // 5. Fetch Ecosystem
       const { data: ecoData } = await supabase.from('ecosystem').select('*').order('sort_order', { ascending: true });
       if (ecoData) {
-        setEcosystem(ecoData.map(e => ({
-          id: e.id,
-          title: e.title,
-          description: e.description,
-          status: e.status,
-          icon: getIconByName(e.icon_name, 24),
-          color: e.color_class,
-          link: e.link || undefined,
-          actionText: e.action_text || undefined
-        })));
+        setEcosystem(ecoData.map(e => {
+            // Manual Override for the School App to be LIVE based on user request
+            if (e.id === 'schools_app') {
+                return {
+                    id: e.id,
+                    title: e.title,
+                    description: e.description,
+                    status: 'Live',
+                    icon: getIconByName(e.icon_name, 24),
+                    color: e.color_class,
+                    link: '/school-app',
+                    actionText: 'Launch App'
+                };
+            }
+            return {
+              id: e.id,
+              title: e.title,
+              description: e.description,
+              status: e.status,
+              icon: getIconByName(e.icon_name, 24),
+              color: e.color_class,
+              link: e.link || undefined,
+              actionText: e.action_text || undefined
+            };
+        }));
       }
 
     } catch (err) {

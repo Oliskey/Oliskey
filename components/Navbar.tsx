@@ -194,15 +194,7 @@ const Navbar: React.FC = () => {
 
             {/* Mobile Actions */}
             <div className="md:hidden flex items-center gap-4 z-[70]">
-               {/* Theme Toggle Mobile */}
-               <button
-                  onClick={toggleTheme}
-                  className={`p-2 transition-all duration-300 active:scale-95 touch-manipulation ${isOpen ? 'opacity-0 translate-x-4 pointer-events-none' : 'text-slate-600 dark:text-slate-300 hover:text-blue-600 opacity-100 translate-x-0'}`}
-                  aria-label="Toggle theme"
-                >
-                  {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
-                </button>
-
+               {/* Search Button Mobile */}
                <button
                 onClick={openSearch}
                 className={`p-2 transition-all duration-300 active:scale-95 touch-manipulation ${isOpen ? 'opacity-0 translate-x-4 pointer-events-none' : 'text-slate-600 dark:text-slate-300 hover:text-blue-600 opacity-100 translate-x-0'}`}
@@ -290,6 +282,25 @@ const Navbar: React.FC = () => {
 
              {/* Footer Actions */}
              <div className="p-6 bg-white dark:bg-slate-950 mt-auto animate-fade-in-up border-t border-gray-50 dark:border-slate-800" style={{ animationDelay: '0.4s' }}>
+                
+                {/* Theme Toggle in Menu */}
+                <div className="flex items-center justify-between mb-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800">
+                    <span className="font-medium text-slate-900 dark:text-white flex items-center gap-2">
+                        {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                        {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                    </span>
+                    <button
+                        onClick={toggleTheme}
+                        className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    >
+                        <span
+                            className={`${
+                                theme === 'dark' ? 'translate-x-6' : 'translate-x-1'
+                            } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                        />
+                    </button>
+                </div>
+
                 {user ? (
                    <div className="space-y-4">
                       <div className="flex items-center gap-4 mb-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800">

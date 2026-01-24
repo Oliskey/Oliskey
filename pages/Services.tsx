@@ -2,7 +2,7 @@ import React from 'react';
 // @ts-ignore
 import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { Server, School, ArrowRight } from 'lucide-react';
+import { Server, School, ArrowRight, ExternalLink } from 'lucide-react';
 
 const Services: React.FC = () => {
   const { services } = useData();
@@ -46,16 +46,19 @@ const Services: React.FC = () => {
                    </div>
                    <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Scalable SaaS Architectures</h2>
                    <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-                      We don't just build websites; we engineer complex, multi-tenant SaaS platforms. Our flagship upcoming product, the <span className="font-bold text-indigo-600 dark:text-indigo-400">Oliskey Schools App</span>, demonstrates our ability to create all-in-one management ecosystems.
+                      We don't just build websites; we engineer complex, multi-tenant SaaS platforms. Our flagship product, the <span className="font-bold text-indigo-600 dark:text-indigo-400">Oliskey Schools App</span>, demonstrates our ability to create all-in-one management ecosystems.
                    </p>
                    
-                   <div className="space-y-4">
+                   <div className="space-y-4 mb-8">
                       <div className="flex items-start gap-4">
                          <div className="p-2 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-lg shrink-0">
                             <School size={20} />
                          </div>
                          <div>
-                            <h4 className="font-bold text-slate-900 dark:text-white">Schools App (Coming Soon)</h4>
+                            <h4 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                Schools App 
+                                <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full uppercase font-bold">Live</span>
+                            </h4>
                             <p className="text-sm text-slate-500 dark:text-slate-400">An all-in-one platform for student data, grading, attendance, and finance.</p>
                          </div>
                       </div>
@@ -69,6 +72,10 @@ const Services: React.FC = () => {
                          </div>
                       </div>
                    </div>
+
+                   <Link to="/school-app" className="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold transition-colors shadow-lg shadow-indigo-500/20">
+                      Launch App <ExternalLink size={16} className="ml-2" />
+                   </Link>
                 </div>
                 <div className="lg:w-1/2 w-full">
                    <div className="bg-slate-900 dark:bg-black/50 rounded-2xl p-6 shadow-2xl transform rotate-1 hover:rotate-0 transition-transform duration-500 border border-slate-800">
@@ -88,7 +95,7 @@ const Services: React.FC = () => {
                          </div>
                       </div>
                       <div className="mt-6 text-center">
-                         <p className="text-slate-400 text-sm font-mono">Building the future of EdTech...</p>
+                         <p className="text-slate-400 text-sm font-mono">Powering 50+ schools globally...</p>
                       </div>
                    </div>
                 </div>

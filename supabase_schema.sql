@@ -322,13 +322,13 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Seed Ecosystem
 INSERT INTO public.ecosystem (id, title, description, status, icon_name, color_class, link, action_text, sort_order) VALUES
-('schools_app', 'Schools App', 'The all-in-one management platform for schools.', 'Coming Soon', 'School', 'bg-indigo-600', null, null, 1),
+('schools_app', 'Schools App', 'The all-in-one management platform for schools.', 'Live', 'School', 'bg-indigo-600', '/school-app', 'Launch App', 1),
 ('labs', 'Oliskey Labs', 'Product innovation and design.', 'Coming Soon', 'FlaskConical', 'bg-pink-500', null, null, 2),
 ('systems', 'Oliskey Systems', 'SaaS platforms and infrastructure.', 'Coming Soon', 'Server', 'bg-blue-500', null, null, 3),
 ('ai', 'Oliskey AI', 'Intelligent tools and integrations.', 'Coming Soon', 'Brain', 'bg-purple-600', null, null, 4),
 ('education', 'Oliskey Education', 'School platforms, courses, and learning tools.', 'Live', 'GraduationCap', 'bg-green-500', '/app', 'Check the App', 5),
 ('media', 'Oliskey Media', 'Tutorials, videos, and creator-first content.', 'Coming Soon', 'Video', 'bg-red-500', null, null, 6)
-ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, icon_name = EXCLUDED.icon_name, color_class = EXCLUDED.color_class;
+ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, icon_name = EXCLUDED.icon_name, color_class = EXCLUDED.color_class, status = EXCLUDED.status, link = EXCLUDED.link, action_text = EXCLUDED.action_text;
 
 -- 4. Permissions
 alter default privileges revoke execute on functions from public;

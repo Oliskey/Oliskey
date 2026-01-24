@@ -222,10 +222,11 @@ INSTRUCTIONS:
             if (part.functionCall) {
                 const call = part.functionCall;
                 let resultString = "Function executed successfully.";
+                const args = call.args || {}; // Safely handle args being undefined
                 
                 // --- NAVIGATE TOOL ---
                 if (call.name === 'navigate') {
-                    const path = call.args['path'] as string;
+                    const path = args['path'] as string;
                     if (path) {
                         // We execute the navigation on the client
                         navigate(path);
@@ -235,7 +236,7 @@ INSTRUCTIONS:
                 
                 // --- CREATE IMAGE TOOL ---
                 if (call.name === 'create_image') {
-                    const prompt = call.args['prompt'] as string;
+                    const prompt = args['prompt'] as string;
                     try {
                         // Use a dedicated image model
                         const imgResponse = await aiRef.current.models.generateContent({
@@ -245,24 +246,29 @@ INSTRUCTIONS:
                         
                         // Extract Image
                         let foundImage = false;
-                        for (const p of imgResponse.candidates[0].content.parts) {
-                            if (p.inlineData) {
-                                const base64 = p.inlineData.data;
-                                const mimeType = p.inlineData.mimeType;
-                                const imageUrl = `data:${mimeType};base64,${base64}`;
-                                
-                                // Add Image Message to UI immediately
-                                setMessages(prev => [...prev, {
-                                    id: Date.now().toString(),
-                                    text: `I've generated an image for: "${prompt}"`,
-                                    sender: 'bot',
-                                    timestamp: new Date(),
-                                    imageUrl: imageUrl
-                                }]);
-                                foundImage = true;
-                                resultString = "Image generated and displayed to user.";
+                        const contentParts = imgResponse.candidates?.[0]?.content?.parts;
+                        
+                        if (contentParts) {
+                            for (const p of contentParts) {
+                                if (p.inlineData) {
+                                    const base64 = p.inlineData.data;
+                                    const mimeType = p.inlineData.mimeType;
+                                    const imageUrl = `data:${mimeType};base64,${base64}`;
+                                    
+                                    // Add Image Message to UI immediately
+                                    setMessages(prev => [...prev, {
+                                        id: Date.now().toString(),
+                                        text: `I've generated an image for: "${prompt}"`,
+                                        sender: 'bot',
+                                        timestamp: new Date(),
+                                        imageUrl: imageUrl
+                                    }]);
+                                    foundImage = true;
+                                    resultString = "Image generated and displayed to user.";
+                                }
                             }
                         }
+                        
                         if (!foundImage) resultString = "Failed to generate image content.";
                     } catch (err) {
                         console.error("Image gen error", err);

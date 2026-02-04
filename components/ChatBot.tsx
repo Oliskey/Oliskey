@@ -87,8 +87,10 @@ const ChatBot: React.FC = () => {
     const ecosystemList = ecosystem.map(e => `- ${e.title} (${e.status})`).join('\n');
     const faqsList = faqs.map(f => `Q: ${f.question} A: ${f.answer}`).join('\n');
 
-    return `You are Oliskey's AI Agent. You are helpful, professional, and concise.
-You help users navigate the Oliskey platform and answer questions about our products.
+    return `You are Oliskey's AI Agent. You are helpful, professional, and extremely concise.
+Your primary goal is to answer the user's specific question directly. 
+
+DO NOT include general information about Oliskey, its vision, or its services unless the user's question is specifically about those topics or your answer requires that context to be accurate. 
 
 Oliskey Vision: Systems that work. Culture that lasts. Creativity that never ends.
 We build platforms, education tools, AI services, and media.
@@ -128,10 +130,12 @@ NAVIGATION PATHS:
 - App: /app
 
 INSTRUCTIONS:
-1. Answer user questions based on the data above.
-2. If the user explicitly asks to go to a page or your response implies looking at a specific section, use the 'navigate' tool.
-3. If the user asks to generate, draw, or create an image, use the 'create_image' tool.
-4. Keep responses short and engaging. Use **bold** for emphasis, but do not use headers (#).
+1. FOCUS ON THE USER QUESTION: Prioritize answering what the user asked above all else. Avoid "fluff" or unsolicited promotional content. 
+2. BE CONCISE: Use the minimum amount of words necessary to provide a complete answer.
+3. USE DATA ONLY WHEN RELEVANT: Only refer to the provided site data if it helps answer the specific query.
+4. NAVIGATION: If the user explicitly asks to go to a page or your response implies looking at a specific section, use the 'navigate' tool.
+5. IMAGE GENERATION: If the user asks to generate, draw, or create an image, YOU MUST use the 'create_image' tool IMMEDIATELY. DO NOT respond with text saying you will do it, just call the tool.
+6. FORMATTING: Use **bold** for emphasis, but do not use headers (#). Keep responses short and engaging.
 `;
   };
 
@@ -169,10 +173,18 @@ INSTRUCTIONS:
     } as any;
 
     try {
+      console.log("Creating chat session with gemini-1.5-flash...");
       chatRef.current = aiRef.current.chats.create({
-        model: 'gemini-flash-latest', // Stable fallback with wider quota availability
+        model: 'gemini-1.5-flash', // Use version-specific name for stability
         config: {
-          systemInstruction: getSystemInstruction(),
+          systemInstruction: getSystemInstruction() + `
+          
+CRITICAL: IMAGE GENERATION CAPABILITY
+- You HAVE the ability to generate images using the 'create_image' tool.
+- If a user asks you to "draw", "generate", or "create" an image, YOU MUST USE THE 'create_image' tool.
+- NEVER tell the user you cannot generate images.
+- NEVER provide a text-only response to an image request; always call the tool first.
+`,
           tools: [{ functionDeclarations: [navigateTool, createImageTool] }],
           automaticFunctionCalling: {
             disable: true
@@ -181,7 +193,7 @@ INSTRUCTIONS:
       });
       console.log("Chat session created successfully.");
     } catch (err) {
-      console.error("Error creating chat session:", err);
+      console.error("Critical Error creating chat session:", err);
     }
   };
 
@@ -243,29 +255,54 @@ INSTRUCTIONS:
           if (call.name === 'create_image') {
             const prompt = args['prompt'] as string;
             try {
+              console.log("Generating image with prompt:", prompt);
+              // Use gemini-1.5-flash or similar stable model
               const imgResponse = await aiRef.current.models.generateContent({
-                model: 'gemini-2.5-flash-image',
-                contents: prompt,
+                model: 'gemini-1.5-flash',
+                contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                config: {
+                  // @ts-ignore
+                  responseModalities: ['IMAGE'],
+                }
               });
 
-              // Extract Image from the data getter
-              const base64 = imgResponse.data;
+              console.log("Image generation response received:", imgResponse);
+
+              // Traverse candidates for image data
+              let base64 = null;
+              if (imgResponse.candidates && imgResponse.candidates[0]?.content?.parts) {
+                for (const part of imgResponse.candidates[0].content.parts) {
+                  if (part.inlineData?.data) {
+                    base64 = part.inlineData.data;
+                    break;
+                  }
+                }
+              }
+
               if (base64) {
                 const imageUrl = `data:image/png;base64,${base64}`;
                 setMessages(prev => [...prev, {
                   id: Date.now().toString(),
-                  text: `I've generated an image for: "${prompt}"`,
+                  text: `I've generated an image for: "**${prompt}**"`,
                   sender: 'bot',
                   timestamp: new Date(),
                   imageUrl: imageUrl
                 }]);
-                resultString = "Image generated and displayed to user.";
+                resultString = "Image generated and displayed to user successfully.";
               } else {
-                resultString = "Failed to generate image content.";
+                console.error("No image data in response:", imgResponse);
+                resultString = "The model didn't return an image. It might have refused or the prompt was blocked.";
+                // Fallback message if image fails but we want to tell the user
+                setMessages(prev => [...prev, {
+                  id: Date.now().toString(),
+                  text: "I tried to generate that image, but I couldn't get it ready for you. It might be due to safety filters or a temporary glitch.",
+                  sender: 'bot',
+                  timestamp: new Date()
+                }]);
               }
             } catch (err) {
-              console.error("Image gen error", err);
-              resultString = "Error generating image.";
+              console.error("Detailed Image Gen Error:", err);
+              resultString = `Error generating image: ${err instanceof Error ? err.message : String(err)}`;
             }
           }
 
@@ -298,11 +335,19 @@ INSTRUCTIONS:
       }
 
     } catch (error: any) {
-      console.error("Chat Error Detail:", error);
-      const errorMsg = error?.message || "Connection failed";
+      console.error("Detailed Chat Error:", error);
+      const errorMsg = error?.message || "Unknown error";
+      const isApiKeyError = errorMsg.toLowerCase().includes("api key") || errorMsg.toLowerCase().includes("unauthorized");
+      const isQuotaError = errorMsg.toLowerCase().includes("quota") || errorMsg.toLowerCase().includes("exhausted");
+
+      let userFriendlyMsg = "I'm having trouble connecting to the Oliskey brain right now.";
+
+      if (isApiKeyError) userFriendlyMsg = "It looks like my API key is invalid or missing. Please contact support.";
+      if (isQuotaError) userFriendlyMsg = "I've hit my usage limit for now. Please try again in a little while.";
+
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
-        text: "I'm having trouble connecting to the Oliskey brain right now. Please check your internet or try again in a moment.",
+        text: userFriendlyMsg,
         sender: 'bot',
         timestamp: new Date()
       }]);

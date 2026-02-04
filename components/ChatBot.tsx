@@ -55,10 +55,10 @@ const ChatBot: React.FC = () => {
       // @ts-ignore
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
       if (apiKey) {
-        console.log("Gemini API Client Initialized.");
+        console.log("Gemini API Client Initialized. Key Length:", apiKey.length);
         aiRef.current = new GoogleGenAI({ apiKey: apiKey });
       } else {
-        console.error("Gemini API Key is missing. Please ensure VITE_GEMINI_API_KEY is set in your environment.");
+        console.error("Gemini API Key is missing. Please ensure VITE_GEMINI_API_KEY is set in your .env file.");
       }
     }
   }, []);
@@ -151,7 +151,7 @@ INSTRUCTIONS:
         },
         required: ['path'],
       },
-    };
+    } as any;
 
     const createImageTool = {
       name: 'create_image',
@@ -166,15 +166,23 @@ INSTRUCTIONS:
         },
         required: ['prompt'],
       },
-    };
+    } as any;
 
-    chatRef.current = aiRef.current.chats.create({
-      model: 'gemini-3-flash-preview',
-      config: {
-        systemInstruction: getSystemInstruction(),
-        tools: [{ functionDeclarations: [navigateTool, createImageTool] }],
-      },
-    });
+    try {
+      chatRef.current = aiRef.current.chats.create({
+        model: 'gemini-flash-latest', // Stable fallback with wider quota availability
+        config: {
+          systemInstruction: getSystemInstruction(),
+          tools: [{ functionDeclarations: [navigateTool, createImageTool] }],
+          automaticFunctionCalling: {
+            disable: true
+          }
+        },
+      });
+      console.log("Chat session created successfully.");
+    } catch (err) {
+      console.error("Error creating chat session:", err);
+    }
   };
 
   // Helper to render text with bold formatting
@@ -215,89 +223,71 @@ INSTRUCTIONS:
       let response = await chatRef.current.sendMessage({ message: userMsg.text });
 
       // 3. Handle Function Calls Loop
-      while (response.candidates?.[0]?.content?.parts?.some(p => p.functionCall)) {
-        const parts = response.candidates[0].content.parts;
+      while (response.functionCalls?.length) {
         const functionResponseParts = [];
 
-        for (const part of parts) {
-          if (part.functionCall) {
-            const call = part.functionCall;
-            let resultString = "Function executed successfully.";
-            const args = call.args || {}; // Safely handle args being undefined
+        for (const call of response.functionCalls) {
+          let resultString = "Function executed successfully.";
+          const args = call.args || {};
 
-            // --- NAVIGATE TOOL ---
-            if (call.name === 'navigate') {
-              const path = args['path'] as string;
-              if (path) {
-                // We execute the navigation on the client
-                navigate(path);
-                resultString = `Navigated user to ${path}`;
-              }
+          // --- NAVIGATE TOOL ---
+          if (call.name === 'navigate') {
+            const path = args['path'] as string;
+            if (path) {
+              navigate(path);
+              resultString = `Navigated user to ${path}`;
             }
-
-            // --- CREATE IMAGE TOOL ---
-            if (call.name === 'create_image') {
-              const prompt = args['prompt'] as string;
-              try {
-                // Use a dedicated image model
-                const imgResponse = await aiRef.current.models.generateContent({
-                  model: 'gemini-2.5-flash-image',
-                  contents: { parts: [{ text: prompt }] },
-                });
-
-                // Extract Image
-                let foundImage = false;
-                const contentParts = imgResponse.candidates?.[0]?.content?.parts;
-
-                if (contentParts) {
-                  for (const p of contentParts) {
-                    if (p.inlineData) {
-                      const base64 = p.inlineData.data;
-                      const mimeType = p.inlineData.mimeType;
-                      const imageUrl = `data:${mimeType};base64,${base64}`;
-
-                      // Add Image Message to UI immediately
-                      setMessages(prev => [...prev, {
-                        id: Date.now().toString(),
-                        text: `I've generated an image for: "${prompt}"`,
-                        sender: 'bot',
-                        timestamp: new Date(),
-                        imageUrl: imageUrl
-                      }]);
-                      foundImage = true;
-                      resultString = "Image generated and displayed to user.";
-                    }
-                  }
-                }
-
-                if (!foundImage) resultString = "Failed to generate image content.";
-              } catch (err) {
-                console.error("Image gen error", err);
-                resultString = "Error generating image.";
-              }
-            }
-
-            functionResponseParts.push({
-              functionResponse: {
-                name: call.name,
-                response: { result: resultString },
-                id: call.id // Important: map response to the call ID
-              }
-            });
           }
+
+          // --- CREATE IMAGE TOOL ---
+          if (call.name === 'create_image') {
+            const prompt = args['prompt'] as string;
+            try {
+              const imgResponse = await aiRef.current.models.generateContent({
+                model: 'gemini-2.5-flash-image',
+                contents: prompt,
+              });
+
+              // Extract Image from the data getter
+              const base64 = imgResponse.data;
+              if (base64) {
+                const imageUrl = `data:image/png;base64,${base64}`;
+                setMessages(prev => [...prev, {
+                  id: Date.now().toString(),
+                  text: `I've generated an image for: "${prompt}"`,
+                  sender: 'bot',
+                  timestamp: new Date(),
+                  imageUrl: imageUrl
+                }]);
+                resultString = "Image generated and displayed to user.";
+              } else {
+                resultString = "Failed to generate image content.";
+              }
+            } catch (err) {
+              console.error("Image gen error", err);
+              resultString = "Error generating image.";
+            }
+          }
+
+          functionResponseParts.push({
+            functionResponse: {
+              name: call.name,
+              response: { result: resultString },
+              id: call.id
+            }
+          });
         }
 
-        // Send the results back to the model so it can formulate a final text response
+        // Send the results back to the model
         if (functionResponseParts.length > 0) {
-          // @ts-ignore
           response = await chatRef.current.sendMessage({ message: functionResponseParts });
         } else {
-          break; // Should not happen if loop condition is true
+          break;
         }
       }
 
       // 4. Display Final Text Response
-      const text = response.text;
+      const text = response.text || "I'm sorry, I couldn't process that.";
       if (text) {
         setMessages(prev => [...prev, {
           id: Date.now().toString(),
@@ -307,11 +297,12 @@ INSTRUCTIONS:
         }]);
       }
 
-    } catch (err) {
-      console.error("Chat Error:", err);
+    } catch (error: any) {
+      console.error("Chat Error Detail:", error);
+      const errorMsg = error?.message || "Connection failed";
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
-        text: "I'm having trouble connecting to the Oliskey brain right now. Please try again later.",
+        text: "I'm having trouble connecting to the Oliskey brain right now. Please check your internet or try again in a moment.",
         sender: 'bot',
         timestamp: new Date()
       }]);

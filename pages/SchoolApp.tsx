@@ -28,9 +28,14 @@ const SchoolApp: React.FC = () => {
                      A next-generation, all-in-one platform integrating administration, academics, communication, and cutting-edge AI-powered learning tools.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                     <button className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-bold text-lg shadow-lg hover:shadow-indigo-500/30 transition-all transform hover:-translate-y-1">
+                     <a
+                        href="https://school-app-one-fawn.vercel.app/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-bold text-lg shadow-lg hover:shadow-indigo-500/30 transition-all transform hover:-translate-y-1 block sm:inline-block"
+                     >
                         Request Live Demo
-                     </button>
+                     </a>
                      <Link to="/contact" className="px-8 py-4 bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-gray-200 dark:border-slate-700 rounded-full font-bold text-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-all">
                         Contact Sales
                      </Link>
@@ -293,8 +298,16 @@ const SchoolApp: React.FC = () => {
                   Empower teachers, engage students, and delight parents with Oliskey.
                </p>
                <div className="flex flex-col sm:flex-row justify-center gap-4">
-                  <Link to="/contact" className="inline-flex items-center justify-center px-8 py-4 bg-white text-indigo-900 rounded-full font-bold text-lg hover:bg-indigo-50 transition-colors">
-                     Get Started Now <ArrowRight className="ml-2" />
+                  <a
+                     href="https://school-app-one-fawn.vercel.app/"
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     className="inline-flex items-center justify-center px-8 py-4 bg-white text-indigo-900 rounded-full font-bold text-lg hover:bg-indigo-50 transition-colors"
+                  >
+                     Request Live Demo <ArrowRight className="ml-2" />
+                  </a>
+                  <Link to="/contact" className="inline-flex items-center justify-center px-8 py-4 border-2 border-white/20 text-white rounded-full font-bold text-lg hover:bg-white/10 transition-colors">
+                     Contact Sales
                   </Link>
                </div>
             </div>

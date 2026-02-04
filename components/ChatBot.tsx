@@ -55,9 +55,10 @@ const ChatBot: React.FC = () => {
       // @ts-ignore
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
       if (apiKey) {
+        console.log("Gemini API Client Initialized.");
         aiRef.current = new GoogleGenAI({ apiKey: apiKey });
       } else {
-        console.warn("Gemini API Key is missing.");
+        console.error("Gemini API Key is missing. Please ensure VITE_GEMINI_API_KEY is set in your environment.");
       }
     }
   }, []);

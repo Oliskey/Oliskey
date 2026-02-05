@@ -19,7 +19,8 @@ import {
     Coins,
     Medal,
     Terminal,
-    Settings
+    Settings,
+    CheckCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 

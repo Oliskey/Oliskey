@@ -60,7 +60,7 @@ const Login: React.FC = () => {
     try {
       // Get the current origin (e.g., https://your-site.com)
       const origin = window.location.origin;
-      
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -73,8 +73,8 @@ const Login: React.FC = () => {
       });
       if (error) throw error;
     } catch (err: any) {
-       console.error("Google Login Error:", err);
-       setError(err.message || 'Failed to sign in with Google. Please ensure Google Auth is enabled in your Supabase dashboard.');
+      console.error("Google Login Error:", err);
+      setError(err.message || 'Failed to sign in with Google. Please ensure Google Auth is enabled in your Supabase dashboard.');
     }
   };
 
@@ -87,13 +87,13 @@ const Login: React.FC = () => {
       <div className="hidden lg:flex lg:w-1/2 bg-slate-900 relative items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-blue-600/20 blur-3xl rounded-full scale-150 animate-pulse"></div>
         <div className="relative z-10 p-12 text-center">
-            <div className="mb-8 flex justify-center">
-                <Logo variant="light" className="h-24 w-24" showText={false} />
-            </div>
-            <h2 className="text-4xl font-bold text-white mb-6">Welcome Back</h2>
-            <p className="text-slate-400 text-lg max-w-md mx-auto">
-                Log in to access your dashboard, courses, and personalized Oliskey tools.
-            </p>
+          <div className="mb-8 flex justify-center">
+            <Logo variant="light" className="h-24 w-24" showText={false} />
+          </div>
+          <h2 className="text-4xl font-bold text-white mb-6">Welcome Back</h2>
+          <p className="text-slate-400 text-lg max-w-md mx-auto">
+            Log in to access your dashboard, courses, and personalized Oliskey tools.
+          </p>
         </div>
       </div>
 
@@ -101,9 +101,9 @@ const Login: React.FC = () => {
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-12 lg:px-24 py-12 relative">
         {/* Changed from absolute to flow-based for mobile */}
         <div className="lg:hidden mb-10 self-start">
-             <Logo variant={formLogoVariant} className="h-8" />
+          <Logo variant={formLogoVariant} className="h-8" />
         </div>
-        
+
         <div className="max-w-md w-full mx-auto">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Sign in to your account</h1>
           <p className="text-slate-500 dark:text-slate-400 mb-8">
@@ -125,21 +125,21 @@ const Login: React.FC = () => {
             onClick={handleGoogleLogin}
             className="w-full bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 font-bold py-3.5 rounded-xl border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 hover:border-gray-300 dark:hover:border-slate-600 transition-all flex items-center justify-center gap-3 mb-6 shadow-sm"
           >
-             <svg className="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-             </svg>
-             Continue with Google
+            <svg className="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+            </svg>
+            Continue with Google
           </button>
 
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200 dark:border-slate-800"></div>
+              <div className="w-full border-t border-gray-200 dark:border-slate-800"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-slate-950 text-slate-500 dark:text-slate-400">Or continue with email</span>
+              <span className="px-2 bg-white dark:bg-slate-950 text-slate-500 dark:text-slate-400">Or continue with email</span>
             </div>
           </div>
 
@@ -164,7 +164,7 @@ const Login: React.FC = () => {
             <div>
               <div className="flex justify-between items-center mb-1.5">
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
-                <a href="#" className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-500">Forgot password?</a>
+                <Link to="/forgot-password" className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-500">Forgot password?</Link>
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
@@ -178,7 +178,7 @@ const Login: React.FC = () => {
                   className="w-full pl-10 pr-12 py-3 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 text-slate-900 dark:text-white"
                   placeholder="Enter your password"
                 />
-                <button 
+                <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
@@ -196,10 +196,10 @@ const Login: React.FC = () => {
               {loading ? <Loader2 size={20} className="animate-spin" /> : 'Sign In'}
             </button>
           </form>
-          
+
           <div className="mt-8 text-center">
             <Link to="/" className="inline-flex items-center text-sm text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                 <ArrowRight className="rotate-180 mr-2" size={16} /> Back to Home
+              <ArrowRight className="rotate-180 mr-2" size={16} /> Back to Home
             </Link>
           </div>
         </div>

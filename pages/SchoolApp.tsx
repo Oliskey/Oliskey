@@ -31,7 +31,21 @@ const SchoolApp: React.FC = () => {
                      <Link to="/contact" className="px-8 py-4 bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-gray-200 dark:border-slate-700 rounded-full font-bold text-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-all">
                         Contact Sales
                      </Link>
+                     <a href="https://school-app-one-fawn.vercel.app/" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-indigo-600 text-white rounded-full font-bold text-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/30 flex items-center justify-center">
+                        Try Demo <ArrowRight size={20} className="ml-2" />
+                     </a>
                   </div>
+               </div>
+
+               {/* Section 1: Executive Summary */}
+               <div className="mt-20 max-w-4xl mx-auto bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/20 rounded-3xl p-8 md:p-12">
+                  <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-6">Executive Summary</h2>
+                  <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-6">
+                     Oliskey School App is a next-generation, all-in-one platform designed to transform schools digitally. By integrating administration, academics, communication, and cutting-edge AI-powered learning tools, the app empowers schools to operate smarter, improve student outcomes, and save time and resources.
+                  </p>
+                  <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed">
+                     This showcase highlights the app’s advanced features, including AI 🤖, CBT 💻, personalized analytics 📊, and interactive content 🎥, making it a must-have for modern schools.
+                  </p>
                </div>
 
                {/* Dashboard Preview */}
@@ -67,10 +81,10 @@ const SchoolApp: React.FC = () => {
          <section className="py-12 bg-white dark:bg-slate-950 border-b border-gray-100 dark:border-slate-900">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                <div className="grid grid-cols-2 md:grid-cols-5 gap-8 text-center">
-                  <ObjectiveItem icon={<Layout />} text="Automate Operations" />
+                  <ObjectiveItem icon={<Layout />} text="Automate School Management" />
                   <ObjectiveItem icon={<Cpu />} text="AI-Driven Insights" />
-                  <ObjectiveItem icon={<MonitorPlay />} text="Secure CBT Exams" />
-                  <ObjectiveItem icon={<MessageCircle />} text="Real-time Comms" />
+                  <ObjectiveItem icon={<MonitorPlay />} text="Secure CBT Assessments" />
+                  <ObjectiveItem icon={<MessageCircle />} text="Real-time Communication" />
                   <ObjectiveItem icon={<BarChart />} text="Actionable Analytics" />
                </div>
             </div>
@@ -126,18 +140,23 @@ const SchoolApp: React.FC = () => {
                <div className="grid md:grid-cols-3 gap-8 mt-8">
                   <FeatureCardSmall
                      icon={<GraduationCap className="text-blue-500" />}
-                     title="Curriculum Support"
-                     desc="Nigerian & British systems (Primary to SSS3). Subjects arranged by level."
+                     title="📚 Comprehensive Curriculum"
+                     desc="Nigerian and British systems, from Primary to SSS3. Subjects arranged by level for easy navigation."
                   />
                   <FeatureCardSmall
                      icon={<FileText className="text-green-500" />}
-                     title="Lesson Notes"
-                     desc="Pre-built, editable templates with multimedia integration (videos, simulations)."
+                     title="🎥 Lesson Notes & Content"
+                     desc="Pre-built, editable templates with multimedia integration: videos, simulations, and interactive quizzes."
                   />
                   <FeatureCardSmall
                      icon={<BarChart className="text-orange-500" />}
-                     title="Performance Analytics"
-                     desc="Real-time dashboards tracking progress by student, class, or subject."
+                     title="📊 Performance Analytics"
+                     desc="Real-time dashboards tracking progress by student, class, or subject. Trends highlighting strengths."
+                  />
+                  <FeatureCardSmall
+                     icon={<Check className="text-purple-500" />}
+                     title="✏️ Assignments & Homework"
+                     desc="Digital submission with instant feedback. Teacher tracking and grading dashboards for full oversight."
                   />
                </div>
             </div>
@@ -156,24 +175,24 @@ const SchoolApp: React.FC = () => {
 
                      <div className="space-y-6">
                         <DetailRow
-                           icon={<CreditCard size={20} className="text-blue-600" />}
-                           title="Fee Management & Payments"
+                           icon={<Calendar size={20} className="text-blue-600" />}
+                           title="🗓️ Attendance & Timetables"
+                           desc="Automated daily tracking and digital timetables accessible to all students and staff."
+                        />
+                        <DetailRow
+                           icon={<CreditCard size={20} className="text-purple-600" />}
+                           title="💰 Fee Management & Payments"
                            desc="Secure online payments, invoicing, and automated reminders for due payments."
                         />
                         <DetailRow
-                           icon={<Calendar size={20} className="text-purple-600" />}
-                           title="Attendance & Timetables"
-                           desc="Automated daily tracking and digital timetables accessible to all staff."
+                           icon={<Calendar size={20} className="text-green-600" />}
+                           title="📅 Event & Calendar Management"
+                           desc="Track exams, parent meetings, and holidays with automated push notifications."
                         />
                         <DetailRow
-                           icon={<Lock size={20} className="text-green-600" />}
-                           title="Secure Data Management"
-                           desc="Cloud-based storage with encryption, backup, and disaster recovery."
-                        />
-                        <DetailRow
-                           icon={<Users size={20} className="text-orange-600" />}
-                           title="Staff & HR Portal"
-                           desc="Manage payroll, schedules, and performance reviews in one secure portal."
+                           icon={<Lock size={20} className="text-orange-600" />}
+                           title="🔒 Secure Data Management"
+                           desc="Cloud-based storage with enterprise encryption, backup, and disaster recovery."
                         />
                      </div>
                   </div>
@@ -222,27 +241,51 @@ const SchoolApp: React.FC = () => {
                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <InnovationCard
                      icon={<WifiOff size={32} />}
-                     title="Offline Access"
+                     title="🌐 Offline Access"
                      desc="Lesson notes and assignments accessible without internet. Auto-syncs when online."
                      color="text-red-400"
                   />
                   <InnovationCard
                      icon={<Gamepad2 size={32} />}
-                     title="Gamified Learning"
+                     title="🎮 Gamified Learning"
                      desc="Quizzes, challenges, and leaderboards to motivate students and increase engagement."
                      color="text-purple-400"
                   />
                   <InnovationCard
                      icon={<MessageCircle size={32} />}
-                     title="Smart Comms"
-                     desc="In-app chat, discussion forums, and automated alerts for parents and teachers."
+                     title="💬 Smart Comms"
+                     desc="In-app chat, discussion forums, and automated alerts for parent-teacher interaction."
                      color="text-blue-400"
                   />
                   <InnovationCard
                      icon={<TrendingUp size={32} />}
-                     title="Adaptive Learning"
-                     desc="AI identifies the learning pace of each student and adjusts recommendations automatically."
+                     title="📈 Adaptive Learning"
+                     desc="AI identifies the learning pace of each student and adjusts recommendations."
                      color="text-green-400"
+                  />
+                  <InnovationCard
+                     icon={<GraduationCap size={32} />}
+                     title="🏆 Digital Reports"
+                     desc="Generate and share report cards, progress reports, and certificates digitally."
+                     color="text-yellow-400"
+                  />
+                  <InnovationCard
+                     icon={<Cpu size={32} />}
+                     title="🤖 AI Teacher Assistant"
+                     desc="Automates grading, suggests lesson improvements, and generates content ideas."
+                     color="text-indigo-400"
+                  />
+                  <InnovationCard
+                     icon={<BarChart size={32} />}
+                     title="📊 School Insights"
+                     desc="School-wide insights: attendance, performance, fee collection, and teacher activity."
+                     color="text-pink-400"
+                  />
+                  <InnovationCard
+                     icon={<Shield size={32} />}
+                     title="🎨 Custom Branding"
+                     desc="Dashboards, themes, and logos customized for each individual school identity."
+                     color="text-teal-400"
                   />
                </div>
 
@@ -257,42 +300,88 @@ const SchoolApp: React.FC = () => {
             </div>
          </section>
 
-         {/* Why Choose Oliskey */}
-         <section className="py-24 bg-white dark:bg-slate-950">
+         {/* Benefits & Audience */}
+         <section className="py-24 bg-slate-50 dark:bg-slate-900/30">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-               <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-slate-900 dark:to-slate-900 border border-indigo-100 dark:border-slate-800 rounded-[3rem] p-8 md:p-16 text-center">
-                  <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-12">Why Oliskey Stands Out</h2>
+               <div className="grid lg:grid-cols-2 gap-16">
+                  {/* Section 4: Key Benefits */}
+                  <div>
+                     <h2 className="text-3xl font-bold mb-8">Key Benefits to Schools</h2>
+                     <div className="grid gap-4">
+                        <BenefitItem icon="✅" title="Efficiency" text="Automates administration, grading, and reporting." />
+                        <BenefitItem icon="🤖" title="Enhanced Learning" text="AI-driven insights improve student outcomes." />
+                        <BenefitItem icon="💻" title="Secure CBT" text="Ensures fair, secure, and scalable testing." />
+                        <BenefitItem icon="💬" title="Parent Engagement" text="Real-time updates build trust and involvement." />
+                        <BenefitItem icon="💰" title="Cost Savings" text="Reduces printing, manual work, and overhead." />
+                        <BenefitItem icon="🌐" title="Modernization" text="Prepares schools for global digital standards." />
+                     </div>
+                  </div>
 
-                  <div className="grid md:grid-cols-3 gap-12">
-                     <div>
-                        <div className="text-5xl font-bold text-indigo-600 dark:text-indigo-400 mb-4">All-in-One</div>
-                        <p className="text-slate-600 dark:text-slate-400">Academics, Admin, AI, and CBT in a single platform. Stop paying for multiple tools.</p>
-                     </div>
-                     <div>
-                        <div className="text-5xl font-bold text-indigo-600 dark:text-indigo-400 mb-4">Offline</div>
-                        <p className="text-slate-600 dark:text-slate-400">Built for reality. Works seamlessly even with unstable internet connections.</p>
-                     </div>
-                     <div>
-                        <div className="text-5xl font-bold text-indigo-600 dark:text-indigo-400 mb-4">Secure</div>
-                        <p className="text-slate-600 dark:text-slate-400">Enterprise-grade security ensuring exam integrity and data privacy.</p>
+                  {/* Section 5: Target Audience */}
+                  <div>
+                     <h2 className="text-3xl font-bold mb-8">Target Audience</h2>
+                     <div className="space-y-6">
+                        <div className="p-6 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm">
+                           <h3 className="text-xl font-bold mb-2">Private & Public Schools</h3>
+                           <p className="text-slate-600 dark:text-slate-400">Schools in Nigeria and beyond looking for digital transformation.</p>
+                        </div>
+                        <div className="p-6 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm">
+                           <h3 className="text-xl font-bold mb-2">Multi-Curriculum Schools</h3>
+                           <p className="text-slate-600 dark:text-slate-400">Schools adopting Nigerian or British curricula across all levels.</p>
+                        </div>
+                        <div className="p-6 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm">
+                           <h3 className="text-xl font-bold mb-2">Forward-Thinking Administrators</h3>
+                           <p className="text-slate-600 dark:text-slate-400">Leaders aiming for maximum operational efficiency and excellence.</p>
+                        </div>
                      </div>
                   </div>
                </div>
             </div>
          </section>
 
-         {/* CTA */}
+         {/* Why Choose Oliskey */}
+         <section className="py-24 bg-white dark:bg-slate-950">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+               <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-slate-900 dark:to-slate-900 border border-indigo-100 dark:border-slate-800 rounded-[3rem] p-8 md:p-16 text-center">
+                  <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-12">Why Oliskey Schools Stands Out</h2>
+
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                     <div>
+                        <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">📲 All-in-One</div>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm">Combines academics, admin, communication, AI, and CBT.</p>
+                     </div>
+                     <div>
+                        <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">🤖 AI-Powered</div>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm">Personalized learning, predictive analytics, and automation.</p>
+                     </div>
+                     <div>
+                        <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">💻 Secure CBT</div>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm">Reduces exam fraud and automates grading effortlessly.</p>
+                     </div>
+                     <div>
+                        <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">🎨 Customizable</div>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm">Tailored dashboards and branding for each school.</p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </section>
+
+         {/* Section 7: CTA */}
          <section className="py-20 bg-indigo-900 dark:bg-indigo-950 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
             <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-               <h2 className="text-4xl font-bold mb-6">Ready to join the revolution?</h2>
+               <h2 className="text-4xl font-bold mb-6">Ready to Join the Revolution? 🚀</h2>
                <p className="text-indigo-200 text-lg mb-8">
-                  Empower teachers, engage students, and delight parents with Oliskey.
+                  Transform your school’s operations, empower teachers, engage students, and delight parents—all on a single intelligent platform. Contact us today for a live demo!
                </p>
                <div className="flex flex-col sm:flex-row justify-center gap-4">
-                  <Link to="/contact" className="inline-flex items-center justify-center px-8 py-4 border-2 border-white/20 text-white rounded-full font-bold text-lg hover:bg-white/10 transition-colors">
-                     Contact Sales
+                  <Link to="/contact" className="px-8 py-4 bg-white text-indigo-900 rounded-full font-bold text-lg hover:bg-slate-50 transition-all flex items-center justify-center">
+                     Contact Us
                   </Link>
+                  <a href="https://school-app-one-fawn.vercel.app/" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-indigo-600 text-white rounded-full font-bold text-lg hover:bg-indigo-700 transition-all shadow-lg flex items-center justify-center">
+                     Try Live Demo <MonitorPlay size={20} className="ml-2" />
+                  </a>
                </div>
             </div>
          </section>
@@ -344,6 +433,16 @@ const InnovationCard = ({ icon, title, desc, color }: { icon: React.ReactNode, t
       <div className={`mb-4 ${color} group-hover:scale-110 transition-transform duration-300`}>{icon}</div>
       <h3 className="text-xl font-bold mb-3">{title}</h3>
       <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
+   </div>
+);
+
+const BenefitItem = ({ icon, title, text }: { icon: string, title: string, text: string }) => (
+   <div className="flex gap-4 p-4 bg-white dark:bg-slate-800/50 rounded-xl border border-gray-100 dark:border-slate-800">
+      <div className="text-2xl">{icon}</div>
+      <div>
+         <h4 className="font-bold text-slate-900 dark:text-white">{title}</h4>
+         <p className="text-sm text-slate-500 dark:text-slate-400">{text}</p>
+      </div>
    </div>
 );
 

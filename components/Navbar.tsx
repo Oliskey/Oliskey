@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, User, LogOut, LayoutDashboard, ChevronRight, ArrowRight, Sun, Moon } from 'lucide-react';
+import { Search, User, LogOut, LayoutDashboard, ChevronRight, ArrowRight, Sun, Moon, ShieldAlert } from 'lucide-react';
 // @ts-ignore
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import SearchModal from './SearchModal';
@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   // Detect scroll for subtle border effect
@@ -152,6 +152,18 @@ const Navbar: React.FC = () => {
                   </Link>
                 )
               ))}
+
+              {/* Admin Link (Desktop) */}
+              {user && isAdmin && (
+                <Link
+                  to="/admin"
+                  className="p-2 rounded-full text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                  aria-label="Admin Dashboard"
+                  title="Admin Dashboard"
+                >
+                  <ShieldAlert size={20} />
+                </Link>
+              )}
 
               {/* Theme Toggle */}
               <button
@@ -320,6 +332,14 @@ const Navbar: React.FC = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      className="flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-base tracking-wide active:scale-95 transition-all"
+                    >
+                      <ShieldAlert size={20} className="text-blue-600" /> Admin
+                    </Link>
+                  )}
                   <Link
                     to="/dashboard"
                     className="flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-blue-600 text-white font-bold text-base tracking-wide active:scale-95 transition-all shadow-lg shadow-blue-500/20"

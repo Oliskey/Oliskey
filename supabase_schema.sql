@@ -39,6 +39,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+GRANT EXECUTE ON FUNCTION public.check_spam_honeypot() TO anon, authenticated, service_role;
+
 -- ==========================================
 -- 1. USER & SYSTEM TABLES
 -- ==========================================
@@ -60,7 +62,12 @@ create policy "Allow public subscription"
 
 drop policy if exists "Admins view subscribers" on public.newsletter_subscribers;
 create policy "Admins view subscribers"
-  on public.newsletter_subscribers for select using (auth.role() = 'service_role');
+  on public.newsletter_subscribers for select using (
+    auth.role() = 'service_role' OR exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.is_admin = true
+    )
+  );
 
 -- Trigger: Sanitize XSS
 drop trigger if exists sanitize_newsletter on public.newsletter_subscribers;
@@ -95,7 +102,12 @@ create policy "Allow public contact submission"
 
 drop policy if exists "Admins view messages" on public.contact_submissions;
 create policy "Admins view messages"
-  on public.contact_submissions for select using (auth.role() = 'service_role');
+  on public.contact_submissions for select using (
+    auth.role() = 'service_role' OR exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.is_admin = true
+    )
+  );
 
 -- Trigger: Sanitize XSS
 drop trigger if exists sanitize_contact on public.contact_submissions;
@@ -115,6 +127,7 @@ create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   full_name text,
   avatar_url text,
+  is_admin boolean default false,
   updated_at timestamp with time zone,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -147,7 +160,12 @@ alter table public.audit_logs enable row level security;
 drop policy if exists "Admins can view audit logs" on public.audit_logs;
 create policy "Admins can view audit logs"
   on public.audit_logs for select
-  using (auth.jwt() ->> 'role' = 'service_role');
+  using (
+    auth.jwt() ->> 'role' = 'service_role' OR exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.is_admin = true
+    )
+  );
 
 drop policy if exists "System can insert logs" on public.audit_logs;
 create policy "System can insert logs"
@@ -209,12 +227,32 @@ create table if not exists public.courses (
   price text not null,
   image_url text not null,
   tags text[] not null,
+  duration text default '4 weeks',
+  instructor_id text default 'Oliskey Team',
+  curriculum jsonb default '[{"week": 1, "topic": "Introduction"}, {"week": 2, "topic": "Advanced Concepts"}]'::jsonb,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 alter table public.courses enable row level security;
 
 drop policy if exists "Public can view courses" on public.courses;
 create policy "Public can view courses" on public.courses for select using (true);
+
+-- Enrollments
+create table if not exists public.enrollments (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete cascade,
+  course_id text references public.courses(id) on delete cascade,
+  enrolled_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  status text default 'active', -- active, completed, cancelled
+  UNIQUE(user_id, course_id)
+);
+alter table public.enrollments enable row level security;
+
+drop policy if exists "Users view own enrollments" on public.enrollments;
+create policy "Users view own enrollments" on public.enrollments for select using (auth.uid() = user_id);
+
+drop policy if exists "Users can enroll themselves" on public.enrollments;
+create policy "Users can enroll themselves" on public.enrollments for insert with check (auth.uid() = user_id);
 
 -- Portfolio Projects
 create table if not exists public.projects (
@@ -237,7 +275,8 @@ create table if not exists public.blog_posts (
   date_published text not null,
   author text not null,
   category text not null,
-  image_url text not null
+  image_url text not null,
+  content text default '## Coming Soon\nThis post content is being written.'
 );
 alter table public.blog_posts enable row level security;
 
@@ -322,13 +361,18 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Seed Ecosystem
 INSERT INTO public.ecosystem (id, title, description, status, icon_name, color_class, link, action_text, sort_order) VALUES
-('schools_app', 'Schools App', 'The all-in-one management platform for schools.', 'Live', 'School', 'bg-indigo-600', '/school-app', 'Launch App', 1),
+('schools_app', 'Schools App', 'The all-in-one management platform for schools.', 'Live', 'School', 'bg-indigo-600', 'https://school-app-one-fawn.vercel.app/', 'Launch App', 1),
 ('labs', 'Oliskey Labs', 'Product innovation and design.', 'Coming Soon', 'FlaskConical', 'bg-pink-500', null, null, 2),
-('systems', 'Oliskey Systems', 'SaaS platforms and infrastructure.', 'Coming Soon', 'Server', 'bg-blue-500', null, null, 3),
-('ai', 'Oliskey AI', 'Intelligent tools and integrations.', 'Coming Soon', 'Brain', 'bg-purple-600', null, null, 4),
-('education', 'Oliskey Education', 'School platforms, courses, and learning tools.', 'Live', 'GraduationCap', 'bg-green-500', '/app', 'Check the App', 5),
-('media', 'Oliskey Media', 'Tutorials, videos, and creator-first content.', 'Coming Soon', 'Video', 'bg-red-500', null, null, 6)
+('systems', 'Oliskey Systems', 'SaaS platforms and infrastructure powering modern business.', 'Coming Soon', 'Server', 'bg-blue-500', null, null, 3),
+('school_platform', 'School App Platform', 'The ultimate all-in-one management ecosystem for modern schools.', 'Live', 'School', 'bg-indigo-600', '/school-app', 'Learn More', 4),
+('ai', 'Oliskey AI', 'Intelligent tools and integrations.', 'Coming Soon', 'Brain', 'bg-purple-600', null, null, 5),
+('education', 'Oliskey Education', 'School platforms, courses, and learning tools.', 'Live', 'GraduationCap', 'bg-green-500', '/roadmap-2030', 'Explore Roadmap', 6),
+('learning_hub', 'Oliskey Learning Hub', 'Immersive video learning and progress tracking.', 'Live', 'Play', 'bg-blue-600', '/learning-hub', 'Start Learning', 7),
+('media', 'Oliskey Media', 'Tutorials, videos, and creator  -first content.', 'Coming Soon', 'Video', 'bg-red-500', null, null, 7)
 ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, icon_name = EXCLUDED.icon_name, color_class = EXCLUDED.color_class, status = EXCLUDED.status, link = EXCLUDED.link, action_text = EXCLUDED.action_text;
 
 -- 4. Permissions
 alter default privileges revoke execute on functions from public;
+
+GRANT EXECUTE ON FUNCTION public.sanitize_input() TO anon, authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.check_spam_honeypot() TO anon, authenticated, service_role;

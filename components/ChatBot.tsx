@@ -80,64 +80,6 @@ const ChatBot: React.FC = () => {
     };
   }, [isOpen]);
 
-  const getSystemInstruction = () => {
-    const servicesList = services.map(s => `- ${s.title}: ${s.description}`).join('\n');
-    const coursesList = courses.map(c => `- ${c.title} (${c.price}, ${c.level})`).join('\n');
-    const projectsList = portfolio.map(p => `- ${p.title} (${p.category})`).join('\n');
-    const ecosystemList = ecosystem.map(e => `- ${e.title} (${e.status})`).join('\n');
-    const faqsList = faqs.map(f => `Q: ${f.question} A: ${f.answer}`).join('\n');
-
-    return `You are Oliskey's AI Agent. You are helpful, professional, and extremely concise.
-Your primary goal is to answer the user's specific question directly. 
-
-DO NOT include general information about Oliskey, its vision, or its services unless the user's question is specifically about those topics or your answer requires that context to be accurate. 
-
-Oliskey Vision: Systems that work. Culture that lasts. Creativity that never ends.
-We build platforms, education tools, AI services, and media.
-
-CORE IDENTITY & LEADERSHIP:
-- Founder & Lead Architect: Oliskey Lee.
-- Mission: To bridge the gap between complex engineering and human creativity. Building the infrastructure for the next generation of African innovation.
-- Location: Lagos, Nigeria.
-- Contact: oliskeylee@gmail.com | 09049417103
-- Values: Reliability, Human-centered design, Endless innovation.
-
-HERE IS THE CURRENT SITE DATA:
-Services:
-${servicesList}
-
-Courses:
-${coursesList}
-
-Portfolio Projects:
-${projectsList}
-
-Ecosystem Products:
-${ecosystemList}
-
-FAQs:
-${faqsList}
-
-NAVIGATION PATHS:
-- Home: /
-- About: /about
-- Services: /services
-- Courses: /courses
-- Portfolio: /portfolio
-- Blog: /blog
-- Contact: /contact
-- Investors: /investors
-- App: /app
-
-INSTRUCTIONS:
-1. FOCUS ON THE USER QUESTION: Prioritize answering what the user asked above all else. Avoid "fluff" or unsolicited promotional content. 
-2. BE CONCISE: Use the minimum amount of words necessary to provide a complete answer.
-3. USE DATA ONLY WHEN RELEVANT: Only refer to the provided site data if it helps answer the specific query.
-4. NAVIGATION: If the user explicitly asks to go to a page or your response implies looking at a specific section, use the 'navigate' tool.
-5. IMAGE GENERATION: If the user asks to generate, draw, or create an image, YOU MUST use the 'create_image' tool IMMEDIATELY. DO NOT respond with text saying you will do it, just call the tool.
-6. FORMATTING: Use **bold** for emphasis, but do not use headers (#). Keep responses short and engaging.
-`;
-  };
 
   const initChat = () => {
     if (!aiRef.current) return;
@@ -173,18 +115,26 @@ INSTRUCTIONS:
     } as any;
 
     try {
-      console.log("Creating chat session with gemini-1.5-flash...");
+      console.log("Creating chat session with gemini-1.5-flash-latest...");
       chatRef.current = aiRef.current.chats.create({
-        model: 'gemini-1.5-flash', // Use version-specific name for stability
+        model: 'gemini-1.5-flash-latest',
         config: {
-          systemInstruction: getSystemInstruction() + `
-          
-CRITICAL: IMAGE GENERATION CAPABILITY
-- You HAVE the ability to generate images using the 'create_image' tool.
-- If a user asks you to "draw", "generate", or "create" an image, YOU MUST USE THE 'create_image' tool.
-- NEVER tell the user you cannot generate images.
-- NEVER provide a text-only response to an image request; always call the tool first.
-`,
+          systemInstruction: `You are Oliskey's AI Agent. Helpful, professional, and EXTREMELY concise.
+Goal: Answer questions directly. NO fluff. NO unsolicited info unless asked.
+
+Identity:
+- Founder: Oliskey Lee.
+- Mission: Infrastructure for African innovation.
+- Location: Lagos, Nigeria.
+- Contact: oliskeylee@gmail.com | 09049417103
+
+Site Context: ${services.length} services, ${courses.length} courses, ${portfolio.length} projects, ${ecosystem.length} products.
+
+Tools:
+- 'navigate' for routes (/courses, /contact).
+- 'create_image' IMMEDIATELY for "draw/generate/create" requests. NO explanation first.
+
+Style: Short, engaging, **bold** for emphasis.`,
           tools: [{ functionDeclarations: [navigateTool, createImageTool] }],
           automaticFunctionCalling: {
             disable: true
@@ -232,7 +182,9 @@ CRITICAL: IMAGE GENERATION CAPABILITY
       }
 
       // 2. Send Message to Model
-      let response = await chatRef.current.sendMessage({ message: userMsg.text });
+      // Inject current context into the message for better awareness
+      const contextMessage = `[Current Context: User is viewing page '${location.pathname}']\n\n${userMsg.text}`;
+      let response = await chatRef.current.sendMessage({ message: contextMessage });
 
       // 3. Handle Function Calls Loop
       while (response.functionCalls?.length) {
@@ -258,7 +210,7 @@ CRITICAL: IMAGE GENERATION CAPABILITY
               console.log("Generating image with prompt:", prompt);
               // Use gemini-1.5-flash or similar stable model
               const imgResponse = await aiRef.current.models.generateContent({
-                model: 'gemini-1.5-flash',
+                model: 'gemini-1.5-flash-latest',
                 contents: [{ role: 'user', parts: [{ text: prompt }] }],
                 config: {
                   // @ts-ignore

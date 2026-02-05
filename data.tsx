@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, Smartphone, Code, BarChart, Layout, Brain, FlaskConical, Server, GraduationCap, Video, Rocket } from 'lucide-react';
+import { Globe, Smartphone, Code, BarChart, Layout, Brain, FlaskConical, Server, GraduationCap, Video, Rocket, School, Play } from 'lucide-react';
 import { Course, Service, Project, BlogPost, EcosystemItem, FAQ } from './types';
 
 export const servicesData: Service[] = [
@@ -157,6 +157,26 @@ export const blogPostsData: BlogPost[] = [
 
 export const ecosystemData: EcosystemItem[] = [
   {
+    id: 'education',
+    title: 'Oliskey Education',
+    description: 'School platforms, courses, and learning tools.',
+    status: 'Live',
+    icon: <GraduationCap size={24} />,
+    color: 'bg-green-500',
+    link: '/roadmap-2030',
+    actionText: 'Explore Roadmap'
+  },
+  {
+    id: 'school_platform',
+    title: 'School App Platform',
+    description: 'The ultimate all-in-one management ecosystem for modern schools.',
+    status: 'Live',
+    icon: <School size={24} />,
+    color: 'bg-indigo-600',
+    link: '/school-app',
+    actionText: 'Learn More'
+  },
+  {
     id: 'labs',
     title: 'Oliskey Labs',
     description: 'Product innovation and design.',
@@ -167,7 +187,7 @@ export const ecosystemData: EcosystemItem[] = [
   {
     id: 'systems',
     title: 'Oliskey Systems',
-    description: 'SaaS platforms and infrastructure.',
+    description: 'SaaS platforms and infrastructure powering modern business.',
     status: 'Coming Soon',
     icon: <Server size={24} />,
     color: 'bg-blue-500'
@@ -179,16 +199,6 @@ export const ecosystemData: EcosystemItem[] = [
     status: 'Coming Soon',
     icon: <Brain size={24} />,
     color: 'bg-purple-600'
-  },
-  {
-    id: 'education',
-    title: 'Oliskey Education',
-    description: 'School platforms, courses, and learning tools.',
-    status: 'Live',
-    icon: <GraduationCap size={24} />,
-    color: 'bg-green-500',
-    link: '/app',
-    actionText: 'Check the App'
   },
   {
     id: 'media',

@@ -1,13 +1,13 @@
 import React from 'react';
-import { 
-  Globe, Smartphone, Code, BarChart, Layout, Brain, 
-  FlaskConical, Server, GraduationCap, Video, Rocket, 
-  HelpCircle, School
+import {
+  Globe, Smartphone, Code, BarChart, Layout, Brain,
+  FlaskConical, Server, GraduationCap, Video, Rocket,
+  HelpCircle, School, Play
 } from 'lucide-react';
 
 export const getIconByName = (name: string, size: number = 24): React.ReactNode => {
   const props = { size, strokeWidth: 1.5 };
-  
+
   switch (name) {
     case 'Globe': return <Globe {...props} />;
     case 'Smartphone': return <Smartphone {...props} />;
@@ -21,6 +21,7 @@ export const getIconByName = (name: string, size: number = 24): React.ReactNode 
     case 'Video': return <Video {...props} />;
     case 'Rocket': return <Rocket {...props} />;
     case 'School': return <School {...props} />;
+    case 'Play': return <Play {...props} />;
     default: return <HelpCircle {...props} />;
   }
 };

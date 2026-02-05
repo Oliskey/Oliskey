@@ -8,6 +8,9 @@ export interface Course {
   price: string;
   image: string; // mapped from image_url
   tags: string[];
+  duration?: string;
+  instructor?: string; // mapped from instructor_id
+  curriculum?: any; // jsonb
 }
 
 export interface Service {
@@ -34,6 +37,7 @@ export interface BlogPost {
   author: string;
   category: string;
   image: string; // mapped from image_url
+  content?: string;
 }
 
 export interface EcosystemItem {

@@ -7,15 +7,15 @@ interface LogoProps {
   animated?: boolean;
 }
 
-const Logo: React.FC<LogoProps> = ({ className = "h-10", variant = 'dark', showText = true, animated = false }) => {
+const Logo: React.FC<LogoProps> = ({ className = "h-10", variant = 'light', showText = true, animated = false }) => {
   const textColor = variant === 'dark' ? 'text-slate-900' : 'text-white';
   const ringColor = variant === 'dark' ? '#0f172a' : '#ffffff'; // slate-900 or white
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <svg 
-        viewBox="0 0 100 100" 
-        fill="none" 
+      <svg
+        viewBox="0 0 100 100"
+        fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className={`h-full w-auto ${animated ? 'animate-slow-spin' : ''}`}
       >
@@ -28,13 +28,13 @@ const Logo: React.FC<LogoProps> = ({ className = "h-10", variant = 'dark', showT
           {/* Top Center */}
           <circle cx="50" cy="36" r="22" />
         </g>
-        
+
         {/* Blue Accent Segment on Top Ring (Top-Right Quadrant) */}
-        <path 
-          d="M 65.55 20.44 A 22 22 0 0 1 72 36" 
-          stroke="#3b82f6" 
-          strokeWidth="8" 
-          strokeLinecap="round" 
+        <path
+          d="M 65.55 20.44 A 22 22 0 0 1 72 36"
+          stroke="#3b82f6"
+          strokeWidth="8"
+          strokeLinecap="round"
         />
       </svg>
       {/* Text hidden on mobile (hidden), shown on md screens (md:block) */}

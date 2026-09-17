@@ -35,6 +35,7 @@ const ChatBot: React.FC = () => {
   // Refs for AI persistence
   const chatRef = useRef<Chat | null>(null);
   const aiRef = useRef<GoogleGenAI | null>(null);
+  const [available, setAvailable] = useState(true);
 
   // Ref for Chat Container to handle click outside
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,11 +55,13 @@ const ChatBot: React.FC = () => {
     if (!aiRef.current) {
       // @ts-ignore
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      // A VITE_ key ships inside the public bundle, so the browser chatbot can
+      // never hold a real Gemini key. Without one the widget stays hidden
+      // instead of rendering a bot that cannot answer.
       if (apiKey) {
-        console.log("Gemini API Client Initialized. Key Length:", apiKey.length);
         aiRef.current = new GoogleGenAI({ apiKey: apiKey });
       } else {
-        console.error("Gemini API Key is missing. Please ensure VITE_GEMINI_API_KEY is set in your .env file.");
+        setAvailable(false);
       }
     }
   }, []);
@@ -307,6 +310,8 @@ Style: Short, engaging, **bold** for emphasis.`,
       setIsTyping(false);
     }
   };
+
+  if (!available) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-[50] font-sans">

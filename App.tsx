@@ -1,6 +1,8 @@
 import React, { useEffect, Suspense, lazy, useState } from 'react';
 // @ts-ignore
-import { HashRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
+import { useSeo } from './seo/useSeo';
+import SchoolFeaturePage, { SCHOOL_PAGE_PATHS } from './pages/school/SchoolFeaturePage';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ChatBot from './components/ChatBot';
@@ -22,7 +24,6 @@ const Services = lazy(() => import('./pages/Services'));
 const Courses = lazy(() => import('./pages/Courses'));
 const Portfolio = lazy(() => import('./pages/Portfolio'));
 const AppShowcase = lazy(() => import('./pages/AppShowcase'));
-const SchoolApp = lazy(() => import('./pages/SchoolApp')); // New Page
 const Blog = lazy(() => import('./pages/Blog'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Investors = lazy(() => import('./pages/Investors'));
@@ -38,30 +39,23 @@ const CareerRoadmap = lazy(() => import('./pages/CareerRoadmap'));
 const LearningHub = lazy(() => import('./pages/LearningHub'));
 const Settings = lazy(() => import('./pages/Settings'));
 
-// Handle route changes: Scroll to top and update title
+// Handle route changes: scroll to top, keep <head> in sync, and migrate
+// legacy HashRouter links (/#/about) to real paths (/about). Path routing is
+// what lets each public page have its own URL, title and canonical for search
+// engines and social previews — with HashRouter the whole site was one URL.
 const RouteListener = () => {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (pathname === '/' && hash.startsWith('#/')) {
+      navigate(hash.slice(1), { replace: true });
+      return;
+    }
     window.scrollTo(0, 0);
+  }, [pathname, hash, navigate]);
 
-    // Simple title mapping
-    let title = 'Oliskey — System. Culture. Creativity.';
-    if (pathname === '/about') title = 'About Us — Oliskey';
-    else if (pathname === '/services') title = 'Services — Oliskey';
-    else if (pathname === '/courses') title = 'Courses — Oliskey';
-    else if (pathname.startsWith('/courses/')) title = 'Course — Oliskey';
-    else if (pathname === '/portfolio') title = 'Portfolio — Oliskey';
-    else if (pathname === '/blog') title = 'Blog — Oliskey';
-    else if (pathname.startsWith('/blog/')) title = 'Post — Oliskey';
-    else if (pathname === '/contact') title = 'Contact — Oliskey';
-    else if (pathname === '/investors') title = 'Investors — Oliskey';
-    else if (pathname === '/pricing') title = 'Pricing — Oliskey';
-    else if (pathname === '/login') title = 'Sign In — Oliskey';
-    else if (pathname === '/signup') title = 'Sign Up — Oliskey';
-
-    document.title = title;
-  }, [pathname]);
+  useSeo(pathname);
 
   return null;
 };
@@ -69,21 +63,23 @@ const RouteListener = () => {
 // Internal component to handle the loading check
 const AppContent: React.FC = () => {
   const { loading: authLoading } = useAuth();
-  const { loading: dataLoading } = useData();
   const [showSplash, setShowSplash] = useState(true);
   const [timedOut, setTimedOut] = useState(false);
 
-  // Fallback timeout: If data hasn't loaded in 10s, force show the app anyway
+  // Fallback timeout: if the auth check hangs, show the app anyway.
   useEffect(() => {
     const timer = setTimeout(() => {
       setTimedOut(true);
-    }, 10000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
 
-  // Determine if the app is fully ready
-  const isAppReady = (!authLoading && !dataLoading) || timedOut;
+  // Every public page renders without the catalogue data (pages that use it
+  // handle their own loading state), so the splash only waits for the auth
+  // check — holding first paint for a Supabase round-trip cost seconds of LCP
+  // on marketing pages.
+  const isAppReady = !authLoading || timedOut;
 
   return (
     <>
@@ -113,7 +109,8 @@ const AppContent: React.FC = () => {
                 <Route path="/courses/:id" element={<CourseDetail />} />
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/app" element={<AppShowcase />} />
-                <Route path="/school-app" element={<SchoolApp />} />
+                <Route path="/school-app" element={<Navigate to="/school-management" replace />} />
+                {SCHOOL_PAGE_PATHS.map((p) => <Route key={p} path={p} element={<SchoolFeaturePage />} />)}
                 <Route path="/roadmap-2030" element={<CareerRoadmap />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:id" element={<BlogPostDetail />} />

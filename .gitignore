@@ -26,3 +26,8 @@ dist-ssr
 .env.local
 .env.*.local
 
+
+# never commit real keys (a real Gemini key was committed here once; rotated 2026-09-18)
+.env
+.env.*
+!.env.example

@@ -112,23 +112,34 @@ const Home: React.FC = () => {
           </div>
 
           <p className="text-base xs:text-lg sm:text-xl md:text-3xl text-slate-600 dark:text-slate-400 font-normal max-w-4xl mx-auto mb-8 sm:mb-12 leading-relaxed tracking-tight opacity-0 animate-[fadeIn_0.8s_ease-out_0.4s_forwards] px-2">
-            Systems that work. Culture that lasts. Creativity that never ends.
+            The all-in-one school management platform: students, teachers, attendance, timetable, fees, exams and results, CBT, e-learning, messaging and AI-assisted workflows — in one app every role signs in to.
           </p>
 
           <div className="flex flex-col xs:flex-row gap-3 sm:gap-4 justify-center items-center opacity-0 animate-[fadeIn_0.8s_ease-out_0.6s_forwards] px-4">
-            <button
-              onClick={scrollToProducts}
+            <a
+              href="https://app.oliskey.com/signup"
               className="w-full xs:w-auto px-6 py-3.5 sm:px-8 sm:py-4 rounded-full bg-blue-600 text-white font-medium text-sm sm:text-base hover:bg-blue-700 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:scale-105 flex items-center justify-center"
             >
-              Explore Products <ArrowRight size={18} className="ml-2" />
-            </button>
-            <Link
-              to="/investors"
+              Get Started <ArrowRight size={18} className="ml-2" />
+            </a>
+            <a
+              href="https://app.oliskey.com/demo"
+              className="w-full xs:w-auto px-6 py-3.5 sm:px-8 sm:py-4 rounded-full border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium text-sm sm:text-base hover:bg-gray-50 dark:hover:bg-slate-800 transition-all duration-300 flex items-center justify-center"
+            >
+              Try Demo
+            </a>
+            <a
+              href="https://app.oliskey.com/"
               className="w-full xs:w-auto group flex items-center justify-center px-6 py-3.5 sm:px-8 sm:py-4 rounded-full text-slate-900 dark:text-white font-medium text-sm sm:text-base hover:bg-gray-50 dark:hover:bg-slate-800 transition-all duration-300 border border-transparent hover:border-gray-200 dark:hover:border-slate-700"
             >
-              Investor Info <ChevronRight size={18} className="ml-1 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
-            </Link>
+              Open App <ChevronRight size={18} className="ml-1 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
+            </a>
           </div>
+          <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">
+            <Link to="/features" className="underline underline-offset-4 hover:text-blue-600 dark:hover:text-blue-400">See everything it does</Link>
+            {' · '}
+            <Link to="/school-management" className="underline underline-offset-4 hover:text-blue-600 dark:hover:text-blue-400">Built for multi-branch schools</Link>
+          </p>
         </div>
       </section>
 

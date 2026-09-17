@@ -21,12 +21,13 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ isReady, onComplete }) => {
           return 95;
         }
 
-        // If data IS ready, and we are stalled, quickly finish
-        if (isReady && prev >= 95) {
-          return Math.min(prev + 2, 100);
+        // Ready: finish in ~0.4s. The old 0–4/tick random walk took ~2.5s on
+        // every visit before anything behind the splash could be seen.
+        if (isReady) {
+          return Math.min(prev + 12, 100);
         }
 
-        // Standard increment
+        // Not ready yet: advance gently towards the 95% stall.
         const increment = Math.random() * 4;
         return Math.min(prev + increment, 100);
       });
@@ -66,10 +67,12 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ isReady, onComplete }) => {
         </div>
 
         {/* Text Logo */}
-        <h1 className={`text-6xl md:text-7xl font-bold tracking-tighter mb-10 animate-fade-in-up ${theme === 'dark' ? 'text-white' : 'text-slate-900'
+        {/* Not a heading: the page's real <h1> is in the route content, and a
+            second h1 in a transient overlay confused the document outline. */}
+        <p aria-hidden="true" className={`text-6xl md:text-7xl font-bold tracking-tighter mb-10 animate-fade-in-up ${theme === 'dark' ? 'text-white' : 'text-slate-900'
           }`}>
           Oliskey
-        </h1>
+        </p>
 
         {/* Progress Bar Container */}
         <div className={`w-64 md:w-80 h-1.5 rounded-full overflow-hidden relative ${theme === 'dark' ? 'bg-slate-800' : 'bg-gray-100'

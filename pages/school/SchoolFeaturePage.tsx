@@ -6,7 +6,7 @@ import { APP_ORIGIN } from '../../seo/publicRoutes';
 import { findPublicRoute } from '../../seo/publicRoutes';
 
 const APP_SIGNUP = `${APP_ORIGIN}/signup`;
-const APP_DEMO = `${APP_ORIGIN}/?demo=1`;
+const APP_DEMO = `${APP_ORIGIN}/demo`;
 
 export const AppCtas: React.FC<{ compact?: boolean }> = ({ compact }) => (
     <div className={`flex flex-col xs:flex-row gap-3 ${compact ? '' : 'sm:gap-4'} justify-center items-center`}>

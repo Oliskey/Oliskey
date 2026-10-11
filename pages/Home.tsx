@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Layers, Users, Zap, ChevronRight, ShieldCheck, Smile, PenTool, LayoutGrid, Building, Loader2, Check, Truck, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, Layers, Users, Zap, ChevronRight, ShieldCheck, Smile, PenTool, LayoutGrid, Building, Loader2, Check, ArrowUpRight } from 'lucide-react';
 // @ts-ignore
 import { Link, useLocation } from 'react-router-dom';
-import { useData } from '../context/DataContext';
 import OptimizedImage from '../components/OptimizedImage';
 import { supabase } from '../supabase';
 
 const Home: React.FC = () => {
   const location = useLocation();
-  const { ecosystem } = useData();
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState(''); // Honeypot
   const [subscribing, setSubscribing] = useState(false);

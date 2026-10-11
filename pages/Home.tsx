@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Layers, Users, Zap, ChevronRight, ExternalLink, ShieldCheck, Smile, PenTool, LayoutGrid, Building, Loader2, Check, Bell, User } from 'lucide-react';
+import { ArrowRight, Layers, Users, Zap, ChevronRight, ExternalLink, ShieldCheck, Smile, PenTool, LayoutGrid, Building, Loader2, Check, Bell, User, Truck, ArrowUpRight } from 'lucide-react';
 // @ts-ignore
 import { Link, useLocation } from 'react-router-dom';
 import { useData } from '../context/DataContext';
@@ -124,7 +124,7 @@ const Home: React.FC = () => {
             </a>
             <a
               href="https://app.oliskey.com/demo"
-              className="w-full xs:w-auto px-6 py-3.5 sm:px-8 sm:py-4 rounded-full border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium text-sm sm:text-base hover:bg-gray-50 dark:hover:bg-slate-800 transition-all duration-300 flex items-center justify-center"
+              className="liquid-glass-control w-full xs:w-auto px-6 py-3.5 sm:px-8 sm:py-4 rounded-full border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium text-sm sm:text-base transition-all duration-300 flex items-center justify-center"
             >
               Try Demo
             </a>
@@ -225,6 +225,11 @@ const Home: React.FC = () => {
             <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400">
               A diverse family of brands working together to innovate, educate, and build the future.
             </p>
+            <div className="mt-6 flex justify-center">
+              <Link to="/products" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-200/80 bg-white/70 px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-blue-200 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100 dark:hover:border-blue-800">
+                Explore all products <ArrowUpRight size={16} />
+              </Link>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -272,6 +277,27 @@ const Home: React.FC = () => {
                 </div>
               </div>
             ))}
+            {/* Featured fleet product: intentionally explicit so it cannot disappear when the CMS catalogue is incomplete. */}
+            <article className="group relative flex min-w-0 flex-col overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 sm:p-8">
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-violet-500 via-blue-500 to-cyan-400" aria-hidden="true" />
+              <div className="mb-6 flex items-start justify-between gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-sm transition-transform duration-300 group-hover:scale-105">
+                  <Truck size={24} strokeWidth={1.8} aria-hidden="true" />
+                </div>
+                <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-violet-700 dark:border-violet-900 dark:bg-violet-950/50 dark:text-violet-300">Fleet product</span>
+              </div>
+              <div className="mb-6">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-violet-700 dark:text-violet-300">Transport &amp; operations</p>
+                <h3 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">Oliskey Fleet</h3>
+                <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">Manage tricycles, drivers, staff, daily collections, remittances, maintenance schedules and partner balances in one workspace.</p>
+              </div>
+              <div className="mt-auto">
+                <a href="https://tricycles.oliskey.com/" target="_blank" rel="noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[.99] dark:bg-white dark:text-slate-900 dark:hover:bg-blue-100">
+                  Explore Oliskey Fleet <ExternalLink size={15} aria-hidden="true" />
+                </a>
+                <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">tricycles.oliskey.com</p>
+              </div>
+            </article>
           </div>
         </div>
       </section>

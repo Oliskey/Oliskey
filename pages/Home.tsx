@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Layers, Users, Zap, ChevronRight, ExternalLink, ShieldCheck, Smile, PenTool, LayoutGrid, Building, Loader2, Check, Bell, User, Truck, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, Layers, Users, Zap, ChevronRight, ShieldCheck, Smile, PenTool, LayoutGrid, Building, Loader2, Check, Truck, ArrowUpRight } from 'lucide-react';
 // @ts-ignore
 import { Link, useLocation } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import Logo from '../components/Logo';
 import OptimizedImage from '../components/OptimizedImage';
 import { supabase } from '../supabase';
-import { useTheme } from '../context/ThemeContext';
 
 const Home: React.FC = () => {
   const location = useLocation();
-  const { ecosystem, faqs } = useData(); // Use Data Context
+  const { ecosystem } = useData();
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState(''); // Honeypot
   const [subscribing, setSubscribing] = useState(false);
   const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const { theme } = useTheme();
 
   useEffect(() => {
     if (location.state && (location.state as any).scrollToProducts) {
@@ -27,14 +24,6 @@ const Home: React.FC = () => {
       }
     }
   }, [location]);
-
-  const scrollToProducts = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const element = document.getElementById('products');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,76 +68,49 @@ const Home: React.FC = () => {
     }
   };
 
-  // Logo variant based on theme
-  const logoVariant = theme === 'dark' ? 'light' : 'dark';
-
   return (
     <div className="flex flex-col w-full bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 font-sans selection:bg-blue-100 dark:selection:bg-blue-900 selection:text-blue-900 dark:selection:text-blue-100 overflow-hidden transition-colors duration-300">
 
-      {/* Hero Section */}
-      <section className="relative pt-24 pb-10 sm:pt-32 sm:pb-16 lg:pt-40 lg:pb-24 px-4 sm:px-6 overflow-hidden">
-
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none z-0 opacity-[0.03] dark:opacity-[0.05]">
-          <div className="animate-slow-spin">
-            <Logo showText={false} variant={logoVariant} className="h-[250px] w-[250px] xs:h-[300px] xs:w-[300px] sm:h-[400px] sm:w-[400px] md:h-[800px] md:w-[800px]" />
+      {/* Brand-first, outcome-led hero */}
+      <section className="relative isolate overflow-hidden px-4 pb-14 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:px-8 lg:pb-28 lg:pt-36">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 mx-auto h-[30rem] max-w-5xl rounded-full bg-blue-500/10 blur-3xl dark:bg-blue-500/10" />
+        <div aria-hidden="true" className="pointer-events-none absolute -right-20 top-24 -z-10 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_.95fr] lg:gap-16">
+          <div className="min-w-0 text-center lg:text-left">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/75 px-3.5 py-2 text-xs font-semibold tracking-wide text-blue-800 shadow-sm backdrop-blur-xl dark:border-blue-900/70 dark:bg-slate-900/75 dark:text-blue-300 sm:text-sm"><span className="h-2 w-2 rounded-full bg-blue-600" /> SOFTWARE · AUTOMATION · AI</div>
+            <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight text-slate-950 dark:text-white sm:text-5xl md:text-6xl lg:mx-0 lg:text-7xl">Make your business run with <span className="text-blue-600 dark:text-blue-400">less manual work.</span></h1>
+            <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg sm:leading-8 lg:mx-0">Oliskey builds practical software, automated workflows and AI-powered tools that help businesses simplify operations, reduce repetitive tasks and work with greater control.</p>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-500 dark:text-slate-400 lg:mx-0">From ready-made products to software designed around your business, we start with the problem—not the technology.</p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
+              <Link to="/products" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-blue-600/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:min-h-14 sm:px-8 sm:text-base">Explore our solutions <ArrowRight size={18} /></Link>
+              <Link to="/contact" className="liquid-glass-control inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-slate-200/80 bg-white/60 px-6 py-3.5 text-sm font-semibold text-slate-900 transition hover:border-blue-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-700/80 dark:bg-slate-900/60 dark:text-white sm:min-h-14 sm:px-8 sm:text-base">Tell us what to automate <ArrowUpRight size={17} /></Link>
+            </div>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-medium text-slate-500 dark:text-slate-400 lg:justify-start sm:text-sm">
+              <span className="inline-flex items-center gap-2"><Check size={15} className="text-blue-600 dark:text-blue-400" /> Built around real workflows</span>
+              <span className="inline-flex items-center gap-2"><Check size={15} className="text-blue-600 dark:text-blue-400" /> Designed for people</span>
+              <span className="inline-flex items-center gap-2"><Check size={15} className="text-blue-600 dark:text-blue-400" /> AI with a purpose</span>
+            </div>
           </div>
-        </div>
-
-        <div className="max-w-screen-xl mx-auto text-center relative z-10">
-
-          <div className="flex flex-col md:flex-row justify-center items-center gap-3 xs:gap-4 sm:gap-8 mb-5 sm:mb-10 opacity-0 animate-[fadeIn_0.8s_ease-out_0.2s_forwards]">
-            <button
-              onClick={scrollToProducts}
-              className="h-16 w-16 xs:h-20 xs:w-20 sm:h-28 sm:w-28 md:h-40 md:w-40 lg:h-48 lg:w-48 flex-shrink-0 relative group cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-4 transition-transform duration-300 hover:scale-105"
-              aria-label="Scroll to products"
-            >
-              <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/5 dark:group-hover:bg-blue-500/10 rounded-full transition-colors scale-125 duration-500"></div>
-              <Logo className="h-full w-full" variant={logoVariant} showText={false} />
-            </button>
-            {/* Scaled Text for Mobile */}
-            <h1 className="text-4xl xs:text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-slate-900 dark:text-white leading-none text-center md:text-left">
-              Oliskey
-            </h1>
+          <div className="relative mx-auto w-full max-w-xl">
+            <div aria-hidden="true" className="absolute -inset-5 rounded-[2.5rem] bg-gradient-to-br from-blue-500/15 via-cyan-400/10 to-violet-500/10 blur-2xl" />
+            <div className="oliskey-liquid-glass relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-5 shadow-2xl shadow-slate-900/10 backdrop-blur-2xl dark:border-slate-700/80 dark:bg-slate-900/80 sm:p-7">
+              <div className="flex items-start justify-between gap-4 border-b border-slate-200/80 pb-5 dark:border-slate-700"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">The Oliskey approach</p><h2 className="mt-2 text-xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-2xl">From busywork to better workflows.</h2></div><span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20"><Zap size={22} /></span></div>
+              <div className="mt-5 space-y-3">
+                <div className="flex items-center gap-4 rounded-2xl border border-slate-200/80 bg-white/75 p-4 dark:border-slate-700 dark:bg-slate-950/50"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200"><Layers size={20} /></span><div className="min-w-0 flex-1"><p className="font-semibold text-slate-900 dark:text-white">Understand the work</p><p className="mt-1 text-sm leading-5 text-slate-500 dark:text-slate-400">Find the tasks, handoffs and bottlenecks that slow you down.</p></div><ChevronRight size={18} className="shrink-0 text-slate-400" /></div>
+                <div className="flex items-center gap-4 rounded-2xl border border-blue-100 bg-blue-50/80 p-4 dark:border-blue-900/70 dark:bg-blue-950/40"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-600 text-white"><Zap size={20} /></span><div className="min-w-0 flex-1"><p className="font-semibold text-slate-900 dark:text-white">Build a better system</p><p className="mt-1 text-sm leading-5 text-slate-600 dark:text-slate-300">Connect software, automation and AI to the actual need.</p></div><ArrowRight size={18} className="shrink-0 text-blue-700 dark:text-blue-300" /></div>
+                <div className="flex items-center gap-4 rounded-2xl border border-slate-200/80 bg-white/75 p-4 dark:border-slate-700 dark:bg-slate-950/50"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"><Check size={20} /></span><div className="min-w-0 flex-1"><p className="font-semibold text-slate-900 dark:text-white">Give people time back</p><p className="mt-1 text-sm leading-5 text-slate-500 dark:text-slate-400">Make routine work clearer, more consistent and easier to manage.</p></div></div>
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2">{["Business software", "Workflow automation", "Useful AI"].map((item) => <span key={item} className="rounded-full border border-slate-200/80 bg-white/70 px-3 py-1.5 text-xs font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-300">{item}</span>)}</div>
+            </div>
           </div>
-
-          <p className="text-base xs:text-lg sm:text-xl md:text-3xl text-slate-600 dark:text-slate-400 font-normal max-w-3xl mx-auto mb-7 sm:mb-10 leading-relaxed tracking-tight opacity-0 animate-[fadeIn_0.8s_ease-out_0.4s_forwards] px-1 sm:px-2">
-            Oliskey builds practical software for education, fleet operations, and AI-enabled work — making complex everyday tasks simpler for schools, transport businesses, and the people who run them.
-          </p>
-
-          <div className="grid w-full max-w-xl grid-cols-2 gap-3 opacity-0 animate-[fadeIn_0.8s_ease-out_0.6s_forwards] sm:flex sm:w-auto sm:max-w-none sm:flex-wrap sm:justify-center sm:items-center sm:gap-4 sm:px-4">
-            <a
-              href="/products"
-              className="col-span-2 flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-300 hover:bg-blue-700 hover:shadow-blue-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:col-span-1 sm:min-h-14 sm:w-auto sm:px-8 sm:py-4 sm:text-base sm:hover:scale-[1.02]"
-            >
-              Explore Products <ArrowRight size={18} className="ml-2" />
-            </a>
-            <a
-              href="https://app.oliskey.com/demo"
-              className="liquid-glass-control flex min-h-12 w-full items-center justify-center rounded-full border border-slate-200/80 px-3 py-3 text-center text-sm font-medium text-slate-900 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:text-white sm:min-h-14 sm:w-auto sm:px-8 sm:py-4 sm:text-base"
-            >
-              School App Demo
-            </a>
-            <a
-              href="https://app.oliskey.com/"
-              className="group flex min-h-12 w-full items-center justify-center gap-1 rounded-full border border-slate-200/80 px-3 py-3 text-center text-sm font-medium text-slate-900 transition-all duration-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800 sm:min-h-14 sm:w-auto sm:px-8 sm:py-4 sm:text-base"
-            >
-              <span className="sm:hidden">Open App</span><span className="hidden sm:inline">Open School App</span> <ChevronRight size={18} className="ml-1 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
-            </a>
-          </div>
-          <p className="mt-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-sm text-slate-500 dark:text-slate-400">
-            <Link to="/features" className="underline underline-offset-4 hover:text-blue-600 dark:hover:text-blue-400">See everything it does</Link>
-            {' · '}
-            <Link to="/school-management" className="underline underline-offset-4 hover:text-blue-600 dark:hover:text-blue-400">Built for multi-branch schools</Link>
-          </p>
         </div>
       </section>
 
-      {/* Brand Manifesto */}
-      <section className="py-12 sm:py-16 bg-white dark:bg-slate-950 relative z-10 transition-colors duration-300">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-lg sm:text-2xl md:text-3xl leading-relaxed text-slate-800 dark:text-slate-200 font-light">
-            <span className="font-semibold text-blue-600 dark:text-blue-400">Oliskey</span> is a global infrastructure brand powering products that scale. We combine rigor and imagination through our S.C.C framework — System, Culture, Creativity — to build platforms, education tools, AI services, and media that endure.
-          </p>
+      {/* What Oliskey stands for */}
+      <section className="relative z-10 bg-white py-14 transition-colors duration-300 dark:bg-slate-950 sm:py-20">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[.8fr_1.2fr] lg:items-end lg:gap-16 lg:px-12">
+          <div><p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">Why Oliskey</p><h2 className="mt-3 text-3xl font-bold leading-tight tracking-tight text-slate-950 dark:text-white sm:text-4xl">Technology should make work feel lighter.</h2></div>
+          <p className="text-lg leading-8 text-slate-600 dark:text-slate-300 sm:text-xl">Every business has work that is harder than it needs to be: repeated data entry, scattered records, missed follow-ups and processes that depend on memory. We turn those everyday frustrations into clearer systems people can actually use.</p>
         </div>
       </section>
 
@@ -168,15 +130,15 @@ const Home: React.FC = () => {
               />
             </div>
             <div className="md:w-7/12 text-center md:text-left">
-              <span className="inline-block py-1 px-3 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-widest mb-4 sm:mb-6">Leadership</span>
-              <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 sm:mb-6">Meet the Creator</h2>
+              <span className="inline-block py-1 px-3 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-widest mb-4 sm:mb-6">The reason we build</span>
+              <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 sm:mb-6">Built from a real problem</h2>
               <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed mb-6 sm:mb-8 italic">
-                "I started Oliskey with a single mission: to bridge the gap between complex engineering and human creativity. We aren't just building software; we are building the infrastructure for the next generation of African innovation."
+                "Growing up, education often felt difficult and boring, and I had to push myself to keep going. Later, while teaching, I saw how much time schools lost to repetitive administration—and how much parents wanted to understand their children’s progress. That showed me how technology could make work and learning easier. Oliskey grew from that idea: build useful software around real human problems, then take the same thinking to businesses beyond education."
               </p>
               <div className="flex items-center justify-center md:justify-start gap-4">
                 <div className="border-l-4 border-blue-600 dark:border-blue-500 pl-4 text-left">
                   <h3 className="text-xl font-bold text-slate-900 dark:text-white">Oliskey Lee</h3>
-                  <p className="text-slate-500 dark:text-slate-400">Co-Founder & Lead Architect</p>
+                  <p className="text-slate-500 dark:text-slate-400">Founder, Oliskey</p>
                 </div>
               </div>
             </div>
@@ -194,7 +156,7 @@ const Home: React.FC = () => {
                 <Layers size={24} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight uppercase text-sm text-blue-600 dark:text-blue-400">System</h3>
-              <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-2">Reliable, scalable platforms engineered for real-world use.</p>
+              <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-2">Build dependable systems that fit real work, scale with demand and keep important operations organised.</p>
             </div>
 
             <div className="group bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl p-6 sm:p-10 shadow-sm transition-all duration-500 border border-transparent hover:border-gray-200 dark:hover:border-slate-800">
@@ -202,7 +164,7 @@ const Home: React.FC = () => {
                 <Users size={24} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight uppercase text-sm text-blue-600 dark:text-blue-400">Culture</h3>
-              <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-2">Designs and communities that outlast trends.</p>
+              <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-2">Design for people first: make everyday tasks easier to understand, learn and complete.</p>
             </div>
 
             <div className="group bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl p-6 sm:p-10 shadow-sm transition-all duration-500 border border-transparent hover:border-gray-200 dark:hover:border-slate-800">
@@ -210,7 +172,7 @@ const Home: React.FC = () => {
                 <Zap size={24} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight uppercase text-sm text-blue-600 dark:text-blue-400">Creativity</h3>
-              <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-2">Endless innovation that moves people and product forward.</p>
+              <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-2">Use automation and AI where they solve a real problem—not just because the technology is new.</p>
             </div>
 
           </div>
@@ -221,9 +183,9 @@ const Home: React.FC = () => {
       <section id="products" className="py-16 sm:py-24 bg-gray-50/50 dark:bg-slate-900/30 relative z-10 scroll-mt-20 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-4 sm:mb-6">Our Products</h2>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-4 sm:mb-6">Software for real-world work</h2>
             <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400">
-              A diverse family of brands working together to innovate, educate, and build the future.
+              Ready-made products for known problems, plus custom software and automation for the way your business works.
             </p>
             <div className="mt-6 flex justify-center">
               <Link to="/products" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-200/80 bg-white/70 px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-blue-200 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100 dark:hover:border-blue-800">
@@ -308,69 +270,61 @@ const Home: React.FC = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
             <div className="flex flex-col items-start">
               <ShieldCheck className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Built for reliability</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Production-ready systems that handle growth without compromising performance.</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Less repetitive work</h3>
+              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Automate routine steps and reduce the amount of work your team has to repeat manually.</p>
             </div>
             <div className="flex flex-col items-start">
               <Smile className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Human-centered</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Product decisions driven by real human needs, not just technical capabilities.</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Designed around people</h3>
+              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Clear, responsive experiences that help staff and customers get things done without unnecessary complexity.</p>
             </div>
             <div className="flex flex-col items-start">
               <PenTool className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Creative-first</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Delivering elegant solutions where form meets function seamlessly.</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">AI with a clear purpose</h3>
+              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Apply AI to useful tasks such as drafting, sorting, summarising and assisting decisions when it genuinely helps.</p>
             </div>
             <div className="flex flex-col items-start">
               <LayoutGrid className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Modular architecture</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Our products plug into the Oliskey platform for a unified experience.</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Connected workflows</h3>
+              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Bring scattered information, tools and handoffs into a more consistent way of working.</p>
             </div>
             <div className="flex flex-col items-start">
               <Building className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Enterprise-ready</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Simple onboarding for schools and businesses with complex needs.</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Built to grow with you</h3>
+              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Start with the problem that matters most, then expand the system as your needs change.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Investor / Partners Hero */}
-      <section className="py-16 sm:py-24 bg-slate-900 dark:bg-black text-white relative overflow-hidden transition-colors duration-300">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/20 blur-[120px] rounded-full pointer-events-none"></div>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">Invest in Oliskey</h2>
-          <p className="text-base sm:text-lg text-slate-400 mb-8 sm:mb-10 leading-relaxed">
-            Oliskey is building a platform ecosystem across SaaS, AI, EdTech, media, and venture. We’re launching MVPs, onboarding pilot customers, and preparing for growth. Join us as we scale systems and shape long-lasting culture.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Link
-              to="/investors"
-              className="px-8 py-4 bg-white text-slate-900 rounded-full font-bold hover:bg-blue-50 transition-colors"
-            >
-              Investor Info
-            </Link>
+      {/* Conversion-focused invitation */}
+      <section className="relative isolate overflow-hidden bg-slate-950 px-4 py-16 text-white transition-colors duration-300 dark:bg-black sm:px-6 sm:py-24">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-24 -z-10 h-96 w-96 rounded-full bg-blue-600/25 blur-[100px]" />
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-300">Have a workflow in mind?</p>
+          <h2 className="mt-4 text-3xl font-bold leading-tight tracking-tight sm:text-5xl">Your business is unique. Your software can be, too.</h2>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg sm:leading-8">Tell us what takes too much time, creates confusion or keeps your team stuck doing things manually. We’ll explore whether a product, an automation or a custom-built system is the right fit.</p>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link to="/contact" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 font-semibold text-slate-950 transition hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">Tell us what you need <ArrowRight size={18} /></Link>
+            <Link to="/products" className="liquid-glass-control inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 px-7 py-3.5 font-semibold text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">Explore ready-made products <ChevronRight size={18} /></Link>
           </div>
         </div>
       </section>
 
-      {/* Social Proof Placeholder */}
-      <section className="py-16 bg-white dark:bg-slate-950 border-b border-gray-100 dark:border-slate-800 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-8">Trusted by</p>
-          <div className="flex flex-wrap justify-center gap-8 sm:gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-            <div className="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
-            <div className="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
-            <div className="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
-            <div className="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
-            <div className="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
+      {/* Trust through transparency, not invented testimonials */}
+      <section className="border-b border-slate-100 bg-white py-16 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">A clear way forward</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-4xl">Start with the problem. Build what helps.</h2>
+            <p className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">No unnecessary complexity and no technology for technology’s sake. We focus on what your team needs to do better.</p>
           </div>
-
-          <div className="mt-12 sm:mt-16 max-w-2xl mx-auto">
-            <blockquote className="text-lg sm:text-xl font-medium text-slate-800 dark:text-slate-200 italic px-4">
-              "Oliskey transformed our workflow. The reliability and design are unmatched."
-            </blockquote>
-            <cite className="block mt-4 text-sm font-semibold text-slate-500 dark:text-slate-400 not-italic">— Early Pilot Partner</cite>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {[
+              { number: "01", title: "Understand", body: "We learn how the work happens today, where it gets stuck and what a better outcome looks like." },
+              { number: "02", title: "Design and build", body: "We choose the right path: a ready-made product, a focused automation or custom software." },
+              { number: "03", title: "Improve over time", body: "We keep usability, reliability, security and the people using the system at the centre." },
+            ].map((step) => <article key={step.number} className="rounded-3xl border border-slate-200/80 bg-slate-50/70 p-6 dark:border-slate-800 dark:bg-slate-900/60 sm:p-8"><p className="text-sm font-bold tracking-widest text-blue-700 dark:text-blue-300">{step.number}</p><h3 className="mt-4 text-xl font-bold text-slate-950 dark:text-white">{step.title}</h3><p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{step.body}</p></article>)}
           </div>
         </div>
       </section>
@@ -379,9 +333,9 @@ const Home: React.FC = () => {
       <section className="py-16 sm:py-24 bg-blue-50 dark:bg-slate-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-12">
           <div className="md:w-1/2 text-center md:text-left">
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Learn with Oliskey</h2>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Practical ideas for better work</h2>
             <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-              Tutorials, case studies, and product deep dives from our Labs. Subscribe for weekly insights.
+              Useful ideas on business automation, practical software and AI—without the hype. Get updates and examples you can apply to your work.
             </p>
             <Link
               to="/blog"
@@ -392,21 +346,8 @@ const Home: React.FC = () => {
           </div>
           <div className="md:w-1/2 w-full">
             <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm border border-blue-100 dark:border-slate-700 transition-colors duration-300">
-              {/* Visible Announcement for everyone */}
-              <div className="mb-6 bg-blue-50/50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800 flex gap-3 items-start animate-fade-in">
-                <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-full text-blue-600 dark:text-blue-300 shrink-0">
-                  <Bell size={16} />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">Coming Soon: All-in-one School App</p>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1">
-                    We're building the ultimate SaaS platform for schools. Launching <span className="font-semibold text-slate-900 dark:text-white">February 15, 2026</span>. Subscribe below for updates.
-                  </p>
-                </div>
-              </div>
-
-              <h3 className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Subscribe to our newsletter</h3>
-              <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">Get the latest updates directly to your inbox.</p>
+              <h3 className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Get the Oliskey field notes</h3>
+              <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">Occasional practical insights on software, workflows and useful AI. Unsubscribe any time.</p>
               {subscribeStatus === 'success' ? (
                 <div className="flex flex-col gap-3 p-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-lg animate-fade-in">
                   <div className="flex items-center text-green-700 dark:text-green-400 font-bold">
@@ -430,7 +371,7 @@ const Home: React.FC = () => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
+                    placeholder="Your email address"
                     className="flex-1 w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-900 focus:border-transparent transition-all"
                   />
                   <button
@@ -438,7 +379,7 @@ const Home: React.FC = () => {
                     disabled={subscribing}
                     className="w-full sm:w-auto px-6 py-3 bg-slate-900 dark:bg-blue-600 text-white rounded-lg font-medium hover:bg-slate-800 dark:hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center shadow-lg shadow-slate-900/10 dark:shadow-blue-500/20 transition-all"
                   >
-                    {subscribing ? <Loader2 size={18} className="animate-spin" /> : 'Subscribe'}
+                    {subscribing ? <Loader2 size={18} className="animate-spin" /> : 'Send me useful ideas'}
                   </button>
                 </form>
               )}
@@ -453,13 +394,22 @@ const Home: React.FC = () => {
       {/* FAQ */}
       <section className="py-16 sm:py-24 bg-white dark:bg-slate-950 transition-colors duration-300">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-12 text-center">Frequently Asked Questions</h2>
-          <div className="space-y-8">
-            {faqs.map((faq, index) => (
-              <div key={index} className="border-b border-gray-100 dark:border-slate-800 pb-8 last:border-0">
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{faq.question}</h3>
-                <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{faq.answer}</p>
-              </div>
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-12 text-center">Questions about working with Oliskey?</h2>
+          <div className="space-y-4">
+            {[
+              { question: 'What does Oliskey build?', answer: 'We build practical software products, business-specific systems, workflow automations and AI-enabled tools. The right solution depends on the problem you want to solve.' },
+              { question: 'Does Oliskey only work with schools?', answer: 'No. School software is one of our products, and Oliskey Fleet is another. Our wider focus is helping organisations simplify work through useful software and automation.' },
+              { question: 'Can you build something for my business?', answer: 'Tell us about your current process, the repetitive work you want to reduce and the outcome you need. We will discuss the problem and whether a ready-made product, automation or custom software is the best fit.' },
+              { question: 'Do I need to know exactly what technology I need?', answer: 'No. Start by explaining what is taking too much time or causing problems. We can help clarify the workflow before discussing the technology.' },
+              { question: 'Can I explore existing products first?', answer: 'Yes. Browse our products to see what is available and read about each product before opening its application.' },
+            ].map((faq) => (
+              <details key={faq.question} className="group rounded-2xl border border-slate-200/80 bg-slate-50/70 p-5 open:bg-white dark:border-slate-800 dark:bg-slate-900/60 dark:open:bg-slate-900 sm:p-6">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-semibold text-slate-900 marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-white sm:text-lg">
+                  {faq.question}
+                  <ChevronRight size={18} className="shrink-0 text-slate-400 transition-transform group-open:rotate-90" />
+                </summary>
+                <p className="mt-4 max-w-3xl pr-2 text-sm leading-6 text-slate-600 dark:text-slate-300 sm:text-base">{faq.answer}</p>
+              </details>
             ))}
           </div>
         </div>

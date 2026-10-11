@@ -28,8 +28,8 @@ export const PUBLIC_ROUTES: PublicRoute[] = [
     {
         path: '/',
         label: 'Home',
-        title: 'Oliskey — Software Products for Education, Fleet & AI',
-        description: 'Discover Oliskey software products for school management, tricycle fleet operations, education and AI. Explore our platforms, visit each product, and see how Oliskey makes complex work simpler.',
+        title: 'Oliskey — Business Software, Automation & AI',
+        description: 'Oliskey builds practical business software, workflow automation and AI-powered tools that help organisations reduce repetitive work, simplify operations and grow with greater control. Explore products or discuss a custom solution.',
         priority: 1,
     },
     {
@@ -139,12 +139,13 @@ export const PUBLIC_ROUTES: PublicRoute[] = [
     {
         path: '/products',
         label: 'Products',
-        title: 'Oliskey Products — School Management and Fleet Operations Software',
-        description: 'Explore Oliskey products: school management software for schools and fleet operations software for tricycle operators. Visit each product or explore its features.',
+        title: 'Oliskey Products — Business Software, Automation & AI',
+        description: 'Explore Oliskey software products for education, fleet operations and business workflows. Start with a ready-made product or talk to us about software and automation designed around your organisation.',
         priority: 0.95,
     },
-    { path: '/about', label: 'About', title: 'About Oliskey', description: 'Oliskey builds practical software for schools and learners, starting with the Oliskey School App.', priority: 0.5 },
-    { path: '/contact', label: 'Contact', title: 'Contact Oliskey', description: 'Talk to the Oliskey team about the School App, onboarding your school, or partnership.', priority: 0.5 },
+    { path: '/services', label: 'Services', title: 'Business Software Development & Workflow Automation — Oliskey', description: 'Explore Oliskey services for custom business software, workflow automation, system integration and practical AI tools. Start with the operational problem you need to solve.', priority: 0.8 },
+    { path: '/about', label: 'About Oliskey', title: 'Our Story — Oliskey Business Software & Automation', description: 'Oliskey exists to make work easier through useful software, automation and AI. Learn about the thinking behind our products and our people-first approach to solving real operational problems.', priority: 0.5 },
+    { path: '/contact', label: 'Contact', title: 'Discuss Your Business Software or Automation Project — Oliskey', description: 'Tell Oliskey what is slowing your team down. Discuss a ready-made product, business workflow automation, AI assistance or custom software for your organisation.', priority: 0.6 },
     { path: '/pricing', label: 'Pricing', title: 'Pricing — Oliskey', description: 'Oliskey plans and pricing.', priority: 0.6 },
 ];
 

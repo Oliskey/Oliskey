@@ -43,11 +43,9 @@ const Navbar: React.FC = () => {
   }, [isOpen]);
 
   const navLinks = [
-    { name: 'School App', path: '/school-management' },
-    { name: 'Features', path: '/features' },
     { name: 'Products', path: '/products' },
-    { name: 'About', path: '/about' },
-    { name: 'Investors', path: '/investors' },
+    { name: 'Services', path: '/services' },
+    { name: 'Our Story', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ];
 

@@ -9,7 +9,7 @@ const products = [
     description: 'Help schools bring student records, attendance, fees, exams, report cards, communication and learning tools together in one workspace.',
     url: 'https://app.oliskey.com/',
     detailsUrl: '/school-management',
-    action: 'Explore school platform',
+    action: 'See what it does',
     icon: GraduationCap,
     image: '/school-dashboard.png',
     tint: 'from-blue-600 to-indigo-700',
@@ -20,8 +20,8 @@ const products = [
     eyebrow: 'Fleet · Transport operations',
     description: 'Give tricycle operators a clearer way to manage vehicles, staff, drivers, collections, remittances, maintenance and finance records.',
     url: 'https://tricycles.oliskey.com/',
-    detailsUrl: 'https://tricycles.oliskey.com/',
-    action: 'Explore Oliskey Fleet',
+    detailsUrl: '/fleet-operations',
+    action: 'See what it does',
     icon: Gauge,
     image: '',
     tint: 'from-violet-600 to-indigo-700',
@@ -45,7 +45,7 @@ const Products: React.FC = () => (
           <div className={`relative min-h-48 overflow-hidden bg-gradient-to-br ${tint} p-6 text-white sm:min-h-56 sm:p-8`}>
             {image ? <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-25 mix-blend-screen" /> : <div aria-hidden className="absolute -right-10 -top-10 h-64 w-64 rounded-full border-[36px] border-white/10" />}
             <div className="relative flex items-start justify-between gap-4">
-              <div><p className="text-sm font-semibold text-white/75">{eyebrow}</p><h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{name}</h2></div>
+              <div><p className="text-sm font-semibold text-white/75">{eyebrow}</p><Link to={detailsUrl} className="mt-3 inline-block rounded-sm text-3xl font-bold tracking-tight transition hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:text-4xl">{name}</Link></div>
               <span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md"><Icon size={25} /></span>
             </div>
             <span className="relative mt-8 inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/10 px-3 py-1.5 text-xs font-medium text-white/90"><ShieldCheck size={14} /> A product by Oliskey</span>
@@ -54,8 +54,8 @@ const Products: React.FC = () => (
             <p className="leading-7 text-slate-600 dark:text-slate-300 sm:text-base">{description}</p>
             <ul className="mt-5 space-y-3">{points.map(point => <li key={point} className="flex items-start gap-2.5 text-sm leading-6 text-slate-700 dark:text-slate-200"><CheckCircle2 size={18} className="mt-0.5 shrink-0 text-blue-600 dark:text-blue-400" />{point}</li>)}</ul>
             <div className="mt-7 flex flex-col gap-3 border-t border-slate-100 pt-5 dark:border-slate-800 min-[430px]:flex-row">
-              <a href={url} target="_blank" rel="noreferrer" className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[.98]">{action}<ArrowRight size={17} /></a>
-              {detailsUrl.startsWith('/') ? <Link to={detailsUrl} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800">Product details</Link> : <a href={detailsUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800">Open website <ExternalLink size={15} /></a>}
+              <Link to={detailsUrl} className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[.98]">{action}<ArrowRight size={17} /></Link>
+              <a href={url} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800">Open live app <ExternalLink size={15} /></a>
             </div>
           </div>
         </article>

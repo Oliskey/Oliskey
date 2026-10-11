@@ -1,6 +1,6 @@
 import React, { useEffect, Suspense, lazy, useState } from 'react';
 // @ts-ignore
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useNavigate, useNavigationType } from 'react-router-dom';
 import { useSeo } from './seo/useSeo';
 import SchoolFeaturePage, { SCHOOL_PAGE_PATHS } from './pages/school/SchoolFeaturePage';
 import Navbar from './components/Navbar';
@@ -45,9 +45,14 @@ const Settings = lazy(() => import('./pages/Settings'));
 // Handle legacy HashRouter links (/#/about) and keep <head> in sync.
 // Ordinary route changes intentionally preserve the visitor's scroll position.
 // Path routing gives each public page its own URL, title and canonical for SEO.
+// Keep scroll positions per history entry so Back/Forward restores where the visitor left off.
+const routeScrollPositions = new Map<string, number>();
+
 const RouteListener = () => {
-  const { pathname, hash } = useLocation();
+  const location = useLocation();
+  const { pathname, hash, key } = location;
   const navigate = useNavigate();
+  const navigationType = useNavigationType();
 
   // Keep legacy HashRouter links working (for example, /#/about -> /about).
   useEffect(() => {
@@ -56,12 +61,32 @@ const RouteListener = () => {
     }
   }, [pathname, hash, navigate]);
 
-  // Every destination page starts at the top, including browser back/forward navigation.
+  // Remember the current entry's position, including while the user scrolls.
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-  }, [pathname]);
+    const saveScrollPosition = () => {
+      routeScrollPositions.set(key, window.scrollY);
+    };
 
-  // Let the route listener, rather than browser history restoration, control page position.
+    window.addEventListener('scroll', saveScrollPosition, { passive: true });
+    saveScrollPosition();
+
+    return () => {
+      saveScrollPosition();
+      window.removeEventListener('scroll', saveScrollPosition);
+    };
+  }, [key]);
+
+  // New navigation starts at the top; browser Back/Forward restores the saved entry.
+  useEffect(() => {
+    const targetY = navigationType === 'POP' ? routeScrollPositions.get(key) ?? 0 : 0;
+    const frame = window.requestAnimationFrame(() => {
+      window.scrollTo({ top: targetY, left: 0, behavior: 'auto' });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [key, navigationType]);
+
+  // Use our history-entry positions instead of browser-dependent automatic restoration.
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
       const previousRestoration = window.history.scrollRestoration;
@@ -78,7 +103,7 @@ const RouteListener = () => {
 };
 
 // Route content is keyed by pathname so each destination gets a restrained entrance transition.
-// RouteListener resets scroll position for every destination.
+// RouteListener starts new visits at the top and restores saved positions for Back/Forward.
 const RouteContent: React.FC = () => {
   const { pathname } = useLocation();
   return (

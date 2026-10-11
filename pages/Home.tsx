@@ -120,19 +120,19 @@ const Home: React.FC = () => {
               href="/products"
               className="w-full xs:w-auto px-6 py-3.5 sm:px-8 sm:py-4 rounded-full bg-blue-600 text-white font-medium text-sm sm:text-base hover:bg-blue-700 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:scale-105 flex items-center justify-center"
             >
-              Get Started <ArrowRight size={18} className="ml-2" />
+              Explore Products <ArrowRight size={18} className="ml-2" />
             </a>
             <a
               href="https://app.oliskey.com/demo"
               className="liquid-glass-control w-full xs:w-auto px-6 py-3.5 sm:px-8 sm:py-4 rounded-full border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium text-sm sm:text-base transition-all duration-300 flex items-center justify-center"
             >
-              Try Demo
+              School App Demo
             </a>
             <a
               href="https://app.oliskey.com/"
               className="w-full xs:w-auto group flex items-center justify-center px-6 py-3.5 sm:px-8 sm:py-4 rounded-full text-slate-900 dark:text-white font-medium text-sm sm:text-base hover:bg-gray-50 dark:hover:bg-slate-800 transition-all duration-300 border border-transparent hover:border-gray-200 dark:hover:border-slate-700"
             >
-              Open App <ChevronRight size={18} className="ml-1 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
+              Open School App <ChevronRight size={18} className="ml-1 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
             </a>
           </div>
           <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">

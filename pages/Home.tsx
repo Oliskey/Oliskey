@@ -179,88 +179,17 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Products Overview (Ecosystem) */}
-      <section id="products" className="py-16 sm:py-24 bg-gray-50/50 dark:bg-slate-900/30 relative z-10 scroll-mt-20 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-4 sm:mb-6">Software for real-world work</h2>
-            <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400">
-              Ready-made products for known problems, plus custom software and automation for the way your business works.
-            </p>
-            <div className="mt-6 flex justify-center">
-              <Link to="/products" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-200/80 bg-white/70 px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-blue-200 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100 dark:hover:border-blue-800">
-                Explore all products <ArrowUpRight size={16} />
-              </Link>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {ecosystem.map((item) => (
-              <div
-                key={item.id}
-                className={`relative flex flex-col p-6 sm:p-8 rounded-2xl bg-white dark:bg-slate-900 border transition-all duration-300 ${item.status === 'Live'
-                  ? 'border-blue-100 dark:border-blue-900 ring-4 ring-blue-50/50 dark:ring-blue-900/20 shadow-xl sm:scale-[1.02] z-10'
-                  : 'border-gray-100 dark:border-slate-800 hover:border-gray-200 dark:hover:border-slate-700 hover:shadow-lg'
-                  }`}
-              >
-                <div className="flex justify-between items-start mb-6">
-                  {/* Icon */}
-                  <div className={`w-12 h-12 rounded-xl ${item.color} text-white flex items-center justify-center shadow-md transform -rotate-3 transition-transform group-hover:rotate-0`}>
-                    {item.icon}
-                  </div>
-
-                  {/* Badge */}
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase ${item.status === 'Live'
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                    : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400'
-                    }`}>
-                    {item.status}
-                  </span>
-                </div>
-
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{item.title}</h3>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{item.description}</p>
-                </div>
-
-                <div className="mt-auto">
-                  {item.status === 'Live' && item.link ? (
-                    <Link
-                      to={item.title.toLowerCase().includes('school') ? '/school-management' : '/products'}
-                      className="w-full py-3 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium text-center text-sm hover:bg-blue-600 dark:hover:bg-blue-300 transition-all shadow-lg shadow-slate-900/10 dark:shadow-white/5 flex items-center justify-center gap-2 group"
-                    >
-                      Learn more <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  ) : (
-                    <div className="w-full py-3 rounded-lg bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-slate-500 font-medium text-center text-sm border border-gray-100 dark:border-slate-700 select-none">
-                      Coming Soon
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-            {/* Featured fleet product: intentionally explicit so it cannot disappear when the CMS catalogue is incomplete. */}
-            <article className="group relative flex min-w-0 flex-col overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 sm:p-8">
-              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-violet-500 via-blue-500 to-cyan-400" aria-hidden="true" />
-              <div className="mb-6 flex items-start justify-between gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-sm transition-transform duration-300 group-hover:scale-105">
-                  <Truck size={24} strokeWidth={1.8} aria-hidden="true" />
-                </div>
-                <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-violet-700 dark:border-violet-900 dark:bg-violet-950/50 dark:text-violet-300">Fleet product</span>
-              </div>
-              <div className="mb-6">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-violet-700 dark:text-violet-300">Transport &amp; operations</p>
-                <Link to="/fleet-operations" className="mb-2 inline-block text-xl font-bold text-slate-900 transition hover:text-violet-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 dark:text-white dark:hover:text-violet-300">Oliskey Fleet</Link>
-                <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">Manage tricycles, drivers, staff, daily collections, remittances, maintenance schedules and partner balances in one workspace.</p>
-              </div>
-              <div className="mt-auto">
-                <Link to="/fleet-operations" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 active:scale-[.99] dark:bg-white dark:text-slate-900 dark:hover:bg-violet-100">
-                  Learn about Oliskey Fleet <ArrowRight size={15} aria-hidden="true" />
-                </Link>
-                <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">View product details before opening the app</p>
-              </div>
-            </article>
-          </div>
+      {/* Product discovery: keep the homepage concise and send visitors to the dedicated product hub. */}
+      <section id="products" className="relative z-10 scroll-mt-20 bg-slate-50/70 py-14 transition-colors duration-300 dark:bg-slate-900/30 sm:py-20">
+        <div className="mx-auto max-w-4xl px-5 text-center sm:px-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">The Oliskey product ecosystem</p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-4xl">Purpose-built software. One connected ecosystem.</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
+            Explore our two active products: Oliskey Education for schools and Oliskey Fleet for transport operations.
+          </p>
+          <Link to="/products" className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:bg-white dark:text-slate-950 dark:hover:bg-blue-100">
+            Explore all products <ArrowUpRight size={17} aria-hidden="true" />
+          </Link>
         </div>
       </section>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, User, LogOut, LayoutDashboard, ChevronRight, ArrowRight, Sun, Moon, ShieldAlert } from 'lucide-react';
+import { Search, User, LogOut, LayoutDashboard, ChevronRight, ArrowRight, Sun, Moon, ShieldAlert, PackageSearch } from 'lucide-react';
 // @ts-ignore
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import SearchModal from './SearchModal';
@@ -45,7 +45,7 @@ const Navbar: React.FC = () => {
   const navLinks = [
     { name: 'School App', path: '/school-management' },
     { name: 'Features', path: '/features' },
-    { name: 'Products', path: '/#products' },
+    { name: 'Products', path: '/products' },
     { name: 'About', path: '/about' },
     { name: 'Investors', path: '/investors' },
     { name: 'Contact', path: '/contact' },
@@ -53,12 +53,7 @@ const Navbar: React.FC = () => {
 
   const handleProductClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (location.pathname !== '/') {
-      navigate('/', { state: { scrollToProducts: true } });
-    } else {
-      const element = document.getElementById('products');
-      if (element) element.scrollIntoView({ behavior: 'smooth' });
-    }
+    navigate('/products');
     setIsOpen(false);
   };
 
@@ -135,7 +130,7 @@ const Navbar: React.FC = () => {
                 link.name === 'Products' ? (
                   <a
                     key={link.name}
-                    href="#products"
+                    href="/products"
                     onClick={handleProductClick}
                     className="text-sm font-medium tracking-wide text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
                   >
@@ -164,6 +159,16 @@ const Navbar: React.FC = () => {
                   title="Admin Dashboard"
                 >
                   <ShieldAlert size={20} />
+                </Link>
+              )}
+              {user && isAdmin && (
+                <Link
+                  to="/admin/products"
+                  className="p-2 rounded-full text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                  aria-label="Products and SEO"
+                  title="Products and SEO"
+                >
+                  <PackageSearch size={20} />
                 </Link>
               )}
 
@@ -340,6 +345,14 @@ const Navbar: React.FC = () => {
                       className="flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-base tracking-wide active:scale-95 transition-all"
                     >
                       <ShieldAlert size={20} className="text-blue-600" /> Admin
+                    </Link>
+                  )}
+                  {isAdmin && (
+                    <Link
+                      to="/admin/products"
+                      className="flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold text-base tracking-wide active:scale-95 transition-all"
+                    >
+                      <PackageSearch size={20} /> Products &amp; SEO
                     </Link>
                   )}
                   <Link

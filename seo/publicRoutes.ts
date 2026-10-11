@@ -127,6 +127,13 @@ export const PUBLIC_ROUTES: PublicRoute[] = [
         product: true,
         priority: 0.9,
     },
+    {
+        path: '/products',
+        label: 'Products',
+        title: 'Oliskey Products — School Management and Fleet Operations Software',
+        description: 'Explore Oliskey products: school management software for schools and fleet operations software for tricycle operators. Visit each product or explore its features.',
+        priority: 0.95,
+    },
     { path: '/about', label: 'About', title: 'About Oliskey', description: 'Oliskey builds practical software for schools and learners, starting with the Oliskey School App.', priority: 0.5 },
     { path: '/contact', label: 'Contact', title: 'Contact Oliskey', description: 'Talk to the Oliskey team about the School App, onboarding your school, or partnership.', priority: 0.5 },
     { path: '/pricing', label: 'Pricing', title: 'Pricing — Oliskey', description: 'Oliskey plans and pricing.', priority: 0.6 },

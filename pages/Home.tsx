@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Layers, Users, Zap, ChevronRight, ExternalLink, ShieldCheck, Smile, PenTool, LayoutGrid, Building, Loader2, Check, Bell, User, Truck, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, Layers, Users, Zap, ChevronRight, ShieldCheck, Smile, PenTool, LayoutGrid, Building, Loader2, Check, Truck, ArrowUpRight } from 'lucide-react';
 // @ts-ignore
 import { Link, useLocation } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import Logo from '../components/Logo';
 import OptimizedImage from '../components/OptimizedImage';
 import { supabase } from '../supabase';
-import { useTheme } from '../context/ThemeContext';
 
 const Home: React.FC = () => {
   const location = useLocation();
-  const { ecosystem, faqs } = useData(); // Use Data Context
+  const { ecosystem } = useData();
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState(''); // Honeypot
   const [subscribing, setSubscribing] = useState(false);
   const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const { theme } = useTheme();
 
   useEffect(() => {
     if (location.state && (location.state as any).scrollToProducts) {
@@ -70,9 +67,6 @@ const Home: React.FC = () => {
       setSubscribing(false);
     }
   };
-
-  // Logo variant based on theme
-  const logoVariant = theme === 'dark' ? 'light' : 'dark';
 
   return (
     <div className="flex flex-col w-full bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 font-sans selection:bg-blue-100 dark:selection:bg-blue-900 selection:text-blue-900 dark:selection:text-blue-100 overflow-hidden transition-colors duration-300">
@@ -401,12 +395,21 @@ const Home: React.FC = () => {
       <section className="py-16 sm:py-24 bg-white dark:bg-slate-950 transition-colors duration-300">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-12 text-center">Questions about working with Oliskey?</h2>
-          <div className="space-y-8">
-            {faqs.map((faq, index) => (
-              <div key={index} className="border-b border-gray-100 dark:border-slate-800 pb-8 last:border-0">
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{faq.question}</h3>
-                <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{faq.answer}</p>
-              </div>
+          <div className="space-y-4">
+            {[
+              { question: 'What does Oliskey build?', answer: 'We build practical software products, business-specific systems, workflow automations and AI-enabled tools. The right solution depends on the problem you want to solve.' },
+              { question: 'Does Oliskey only work with schools?', answer: 'No. School software is one of our products, and Oliskey Fleet is another. Our wider focus is helping organisations simplify work through useful software and automation.' },
+              { question: 'Can you build something for my business?', answer: 'Tell us about your current process, the repetitive work you want to reduce and the outcome you need. We will discuss the problem and whether a ready-made product, automation or custom software is the best fit.' },
+              { question: 'Do I need to know exactly what technology I need?', answer: 'No. Start by explaining what is taking too much time or causing problems. We can help clarify the workflow before discussing the technology.' },
+              { question: 'Can I explore existing products first?', answer: 'Yes. Browse our products to see what is available and read about each product before opening its application.' },
+            ].map((faq) => (
+              <details key={faq.question} className="group rounded-2xl border border-slate-200/80 bg-slate-50/70 p-5 open:bg-white dark:border-slate-800 dark:bg-slate-900/60 dark:open:bg-slate-900 sm:p-6">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-semibold text-slate-900 marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-white sm:text-lg">
+                  {faq.question}
+                  <ChevronRight size={18} className="shrink-0 text-slate-400 transition-transform group-open:rotate-90" />
+                </summary>
+                <p className="mt-4 max-w-3xl pr-2 text-sm leading-6 text-slate-600 dark:text-slate-300 sm:text-base">{faq.answer}</p>
+              </details>
             ))}
           </div>
         </div>

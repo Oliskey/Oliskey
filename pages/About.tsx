@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Target, Users, Award, User } from 'lucide-react';
+import React from 'react';
+import { Target, Users, Award } from 'lucide-react';
 import OptimizedImage from '../components/OptimizedImage';
 
 const About: React.FC = () => {
@@ -8,9 +8,9 @@ const About: React.FC = () => {
     <div className="pt-24 pb-24 bg-white dark:bg-slate-950 transition-colors duration-300">
       {/* Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 text-center">
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Built by engineers, designers, and storytellers.</h1>
+        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">We build technology around real human problems.</h1>
         <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-          Oliskey’s leadership combines product engineering, academic partnerships, and creative media experience.
+          Oliskey builds practical software, workflow automation and AI-enabled tools to help organisations make everyday work simpler and more reliable.
         </p>
       </div>
 
@@ -28,21 +28,21 @@ const About: React.FC = () => {
           <div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Our Mission</h2>
             <p className="text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
-              Oliskey is a global infrastructure brand powering products that scale. We combine rigor and imagination through our S.C.C framework — System, Culture, Creativity — to build platforms, education tools, AI services, and media that endure.
+              Oliskey began with a simple belief: technology should make difficult work easier for the people doing it. We build useful software products and business systems by combining strong engineering, thoughtful design and a clear understanding of real workflows.
             </p>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-              Whether it's a small business needing a digital presence or a student wanting to learn code, we provide the tools and expertise to make it happen. We believe in reliability, human-centered design, and endless innovation.
+              The idea grew from personal experience with how challenging education can feel and from seeing, while teaching, how much time schools lose to repetitive administration. We also saw how much parents need clear visibility into progress. Those experiences shaped our approach: solve a real problem first, make the system understandable, and use automation or AI only where it creates practical value. Today, that approach extends beyond education to businesses with workflows that can be made clearer, faster and easier to manage.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Leadership / Co-Founder Section */}
+      {/* Founder Section */}
       <section className="bg-white dark:bg-slate-950 py-16 border-t border-gray-100 dark:border-slate-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Leadership</h2>
-            <p className="text-slate-500 dark:text-slate-400 mt-2">Visionaries driving the future of infrastructure.</p>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">The person behind the mission</h2>
+            <p className="text-slate-500 dark:text-slate-400 mt-2">Building practical technology, one real problem at a time.</p>
           </div>
 
           <div className="flex justify-center">
@@ -62,9 +62,9 @@ const About: React.FC = () => {
                 {/* Text Content Overlay */}
                 <div className="absolute bottom-0 left-0 right-0 p-8 text-white z-20">
                   <h3 className="text-2xl font-bold mb-1">Oliskey Lee</h3>
-                  <p className="text-blue-400 font-bold tracking-wide uppercase text-sm mb-3">Co-Founder</p>
+                  <p className="text-blue-400 font-bold tracking-wide uppercase text-sm mb-3">Founder</p>
                   <p className="text-slate-200 text-sm leading-relaxed opacity-90">
-                    Architecting the systems and culture that drive our global vision.
+                    Turning everyday frustrations into software, automation and AI tools that people can actually use.
                   </p>
                 </div>
               </div>
@@ -82,21 +82,21 @@ const About: React.FC = () => {
                 <Target size={32} />
               </div>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">System</h3>
-              <p className="text-slate-600 dark:text-slate-400">Reliable, scalable platforms engineered for real-world use.</p>
+              <p className="text-slate-600 dark:text-slate-400">Build dependable systems that fit real workflows and grow with changing needs.</p>
             </div>
             <div className="text-center p-6">
               <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-primary-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Users size={32} />
               </div>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">Culture</h3>
-              <p className="text-slate-600 dark:text-slate-400">Designs and communities that outlast trends.</p>
+              <p className="text-slate-600 dark:text-slate-400">Create clear, accessible experiences that respect people’s time and attention.</p>
             </div>
             <div className="text-center p-6">
               <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-primary-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Award size={32} />
               </div>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">Creativity</h3>
-              <p className="text-slate-600 dark:text-slate-400">Endless innovation that moves people and product forward.</p>
+              <p className="text-slate-600 dark:text-slate-400">Explore new technology with purpose, and measure it by the problems it helps solve.</p>
             </div>
           </div>
         </div>

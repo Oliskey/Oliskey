@@ -42,20 +42,18 @@ const CareerRoadmap = lazy(() => import('./pages/CareerRoadmap'));
 const LearningHub = lazy(() => import('./pages/LearningHub'));
 const Settings = lazy(() => import('./pages/Settings'));
 
-// Handle route changes: scroll to top, keep <head> in sync, and migrate
-// legacy HashRouter links (/#/about) to real paths (/about). Path routing is
-// what lets each public page have its own URL, title and canonical for search
-// engines and social previews — with HashRouter the whole site was one URL.
+// Handle legacy HashRouter links (/#/about) and keep <head> in sync.
+// Ordinary route changes intentionally preserve the visitor's scroll position.
+// Path routing gives each public page its own URL, title and canonical for SEO.
 const RouteListener = () => {
   const { pathname, hash } = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Migrate legacy HashRouter URLs without forcing ordinary routes to the top.
     if (pathname === '/' && hash.startsWith('#/')) {
       navigate(hash.slice(1), { replace: true });
-      return;
     }
-    window.scrollTo(0, 0);
   }, [pathname, hash, navigate]);
 
   useSeo(pathname);
@@ -63,45 +61,13 @@ const RouteListener = () => {
   return null;
 };
 
-// Internal component to handle the loading check
-const AppContent: React.FC = () => {
-  const { loading: authLoading } = useAuth();
-  const [showSplash, setShowSplash] = useState(true);
-  const [timedOut, setTimedOut] = useState(false);
-
-  // Fallback timeout: if the auth check hangs, show the app anyway.
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setTimedOut(true);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Every public page renders without the catalogue data (pages that use it
-  // handle their own loading state), so the splash only waits for the auth
-  // check — holding first paint for a Supabase round-trip cost seconds of LCP
-  // on marketing pages.
-  const isAppReady = !authLoading || timedOut;
-
+// Route content is keyed by pathname so each destination gets a restrained entrance transition.
+// Scroll position is deliberately not reset here: visitors keep their place while navigating.
+const RouteContent: React.FC = () => {
+  const { pathname } = useLocation();
   return (
-    <>
-      {/* Splash Screen Overlay - Stays mounted until onComplete triggers (after fade out) */}
-      {showSplash && (
-        <SplashScreen
-          isReady={isAppReady}
-          onComplete={() => setShowSplash(false)}
-        />
-      )}
-
-      {/* Main Application Structure - Rendered immediately so it's ready behind the splash */}
-      <Router>
-        <RouteListener />
-        <div
-          className={`flex flex-col min-h-screen relative bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-300 ${showSplash ? 'h-screen overflow-hidden' : ''}`}
-        >
-          <Navbar />
-          <main className="flex-grow">
+      <main className="flex-grow">
+        <div key={pathname} className="route-content-enter">
             <Suspense fallback={<div className="min-h-screen bg-white dark:bg-slate-950"></div>}>
               <Routes>
                 {/* Public Routes */}
@@ -169,7 +135,50 @@ const AppContent: React.FC = () => {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
-          </main>
+                  </div>
+      </main>
+  );
+};
+
+// Internal component to handle the loading check
+const AppContent: React.FC = () => {
+  const { loading: authLoading } = useAuth();
+  const [showSplash, setShowSplash] = useState(true);
+  const [timedOut, setTimedOut] = useState(false);
+
+  // Fallback timeout: if the auth check hangs, show the app anyway.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTimedOut(true);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Every public page renders without the catalogue data (pages that use it
+  // handle their own loading state), so the splash only waits for the auth
+  // check — holding first paint for a Supabase round-trip cost seconds of LCP
+  // on marketing pages.
+  const isAppReady = !authLoading || timedOut;
+
+  return (
+    <>
+      {/* Splash Screen Overlay - Stays mounted until onComplete triggers (after fade out) */}
+      {showSplash && (
+        <SplashScreen
+          isReady={isAppReady}
+          onComplete={() => setShowSplash(false)}
+        />
+      )}
+
+      {/* Main Application Structure - Rendered immediately so it's ready behind the splash */}
+      <Router>
+        <RouteListener />
+        <div
+          className={`flex flex-col min-h-screen relative bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-300 ${showSplash ? 'h-screen overflow-hidden' : ''}`}
+        >
+          <Navbar />
+          <RouteContent />
           <Footer />
           <ChatBot />
         </div>

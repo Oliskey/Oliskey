@@ -112,12 +112,11 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Brand Manifesto */}
-      <section className="py-12 sm:py-16 bg-white dark:bg-slate-950 relative z-10 transition-colors duration-300">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-lg sm:text-2xl md:text-3xl leading-relaxed text-slate-800 dark:text-slate-200 font-light">
-            <span className="font-semibold text-blue-600 dark:text-blue-400">Oliskey</span> is a global infrastructure brand powering products that scale. We combine rigor and imagination through our S.C.C framework — System, Culture, Creativity — to build platforms, education tools, AI services, and media that endure.
-          </p>
+      {/* What Oliskey stands for */}
+      <section className="relative z-10 bg-white py-14 transition-colors duration-300 dark:bg-slate-950 sm:py-20">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[.8fr_1.2fr] lg:items-end lg:gap-16 lg:px-12">
+          <div><p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">Why Oliskey</p><h2 className="mt-3 text-3xl font-bold leading-tight tracking-tight text-slate-950 dark:text-white sm:text-4xl">Technology should make work feel lighter.</h2></div>
+          <p className="text-lg leading-8 text-slate-600 dark:text-slate-300 sm:text-xl">Every business has work that is harder than it needs to be: repeated data entry, scattered records, missed follow-ups and processes that depend on memory. We turn those everyday frustrations into clearer systems people can actually use.</p>
         </div>
       </section>
 
@@ -137,15 +136,15 @@ const Home: React.FC = () => {
               />
             </div>
             <div className="md:w-7/12 text-center md:text-left">
-              <span className="inline-block py-1 px-3 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-widest mb-4 sm:mb-6">Leadership</span>
-              <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 sm:mb-6">Meet the Creator</h2>
+              <span className="inline-block py-1 px-3 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-widest mb-4 sm:mb-6">The reason we build</span>
+              <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 sm:mb-6">Built from a real problem</h2>
               <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed mb-6 sm:mb-8 italic">
-                "I started Oliskey with a single mission: to bridge the gap between complex engineering and human creativity. We aren't just building software; we are building the infrastructure for the next generation of African innovation."
+                "Growing up, education often felt difficult and boring, and I had to push myself to keep going. Later, while teaching, I saw how much time schools lost to repetitive administration—and how much parents wanted to understand their children’s progress. That showed me how technology could make work and learning easier. Oliskey grew from that idea: build useful software around real human problems, then take the same thinking to businesses beyond education."
               </p>
               <div className="flex items-center justify-center md:justify-start gap-4">
                 <div className="border-l-4 border-blue-600 dark:border-blue-500 pl-4 text-left">
                   <h3 className="text-xl font-bold text-slate-900 dark:text-white">Oliskey Lee</h3>
-                  <p className="text-slate-500 dark:text-slate-400">Co-Founder & Lead Architect</p>
+                  <p className="text-slate-500 dark:text-slate-400">Founder, Oliskey</p>
                 </div>
               </div>
             </div>
@@ -163,7 +162,7 @@ const Home: React.FC = () => {
                 <Layers size={24} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight uppercase text-sm text-blue-600 dark:text-blue-400">System</h3>
-              <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-2">Reliable, scalable platforms engineered for real-world use.</p>
+              <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-2">Build dependable systems that fit real work, scale with demand and keep important operations organised.</p>
             </div>
 
             <div className="group bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl p-6 sm:p-10 shadow-sm transition-all duration-500 border border-transparent hover:border-gray-200 dark:hover:border-slate-800">
@@ -171,7 +170,7 @@ const Home: React.FC = () => {
                 <Users size={24} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight uppercase text-sm text-blue-600 dark:text-blue-400">Culture</h3>
-              <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-2">Designs and communities that outlast trends.</p>
+              <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-2">Design for people first: make everyday tasks easier to understand, learn and complete.</p>
             </div>
 
             <div className="group bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl p-6 sm:p-10 shadow-sm transition-all duration-500 border border-transparent hover:border-gray-200 dark:hover:border-slate-800">
@@ -179,7 +178,7 @@ const Home: React.FC = () => {
                 <Zap size={24} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight uppercase text-sm text-blue-600 dark:text-blue-400">Creativity</h3>
-              <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-2">Endless innovation that moves people and product forward.</p>
+              <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-2">Use automation and AI where they solve a real problem—not just because the technology is new.</p>
             </div>
 
           </div>
@@ -190,9 +189,9 @@ const Home: React.FC = () => {
       <section id="products" className="py-16 sm:py-24 bg-gray-50/50 dark:bg-slate-900/30 relative z-10 scroll-mt-20 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-4 sm:mb-6">Our Products</h2>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-4 sm:mb-6">Software for real-world work</h2>
             <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400">
-              A diverse family of brands working together to innovate, educate, and build the future.
+              Ready-made products for known problems, plus custom software and automation for the way your business works.
             </p>
             <div className="mt-6 flex justify-center">
               <Link to="/products" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-200/80 bg-white/70 px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-blue-200 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100 dark:hover:border-blue-800">
@@ -277,28 +276,28 @@ const Home: React.FC = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
             <div className="flex flex-col items-start">
               <ShieldCheck className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Built for reliability</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Production-ready systems that handle growth without compromising performance.</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Less repetitive work</h3>
+              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Automate routine steps and reduce the amount of work your team has to repeat manually.</p>
             </div>
             <div className="flex flex-col items-start">
               <Smile className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Human-centered</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Product decisions driven by real human needs, not just technical capabilities.</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Designed around people</h3>
+              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Clear, responsive experiences that help staff and customers get things done without unnecessary complexity.</p>
             </div>
             <div className="flex flex-col items-start">
               <PenTool className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Creative-first</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Delivering elegant solutions where form meets function seamlessly.</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">AI with a clear purpose</h3>
+              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Apply AI to useful tasks such as drafting, sorting, summarising and assisting decisions when it genuinely helps.</p>
             </div>
             <div className="flex flex-col items-start">
               <LayoutGrid className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Modular architecture</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Our products plug into the Oliskey platform for a unified experience.</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Connected workflows</h3>
+              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Bring scattered information, tools and handoffs into a more consistent way of working.</p>
             </div>
             <div className="flex flex-col items-start">
               <Building className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Enterprise-ready</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Simple onboarding for schools and businesses with complex needs.</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Built to grow with you</h3>
+              <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base">Start with the problem that matters most, then expand the system as your needs change.</p>
             </div>
           </div>
         </div>

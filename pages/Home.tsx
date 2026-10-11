@@ -303,42 +303,34 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Investor / Partners Hero */}
-      <section className="py-16 sm:py-24 bg-slate-900 dark:bg-black text-white relative overflow-hidden transition-colors duration-300">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/20 blur-[120px] rounded-full pointer-events-none"></div>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">Invest in Oliskey</h2>
-          <p className="text-base sm:text-lg text-slate-400 mb-8 sm:mb-10 leading-relaxed">
-            Oliskey is building a platform ecosystem across SaaS, AI, EdTech, media, and venture. We’re launching MVPs, onboarding pilot customers, and preparing for growth. Join us as we scale systems and shape long-lasting culture.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Link
-              to="/investors"
-              className="px-8 py-4 bg-white text-slate-900 rounded-full font-bold hover:bg-blue-50 transition-colors"
-            >
-              Investor Info
-            </Link>
+      {/* Conversion-focused invitation */}
+      <section className="relative isolate overflow-hidden bg-slate-950 px-4 py-16 text-white transition-colors duration-300 dark:bg-black sm:px-6 sm:py-24">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-24 -z-10 h-96 w-96 rounded-full bg-blue-600/25 blur-[100px]" />
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-300">Have a workflow in mind?</p>
+          <h2 className="mt-4 text-3xl font-bold leading-tight tracking-tight sm:text-5xl">Your business is unique. Your software can be, too.</h2>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg sm:leading-8">Tell us what takes too much time, creates confusion or keeps your team stuck doing things manually. We’ll explore whether a product, an automation or a custom-built system is the right fit.</p>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link to="/contact" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 font-semibold text-slate-950 transition hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">Tell us what you need <ArrowRight size={18} /></Link>
+            <Link to="/products" className="liquid-glass-control inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 px-7 py-3.5 font-semibold text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">Explore ready-made products <ChevronRight size={18} /></Link>
           </div>
         </div>
       </section>
 
-      {/* Social Proof Placeholder */}
-      <section className="py-16 bg-white dark:bg-slate-950 border-b border-gray-100 dark:border-slate-800 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-8">Trusted by</p>
-          <div className="flex flex-wrap justify-center gap-8 sm:gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-            <div className="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
-            <div className="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
-            <div className="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
-            <div className="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
-            <div className="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
+      {/* Trust through transparency, not invented testimonials */}
+      <section className="border-b border-slate-100 bg-white py-16 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">A clear way forward</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-4xl">Start with the problem. Build what helps.</h2>
+            <p className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">No unnecessary complexity and no technology for technology’s sake. We focus on what your team needs to do better.</p>
           </div>
-
-          <div className="mt-12 sm:mt-16 max-w-2xl mx-auto">
-            <blockquote className="text-lg sm:text-xl font-medium text-slate-800 dark:text-slate-200 italic px-4">
-              "Oliskey transformed our workflow. The reliability and design are unmatched."
-            </blockquote>
-            <cite className="block mt-4 text-sm font-semibold text-slate-500 dark:text-slate-400 not-italic">— Early Pilot Partner</cite>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {[
+              { number: "01", title: "Understand", body: "We learn how the work happens today, where it gets stuck and what a better outcome looks like." },
+              { number: "02", title: "Design and build", body: "We choose the right path: a ready-made product, a focused automation or custom software." },
+              { number: "03", title: "Improve over time", body: "We keep usability, reliability, security and the people using the system at the centre." },
+            ].map((step) => <article key={step.number} className="rounded-3xl border border-slate-200/80 bg-slate-50/70 p-6 dark:border-slate-800 dark:bg-slate-900/60 sm:p-8"><p className="text-sm font-bold tracking-widest text-blue-700 dark:text-blue-300">{step.number}</p><h3 className="mt-4 text-xl font-bold text-slate-950 dark:text-white">{step.title}</h3><p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{step.body}</p></article>)}
           </div>
         </div>
       </section>
@@ -347,9 +339,9 @@ const Home: React.FC = () => {
       <section className="py-16 sm:py-24 bg-blue-50 dark:bg-slate-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-12">
           <div className="md:w-1/2 text-center md:text-left">
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Learn with Oliskey</h2>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Practical ideas for better work</h2>
             <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-              Tutorials, case studies, and product deep dives from our Labs. Subscribe for weekly insights.
+              Useful ideas on business automation, practical software and AI—without the hype. Get updates and examples you can apply to your work.
             </p>
             <Link
               to="/blog"
@@ -360,21 +352,8 @@ const Home: React.FC = () => {
           </div>
           <div className="md:w-1/2 w-full">
             <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm border border-blue-100 dark:border-slate-700 transition-colors duration-300">
-              {/* Visible Announcement for everyone */}
-              <div className="mb-6 bg-blue-50/50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800 flex gap-3 items-start animate-fade-in">
-                <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-full text-blue-600 dark:text-blue-300 shrink-0">
-                  <Bell size={16} />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">Coming Soon: All-in-one School App</p>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1">
-                    We're building the ultimate SaaS platform for schools. Launching <span className="font-semibold text-slate-900 dark:text-white">February 15, 2026</span>. Subscribe below for updates.
-                  </p>
-                </div>
-              </div>
-
-              <h3 className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Subscribe to our newsletter</h3>
-              <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">Get the latest updates directly to your inbox.</p>
+              <h3 className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Get the Oliskey field notes</h3>
+              <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">Occasional practical insights on software, workflows and useful AI. Unsubscribe any time.</p>
               {subscribeStatus === 'success' ? (
                 <div className="flex flex-col gap-3 p-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-lg animate-fade-in">
                   <div className="flex items-center text-green-700 dark:text-green-400 font-bold">
@@ -398,7 +377,7 @@ const Home: React.FC = () => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
+                    placeholder="Your email address"
                     className="flex-1 w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-900 focus:border-transparent transition-all"
                   />
                   <button
@@ -406,7 +385,7 @@ const Home: React.FC = () => {
                     disabled={subscribing}
                     className="w-full sm:w-auto px-6 py-3 bg-slate-900 dark:bg-blue-600 text-white rounded-lg font-medium hover:bg-slate-800 dark:hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center shadow-lg shadow-slate-900/10 dark:shadow-blue-500/20 transition-all"
                   >
-                    {subscribing ? <Loader2 size={18} className="animate-spin" /> : 'Subscribe'}
+                    {subscribing ? <Loader2 size={18} className="animate-spin" /> : 'Send me useful ideas'}
                   </button>
                 </form>
               )}
@@ -421,7 +400,7 @@ const Home: React.FC = () => {
       {/* FAQ */}
       <section className="py-16 sm:py-24 bg-white dark:bg-slate-950 transition-colors duration-300">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-12 text-center">Frequently Asked Questions</h2>
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-12 text-center">Questions about working with Oliskey?</h2>
           <div className="space-y-8">
             {faqs.map((faq, index) => (
               <div key={index} className="border-b border-gray-100 dark:border-slate-800 pb-8 last:border-0">

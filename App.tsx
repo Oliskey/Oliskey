@@ -50,12 +50,10 @@ const RouteListener = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Migrate legacy HashRouter URLs without forcing ordinary routes to the top.
     if (pathname === '/' && hash.startsWith('#/')) {
       navigate(hash.slice(1), { replace: true });
-      return;
     }
-    // Preserve the current scroll position during client-side navigation.
-    // Native anchor navigation and explicit user scroll actions remain unaffected.
   }, [pathname, hash, navigate]);
 
   useSeo(pathname);

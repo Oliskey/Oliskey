@@ -97,11 +97,11 @@ const Navbar: React.FC = () => {
     <>
       <nav
         className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-300 ${scrolled || isOpen
-          ? 'bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl border-b border-gray-100 dark:border-slate-800 shadow-sm'
+          ? 'oliskey-liquid-glass bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-white/70 dark:border-slate-700/70 shadow-sm'
           : 'bg-white/0 dark:bg-slate-950/0 backdrop-blur-none border-transparent'
           }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20 items-center">
             {/* Logo */}
             <a

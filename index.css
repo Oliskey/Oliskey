@@ -98,3 +98,28 @@
 @media (prefers-reduced-motion: reduce) {
   .liquid-glass-control { transition: none !important; }
 }
+
+
+/* Responsive interaction polish shared across the Oliskey marketing site. */
+html {
+  scroll-padding-top: 5.5rem;
+  -webkit-text-size-adjust: 100%;
+}
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}
+@media (max-width: 639px) {
+  html { scroll-padding-top: 5rem; }
+  body { min-width: 320px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

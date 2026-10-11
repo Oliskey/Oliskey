@@ -86,7 +86,7 @@ const Home: React.FC = () => {
     <div className="flex flex-col w-full bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 font-sans selection:bg-blue-100 dark:selection:bg-blue-900 selection:text-blue-900 dark:selection:text-blue-100 overflow-hidden transition-colors duration-300">
 
       {/* Hero Section */}
-      <section className="relative pt-28 pb-12 sm:pt-40 sm:pb-20 lg:pt-52 lg:pb-32 px-4 sm:px-6 overflow-hidden">
+      <section className="relative pt-24 pb-10 sm:pt-32 sm:pb-16 lg:pt-40 lg:pb-24 px-4 sm:px-6 overflow-hidden">
 
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none z-0 opacity-[0.03] dark:opacity-[0.05]">
           <div className="animate-slow-spin">
@@ -96,46 +96,46 @@ const Home: React.FC = () => {
 
         <div className="max-w-screen-xl mx-auto text-center relative z-10">
 
-          <div className="flex flex-col md:flex-row justify-center items-center gap-4 sm:gap-8 mb-6 sm:mb-12 opacity-0 animate-[fadeIn_0.8s_ease-out_0.2s_forwards]">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-3 xs:gap-4 sm:gap-8 mb-5 sm:mb-10 opacity-0 animate-[fadeIn_0.8s_ease-out_0.2s_forwards]">
             <button
               onClick={scrollToProducts}
-              className="h-20 w-20 sm:h-32 sm:w-32 md:h-40 md:w-40 lg:h-48 lg:w-48 flex-shrink-0 relative group cursor-pointer focus:outline-none transition-transform duration-300 hover:scale-105"
+              className="h-16 w-16 xs:h-20 xs:w-20 sm:h-28 sm:w-28 md:h-40 md:w-40 lg:h-48 lg:w-48 flex-shrink-0 relative group cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-4 transition-transform duration-300 hover:scale-105"
               aria-label="Scroll to products"
             >
               <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/5 dark:group-hover:bg-blue-500/10 rounded-full transition-colors scale-125 duration-500"></div>
               <Logo className="h-full w-full" variant={logoVariant} showText={false} />
             </button>
             {/* Scaled Text for Mobile */}
-            <h1 className="text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-slate-900 dark:text-white leading-none text-center md:text-left">
+            <h1 className="text-4xl xs:text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-slate-900 dark:text-white leading-none text-center md:text-left">
               Oliskey
             </h1>
           </div>
 
-          <p className="text-base xs:text-lg sm:text-xl md:text-3xl text-slate-600 dark:text-slate-400 font-normal max-w-4xl mx-auto mb-8 sm:mb-12 leading-relaxed tracking-tight opacity-0 animate-[fadeIn_0.8s_ease-out_0.4s_forwards] px-2">
+          <p className="text-base xs:text-lg sm:text-xl md:text-3xl text-slate-600 dark:text-slate-400 font-normal max-w-3xl mx-auto mb-7 sm:mb-10 leading-relaxed tracking-tight opacity-0 animate-[fadeIn_0.8s_ease-out_0.4s_forwards] px-1 sm:px-2">
             Oliskey builds practical software for education, fleet operations, and AI-enabled work — making complex everyday tasks simpler for schools, transport businesses, and the people who run them.
           </p>
 
-          <div className="flex flex-col xs:flex-row gap-3 sm:gap-4 justify-center items-center opacity-0 animate-[fadeIn_0.8s_ease-out_0.6s_forwards] px-4">
+          <div className="grid w-full max-w-xl grid-cols-2 gap-3 opacity-0 animate-[fadeIn_0.8s_ease-out_0.6s_forwards] sm:flex sm:w-auto sm:max-w-none sm:flex-wrap sm:justify-center sm:items-center sm:gap-4 sm:px-4">
             <a
               href="/products"
-              className="w-full xs:w-auto px-6 py-3.5 sm:px-8 sm:py-4 rounded-full bg-blue-600 text-white font-medium text-sm sm:text-base hover:bg-blue-700 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:scale-105 flex items-center justify-center"
+              className="col-span-2 flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-300 hover:bg-blue-700 hover:shadow-blue-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 sm:col-span-1 sm:min-h-14 sm:w-auto sm:px-8 sm:py-4 sm:text-base sm:hover:scale-[1.02]"
             >
               Explore Products <ArrowRight size={18} className="ml-2" />
             </a>
             <a
               href="https://app.oliskey.com/demo"
-              className="liquid-glass-control w-full xs:w-auto px-6 py-3.5 sm:px-8 sm:py-4 rounded-full border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium text-sm sm:text-base transition-all duration-300 flex items-center justify-center"
+              className="liquid-glass-control flex min-h-12 w-full items-center justify-center rounded-full border border-slate-200/80 px-3 py-3 text-center text-sm font-medium text-slate-900 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:text-white sm:min-h-14 sm:w-auto sm:px-8 sm:py-4 sm:text-base"
             >
               School App Demo
             </a>
             <a
               href="https://app.oliskey.com/"
-              className="w-full xs:w-auto group flex items-center justify-center px-6 py-3.5 sm:px-8 sm:py-4 rounded-full text-slate-900 dark:text-white font-medium text-sm sm:text-base hover:bg-gray-50 dark:hover:bg-slate-800 transition-all duration-300 border border-transparent hover:border-gray-200 dark:hover:border-slate-700"
+              className="group flex min-h-12 w-full items-center justify-center gap-1 rounded-full border border-slate-200/80 px-3 py-3 text-center text-sm font-medium text-slate-900 transition-all duration-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800 sm:min-h-14 sm:w-auto sm:px-8 sm:py-4 sm:text-base"
             >
-              Open School App <ChevronRight size={18} className="ml-1 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
+              <span className="sm:hidden">Open App</span><span className="hidden sm:inline">Open School App</span> <ChevronRight size={18} className="ml-1 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
             </a>
           </div>
-          <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-sm text-slate-500 dark:text-slate-400">
             <Link to="/features" className="underline underline-offset-4 hover:text-blue-600 dark:hover:text-blue-400">See everything it does</Link>
             {' · '}
             <Link to="/school-management" className="underline underline-offset-4 hover:text-blue-600 dark:hover:text-blue-400">Built for multi-branch schools</Link>
@@ -237,7 +237,7 @@ const Home: React.FC = () => {
               <div
                 key={item.id}
                 className={`relative flex flex-col p-6 sm:p-8 rounded-2xl bg-white dark:bg-slate-900 border transition-all duration-300 ${item.status === 'Live'
-                  ? 'border-blue-100 dark:border-blue-900 ring-4 ring-blue-50/50 dark:ring-blue-900/20 shadow-xl scale-[1.02] z-10'
+                  ? 'border-blue-100 dark:border-blue-900 ring-4 ring-blue-50/50 dark:ring-blue-900/20 shadow-xl sm:scale-[1.02] z-10'
                   : 'border-gray-100 dark:border-slate-800 hover:border-gray-200 dark:hover:border-slate-700 hover:shadow-lg'
                   }`}
               >

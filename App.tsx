@@ -42,10 +42,9 @@ const CareerRoadmap = lazy(() => import('./pages/CareerRoadmap'));
 const LearningHub = lazy(() => import('./pages/LearningHub'));
 const Settings = lazy(() => import('./pages/Settings'));
 
-// Handle route changes: scroll to top, keep <head> in sync, and migrate
-// legacy HashRouter links (/#/about) to real paths (/about). Path routing is
-// what lets each public page have its own URL, title and canonical for search
-// engines and social previews — with HashRouter the whole site was one URL.
+// Handle legacy HashRouter links (/#/about) and keep <head> in sync.
+// Ordinary route changes intentionally preserve the visitor's scroll position.
+// Path routing gives each public page its own URL, title and canonical for SEO.
 const RouteListener = () => {
   const { pathname, hash } = useLocation();
   const navigate = useNavigate();

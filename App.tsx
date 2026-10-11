@@ -33,6 +33,8 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Profile = lazy(() => import('./pages/Profile'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const Products = lazy(() => import('./pages/Products'));
+const ProductOperations = lazy(() => import('./pages/ProductOperations'));
 const CourseDetail = lazy(() => import('./pages/CourseDetail'));
 const BlogPostDetail = lazy(() => import('./pages/BlogPostDetail'));
 const CareerRoadmap = lazy(() => import('./pages/CareerRoadmap'));
@@ -108,6 +110,7 @@ const AppContent: React.FC = () => {
                 <Route path="/courses" element={<Courses />} />
                 <Route path="/courses/:id" element={<CourseDetail />} />
                 <Route path="/portfolio" element={<Portfolio />} />
+                <Route path="/products" element={<Products />} />
                 <Route path="/app" element={<AppShowcase />} />
                 <Route path="/school-app" element={<Navigate to="/school-management" replace />} />
                 {SCHOOL_PAGE_PATHS.map((p) => <Route key={p} path={p} element={<SchoolFeaturePage />} />)}
@@ -139,6 +142,11 @@ const AppContent: React.FC = () => {
                 <Route path="/admin" element={
                   <AdminRoute>
                     <AdminDashboard />
+                  </AdminRoute>
+                } />
+                <Route path="/admin/products" element={
+                  <AdminRoute>
+                    <ProductOperations />
                   </AdminRoute>
                 } />
 

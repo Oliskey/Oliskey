@@ -45,7 +45,7 @@ const Navbar: React.FC = () => {
   const navLinks = [
     { name: 'School App', path: '/school-management' },
     { name: 'Features', path: '/features' },
-    { name: 'Products', path: '/#products' },
+    { name: 'Products', path: '/products' },
     { name: 'About', path: '/about' },
     { name: 'Investors', path: '/investors' },
     { name: 'Contact', path: '/contact' },
@@ -53,12 +53,7 @@ const Navbar: React.FC = () => {
 
   const handleProductClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (location.pathname !== '/') {
-      navigate('/', { state: { scrollToProducts: true } });
-    } else {
-      const element = document.getElementById('products');
-      if (element) element.scrollIntoView({ behavior: 'smooth' });
-    }
+    navigate('/products');
     setIsOpen(false);
   };
 
@@ -135,7 +130,7 @@ const Navbar: React.FC = () => {
                 link.name === 'Products' ? (
                   <a
                     key={link.name}
-                    href="#products"
+                    href="/products"
                     onClick={handleProductClick}
                     className="text-sm font-medium tracking-wide text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
                   >

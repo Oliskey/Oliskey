@@ -112,12 +112,12 @@ const Home: React.FC = () => {
           </div>
 
           <p className="text-base xs:text-lg sm:text-xl md:text-3xl text-slate-600 dark:text-slate-400 font-normal max-w-4xl mx-auto mb-8 sm:mb-12 leading-relaxed tracking-tight opacity-0 animate-[fadeIn_0.8s_ease-out_0.4s_forwards] px-2">
-            The all-in-one school management platform: students, teachers, attendance, timetable, fees, exams and results, CBT, e-learning, messaging and AI-assisted workflows — in one app every role signs in to.
+            Oliskey builds practical software for education, fleet operations, and AI-enabled work — making complex everyday tasks simpler for schools, transport businesses, and the people who run them.
           </p>
 
           <div className="flex flex-col xs:flex-row gap-3 sm:gap-4 justify-center items-center opacity-0 animate-[fadeIn_0.8s_ease-out_0.6s_forwards] px-4">
             <a
-              href="https://app.oliskey.com/signup"
+              href="/products"
               className="w-full xs:w-auto px-6 py-3.5 sm:px-8 sm:py-4 rounded-full bg-blue-600 text-white font-medium text-sm sm:text-base hover:bg-blue-700 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:scale-105 flex items-center justify-center"
             >
               Get Started <ArrowRight size={18} className="ml-2" />

@@ -18,6 +18,8 @@ export interface PublicRoute {
     label: string;
     /** Set for the school-product pages so they get SoftwareApplication data. */
     product?: boolean;
+    /** Fleet-specific structured data, separate from the school application schema. */
+    fleetProduct?: boolean;
     /** Lower priority for secondary pages in the sitemap. */
     priority?: number;
 }
@@ -127,6 +129,14 @@ export const PUBLIC_ROUTES: PublicRoute[] = [
         priority: 0.9,
     },
     {
+        path: '/fleet-operations',
+        label: 'Oliskey Fleet',
+        title: 'Tricycle Fleet Management Software — Oliskey Fleet',
+        description: 'Manage tricycles, drivers, staff, collections, remittances, maintenance schedules and partner balances in one fleet operations workspace. Explore Oliskey Fleet before opening the app.',
+        fleetProduct: true,
+        priority: 0.9,
+    },
+    {
         path: '/products',
         label: 'Products',
         title: 'Oliskey Products — School Management and Fleet Operations Software',
@@ -175,6 +185,24 @@ export function jsonLdFor(route: PublicRoute): object[] {
                 { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'NGN' },
                 { '@type': 'Offer', name: 'Basic', price: '1000', priceCurrency: 'NGN', description: 'Per student per term' },
                 { '@type': 'Offer', name: 'Advanced (with AI)', price: '3000', priceCurrency: 'NGN', description: 'Per student per term' },
+            ],
+            publisher: { '@id': `${SITE_ORIGIN}/#organization` },
+        });
+    }
+    if (route.fleetProduct) {
+        graph.push({
+            '@type': 'SoftwareApplication',
+            name: 'Oliskey Fleet',
+            applicationCategory: 'BusinessApplication',
+            operatingSystem: 'Web',
+            url: 'https://tricycles.oliskey.com/',
+            description: route.description,
+            featureList: [
+                'Tricycle and vehicle records',
+                'Driver and staff management',
+                'Daily collections and remittance tracking',
+                'Maintenance scheduling and reminders',
+                'Partner balances and finance records',
             ],
             publisher: { '@id': `${SITE_ORIGIN}/#organization` },
         });

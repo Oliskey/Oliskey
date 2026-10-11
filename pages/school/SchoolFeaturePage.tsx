@@ -9,14 +9,14 @@ const APP_SIGNUP = `${APP_ORIGIN}/signup`;
 const APP_DEMO = `${APP_ORIGIN}/demo`;
 
 export const AppCtas: React.FC<{ compact?: boolean }> = ({ compact }) => (
-    <div className={`flex flex-col xs:flex-row gap-3 ${compact ? '' : 'sm:gap-4'} justify-center items-center`}>
-        <a href={APP_SIGNUP} className="w-full xs:w-auto px-6 py-3.5 rounded-full bg-blue-600 text-white font-medium text-sm sm:text-base hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center">
-            Get Started <ArrowRight size={18} className="ml-2" />
+    <div className={`grid w-full grid-cols-2 gap-3 sm:flex sm:w-auto sm:items-center sm:justify-center ${compact ? 'sm:gap-3' : 'sm:gap-4'}`}>
+        <a href={APP_SIGNUP} className="col-span-2 flex min-h-12 w-full items-center justify-center whitespace-nowrap rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 sm:col-span-1 sm:w-auto sm:px-6 sm:text-base">
+            Get Started <ArrowRight size={18} className="ml-2 shrink-0" aria-hidden="true" />
         </a>
-        <a href={APP_DEMO} className="w-full xs:w-auto px-6 py-3.5 rounded-full border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white font-medium text-sm sm:text-base hover:bg-gray-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center">
+        <a href={APP_DEMO} className="flex min-h-12 w-full items-center justify-center whitespace-nowrap rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800 sm:w-auto sm:px-6 sm:text-base">
             Try Demo
         </a>
-        <a href={APP_ORIGIN} className="w-full xs:w-auto px-6 py-3.5 rounded-full text-slate-600 dark:text-slate-300 font-medium text-sm sm:text-base hover:text-blue-600 dark:hover:text-blue-400 transition-all flex items-center justify-center">
+        <a href={APP_ORIGIN} className="flex min-h-12 w-full items-center justify-center whitespace-nowrap rounded-full border border-transparent px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:border-slate-200 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 dark:text-slate-300 dark:hover:border-slate-700 dark:hover:text-blue-400 sm:w-auto sm:text-base">
             Open App
         </a>
     </div>
@@ -48,17 +48,17 @@ const SchoolFeaturePage: React.FC = () => {
     const showPlans = page.path === '/features' || page.path === '/school-management' || page.path === '/fees';
 
     return (
-        <div className="pt-24 pb-24 bg-white dark:bg-slate-950 transition-colors duration-300">
-            <header className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <p className="text-sm font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-3">{page.eyebrow}</p>
-                <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-6 leading-tight">{page.h1}</h1>
-                <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed mb-8">{page.intro}</p>
+        <div className="bg-white pb-16 pt-10 transition-colors duration-300 dark:bg-slate-950 sm:pb-24 sm:pt-20">
+            <header className="mx-auto max-w-4xl px-5 text-center sm:px-6 lg:px-8">
+                <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-3 sm:text-sm">{page.eyebrow}</p>
+                <h1 className="text-[2rem] leading-[1.12] sm:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-4 sm:mb-6">{page.h1}</h1>
+                <p className="text-base leading-relaxed sm:text-xl text-slate-600 dark:text-slate-400 mb-6 sm:mb-8">{page.intro}</p>
                 <AppCtas />
             </header>
 
-            <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 grid gap-6 md:grid-cols-2">
+            <section className="mx-auto mt-10 grid max-w-6xl gap-4 px-5 sm:mt-16 sm:gap-6 sm:px-6 lg:px-8 md:grid-cols-2">
                 {page.sections.map((s) => (
-                    <article key={s.heading} className="rounded-3xl p-6 sm:p-8 border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+                    <article key={s.heading} className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-8">
                         <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{s.heading}</h2>
                         <p className="text-slate-600 dark:text-slate-300 leading-relaxed">{s.body}</p>
                         {s.bullets && (
@@ -77,7 +77,7 @@ const SchoolFeaturePage: React.FC = () => {
             {showPlans && <PlansSection />}
 
             {page.faqs && (
-                <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+                <section className="mx-auto mt-14 max-w-3xl px-5 sm:mt-20 sm:px-6 lg:px-8">
                     <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-6">Questions</h2>
                     <dl className="space-y-6">
                         {page.faqs.map((f) => (
@@ -90,7 +90,7 @@ const SchoolFeaturePage: React.FC = () => {
                 </section>
             )}
 
-            <nav aria-label="Related pages" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+            <nav aria-label="Related pages" className="mx-auto mt-14 max-w-6xl px-5 sm:mt-20 sm:px-6 lg:px-8">
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Explore more</h2>
                 <div className="flex flex-wrap gap-2">
                     {related.map((r) => (
@@ -101,7 +101,7 @@ const SchoolFeaturePage: React.FC = () => {
                 </div>
             </nav>
 
-            <div className="max-w-4xl mx-auto px-4 mt-20 text-center">
+            <div className="mx-auto mt-14 max-w-4xl px-5 text-center sm:mt-20 sm:px-6">
                 <AppCtas compact />
             </div>
         </div>

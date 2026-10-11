@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowUpRight, CheckCircle2, CircleAlert, Copy, ExternalLink, Gauge, GraduationCap, Globe, Search, ShieldCheck, Activity, ClipboardCheck } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, CheckCircle2, AlertCircle, Copy, ExternalLink, Gauge, GraduationCap, Globe, Search, ShieldCheck, Activity, ClipboardCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const products = [
@@ -80,7 +80,7 @@ const ProductOperations: React.FC = () => {
               <h3 className="flex items-center gap-2 text-base font-bold"><Activity size={18} /> Production &amp; source</h3>
               <div className="rounded-2xl border border-slate-200 p-4 dark:border-slate-700"><p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Public domain</p><a className="mt-1 block break-all font-semibold text-blue-600 hover:underline" href={product.domain} target="_blank" rel="noreferrer">{product.domain}</a><p className="mt-2 text-sm text-slate-500">Open the product directly to confirm the current customer-facing experience.</p></div>
               <div className="grid gap-3 min-[460px]:grid-cols-2"><LinkButton href={product.deploy}>Vercel deployments</LinkButton><LinkButton href={product.repo}>GitHub repository</LinkButton></div>
-              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900 dark:bg-amber-950/30"><p className="flex items-center gap-2 font-semibold text-amber-900 dark:text-amber-200"><CircleAlert size={17} /> Live status is not yet connected</p><p className="mt-2 text-sm leading-6 text-amber-900/80 dark:text-amber-100/80">This page does not claim a deployment is healthy. Use Vercel to confirm the latest build, domain alias and deployment state. Automated health checks need a secure server-side integration.</p></div>
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900 dark:bg-amber-950/30"><p className="flex items-center gap-2 font-semibold text-amber-900 dark:text-amber-200"><AlertCircle size={17} /> Live status is not yet connected</p><p className="mt-2 text-sm leading-6 text-amber-900/80 dark:text-amber-100/80">This page does not claim a deployment is healthy. Use Vercel to confirm the latest build, domain alias and deployment state. Automated health checks need a secure server-side integration.</p></div>
             </div>
             <div className="space-y-4">
               <h3 className="flex items-center gap-2 text-base font-bold"><Search size={18} /> SEO tools &amp; indexing</h3>

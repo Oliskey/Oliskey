@@ -26,9 +26,8 @@ export const PUBLIC_ROUTES: PublicRoute[] = [
     {
         path: '/',
         label: 'Home',
-        title: 'Oliskey School App — All-in-One School Management Platform',
-        description: 'Oliskey is an all-in-one school management platform: students, teachers, attendance, timetable, fees, exams and results, CBT, e-learning, messaging and AI-assisted workflows in one app. Try the demo free.',
-        product: true,
+        title: 'Oliskey — Software Products for Education, Fleet & AI',
+        description: 'Discover Oliskey software products for school management, tricycle fleet operations, education and AI. Explore our platforms, visit each product, and see how Oliskey makes complex work simpler.',
         priority: 1,
     },
     {
@@ -179,6 +178,28 @@ export function jsonLdFor(route: PublicRoute): object[] {
             ],
             publisher: { '@id': `${SITE_ORIGIN}/#organization` },
         });
+    }
+    if (route.path === '/products') {
+        graph.push(
+            {
+                '@type': 'SoftwareApplication',
+                name: 'Oliskey School App',
+                applicationCategory: 'EducationalApplication',
+                operatingSystem: 'Web, Android, iOS',
+                url: APP_ORIGIN,
+                description: 'School management, communication, assessment and learning tools for schools.',
+                publisher: { '@id': `${SITE_ORIGIN}/#organization` },
+            },
+            {
+                '@type': 'SoftwareApplication',
+                name: 'Oliskey Fleet',
+                applicationCategory: 'BusinessApplication',
+                operatingSystem: 'Web',
+                url: 'https://tricycles.oliskey.com/',
+                description: 'Fleet operations software for tricycle businesses, including vehicle, driver, collections, maintenance and finance workflows.',
+                publisher: { '@id': `${SITE_ORIGIN}/#organization` },
+            }
+        );
     }
     if (route.path !== '/') {
         graph.push({

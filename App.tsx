@@ -49,12 +49,28 @@ const RouteListener = () => {
   const { pathname, hash } = useLocation();
   const navigate = useNavigate();
 
+  // Keep legacy HashRouter links working (for example, /#/about -> /about).
   useEffect(() => {
-    // Migrate legacy HashRouter URLs without forcing ordinary routes to the top.
     if (pathname === '/' && hash.startsWith('#/')) {
       navigate(hash.slice(1), { replace: true });
     }
   }, [pathname, hash, navigate]);
+
+  // Every destination page starts at the top, including browser back/forward navigation.
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [pathname]);
+
+  // Let the route listener, rather than browser history restoration, control page position.
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      const previousRestoration = window.history.scrollRestoration;
+      window.history.scrollRestoration = 'manual';
+      return () => {
+        window.history.scrollRestoration = previousRestoration;
+      };
+    }
+  }, []);
 
   useSeo(pathname);
 
@@ -62,7 +78,7 @@ const RouteListener = () => {
 };
 
 // Route content is keyed by pathname so each destination gets a restrained entrance transition.
-// Scroll position is deliberately not reset here: visitors keep their place while navigating.
+// RouteListener resets scroll position for every destination.
 const RouteContent: React.FC = () => {
   const { pathname } = useLocation();
   return (

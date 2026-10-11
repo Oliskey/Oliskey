@@ -107,7 +107,7 @@ const Navbar: React.FC = () => {
             <a
               href="/"
               onClick={handleLogoClick}
-              className="flex items-center flex-shrink-0 mr-8 z-[70] cursor-pointer select-none relative"
+              className="flex min-w-0 items-center flex-shrink-0 mr-3 sm:mr-8 z-[70] cursor-pointer select-none relative"
             >
               <Logo className="h-10 md:h-12" variant={logoVariant} animated={true} />
             </a>
@@ -212,7 +212,7 @@ const Navbar: React.FC = () => {
             </div>
 
             {/* Mobile Actions */}
-            <div className="md:hidden flex items-center gap-4 z-[70]">
+            <div className="md:hidden flex items-center gap-2 sm:gap-4 z-[70]">
               {/* Search Button Mobile */}
               <button
                 onClick={openSearch}
@@ -241,7 +241,7 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Menu Full Screen Overlay */}
       <div
-        className={`fixed inset-0 bg-white dark:bg-slate-950 z-[55] md:hidden flex flex-col transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${isOpen
+        className={`fixed inset-0 h-[100dvh] bg-white dark:bg-slate-950 z-[55] md:hidden flex flex-col transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${isOpen
           ? 'opacity-100 translate-y-0 visible'
           : 'opacity-0 -translate-y-4 invisible pointer-events-none'
           }`}
@@ -280,7 +280,7 @@ const Navbar: React.FC = () => {
                     onClick={handleProductClick}
                     className="group flex items-center justify-between py-3 border-b border-gray-50 dark:border-slate-800"
                   >
-                    <span className="text-3xl font-bold text-slate-900 dark:text-white group-active:text-blue-600 dark:group-active:text-blue-400 tracking-tight transition-colors">{link.name}</span>
+                    <span className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white group-active:text-blue-600 dark:group-active:text-blue-400 tracking-tight transition-colors">{link.name}</span>
                     <ChevronRight size={24} className="text-slate-300 dark:text-slate-700 group-active:text-blue-600 transition-colors" />
                   </a>
                 ) : (
@@ -289,7 +289,7 @@ const Navbar: React.FC = () => {
                     className={`group flex items-center justify-between py-3 border-b border-gray-50 dark:border-slate-800 ${isActive(link.path) ? 'text-blue-600 dark:text-blue-400' : 'text-slate-900 dark:text-white'
                       }`}
                   >
-                    <span className="text-3xl font-bold tracking-tight group-active:text-blue-600 transition-colors">{link.name}</span>
+                    <span className="text-2xl sm:text-3xl font-bold tracking-tight group-active:text-blue-600 transition-colors">{link.name}</span>
                     {isActive(link.path) && <div className="w-2.5 h-2.5 bg-blue-600 dark:bg-blue-400 rounded-full shadow-sm"></div>}
                   </Link>
                 )}

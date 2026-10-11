@@ -12,25 +12,38 @@
   }
 }
 
-/* Custom Scrollbar */
+/* Quiet, slim scrollbar: visible when needed without competing with page content. */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.48) transparent;
+}
+.dark {
+  scrollbar-color: rgba(148, 163, 184, 0.38) transparent;
+}
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-.dark ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 5px;
-}
-.dark ::-webkit-scrollbar-thumb {
-  background: #334155;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.42);
+  background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: rgba(37, 99, 235, 0.72);
+  background-clip: padding-box;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.38);
+  background-clip: padding-box;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(96, 165, 250, 0.72);
+  background-clip: padding-box;
 }
 
 /* Logo Animation Utility */
@@ -130,25 +143,35 @@ textarea:focus-visible {
 }
 
 
-/* Calm, purposeful route motion: small movement and opacity only.
-   Avoids expensive blur/scale effects and respects system motion preferences. */
+/* Premium-feeling route motion: subtle, short, and never retained as a transform
+   after the transition. This avoids trapping fixed-position descendants. */
 @keyframes oliskey-page-enter {
   from {
     opacity: 0;
-    transform: translate3d(0, 6px, 0);
+    transform: translate3d(0, 5px, 0);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+    transform: none;
   }
 }
 
+@keyframes oliskey-page-return {
+  from { opacity: 0.72; }
+  to { opacity: 1; }
+}
+
 .route-content-enter {
-  animation: oliskey-page-enter 220ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  animation: oliskey-page-enter 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.route-content-restore {
+  animation: oliskey-page-return 140ms ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .route-content-enter {
+  .route-content-enter,
+  .route-content-restore {
     animation: none !important;
     transform: none !important;
   }

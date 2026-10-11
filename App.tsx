@@ -76,14 +76,73 @@ const RouteListener = () => {
     };
   }, [key]);
 
-  // New navigation starts at the top; browser Back/Forward restores the saved entry.
+  // New navigation starts at the top. Back/Forward restores only after the
+  // destination has enough layout height, including when its route is lazy-loaded.
   useEffect(() => {
     const targetY = navigationType === 'POP' ? routeScrollPositions.get(key) ?? 0 : 0;
-    const frame = window.requestAnimationFrame(() => {
-      window.scrollTo({ top: targetY, left: 0, behavior: 'auto' });
+
+    if (targetY <= 0) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      return;
+    }
+
+    let settled = false;
+    let cancelledByUser = false;
+    let timeoutId = 0;
+
+    const getMaxScrollY = () =>
+      Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+
+    const restoreWhenReady = () => {
+      if (settled || cancelledByUser) return;
+
+      if (getMaxScrollY() >= targetY) {
+        settled = true;
+        window.scrollTo({ top: targetY, left: 0, behavior: 'auto' });
+        window.clearTimeout(timeoutId);
+      }
+    };
+
+    const cancelForUserInput = (event: Event) => {
+      if (event.type === 'keydown') {
+        const keyEvent = event as KeyboardEvent;
+        if (!['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(keyEvent.key)) return;
+      }
+      cancelledByUser = true;
+      window.clearTimeout(timeoutId);
+      observer.disconnect();
+    };
+
+    const observer = new ResizeObserver(restoreWhenReady);
+    observer.observe(document.documentElement);
+    if (document.body) observer.observe(document.body);
+
+    window.addEventListener('wheel', cancelForUserInput, { passive: true, once: true });
+    window.addEventListener('touchstart', cancelForUserInput, { passive: true, once: true });
+    window.addEventListener('keydown', cancelForUserInput, { once: true });
+
+    // A page whose content has genuinely become shorter restores to its nearest valid position.
+    timeoutId = window.setTimeout(() => {
+      if (!settled && !cancelledByUser) {
+        settled = true;
+        window.scrollTo({ top: Math.min(targetY, getMaxScrollY()), left: 0, behavior: 'auto' });
+      }
+      observer.disconnect();
+    }, 1200);
+
+    const firstFrame = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(restoreWhenReady);
     });
 
-    return () => window.cancelAnimationFrame(frame);
+    return () => {
+      settled = true;
+      window.cancelAnimationFrame(firstFrame);
+      window.clearTimeout(timeoutId);
+      observer.disconnect();
+      window.removeEventListener('wheel', cancelForUserInput);
+      window.removeEventListener('touchstart', cancelForUserInput);
+      window.removeEventListener('keydown', cancelForUserInput);
+    };
   }, [key, navigationType]);
 
   // Use our history-entry positions instead of browser-dependent automatic restoration.
@@ -106,9 +165,11 @@ const RouteListener = () => {
 // RouteListener starts new visits at the top and restores saved positions for Back/Forward.
 const RouteContent: React.FC = () => {
   const { pathname } = useLocation();
+  const navigationType = useNavigationType();
+  const transitionClass = navigationType === 'POP' ? 'route-content-restore' : 'route-content-enter';
   return (
       <main className="flex-grow">
-        <div key={pathname} className="route-content-enter">
+        <div key={pathname} className={transitionClass}>
             <Suspense fallback={<div className="min-h-screen bg-white dark:bg-slate-950"></div>}>
               <Routes>
                 {/* Public Routes */}

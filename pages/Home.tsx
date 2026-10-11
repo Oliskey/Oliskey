@@ -264,10 +264,10 @@ const Home: React.FC = () => {
                 <div className="mt-auto">
                   {item.status === 'Live' && item.link ? (
                     <Link
-                      to={item.link}
+                      to={item.title.toLowerCase().includes('school') ? '/school-management' : '/products'}
                       className="w-full py-3 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium text-center text-sm hover:bg-blue-600 dark:hover:bg-blue-300 transition-all shadow-lg shadow-slate-900/10 dark:shadow-white/5 flex items-center justify-center gap-2 group"
                     >
-                      {item.actionText || 'Explore'} <ExternalLink size={14} className="group-hover:translate-x-1 transition-transform" />
+                      Learn more <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                     </Link>
                   ) : (
                     <div className="w-full py-3 rounded-lg bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-slate-500 font-medium text-center text-sm border border-gray-100 dark:border-slate-700 select-none">
@@ -288,14 +288,14 @@ const Home: React.FC = () => {
               </div>
               <div className="mb-6">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-violet-700 dark:text-violet-300">Transport &amp; operations</p>
-                <h3 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">Oliskey Fleet</h3>
+                <Link to="/fleet-operations" className="mb-2 inline-block text-xl font-bold text-slate-900 transition hover:text-violet-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 dark:text-white dark:hover:text-violet-300">Oliskey Fleet</Link>
                 <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">Manage tricycles, drivers, staff, daily collections, remittances, maintenance schedules and partner balances in one workspace.</p>
               </div>
               <div className="mt-auto">
-                <a href="https://tricycles.oliskey.com/" target="_blank" rel="noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[.99] dark:bg-white dark:text-slate-900 dark:hover:bg-blue-100">
-                  Explore Oliskey Fleet <ExternalLink size={15} aria-hidden="true" />
-                </a>
-                <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">tricycles.oliskey.com</p>
+                <Link to="/fleet-operations" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 active:scale-[.99] dark:bg-white dark:text-slate-900 dark:hover:bg-violet-100">
+                  Learn about Oliskey Fleet <ArrowRight size={15} aria-hidden="true" />
+                </Link>
+                <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">View product details before opening the app</p>
               </div>
             </article>
           </div>

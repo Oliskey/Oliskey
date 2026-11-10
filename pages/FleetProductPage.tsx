@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, CalendarClock, CheckCircle2, ExternalLink, Gauge, ShieldCheck, Truck, Users, Wallet, Wrench } from 'lucide-react';
+import { ArrowRight, CalendarClock, ExternalLink, Gauge, ShieldCheck, Truck, Users, Wallet, Wrench } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const APP_URL = 'https://tricycles.oliskey.com/';
@@ -34,16 +34,11 @@ const FleetProductPage: React.FC = () => (
         </div>
         <div className="relative">
           <div aria-hidden className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-violet-500/15 via-blue-500/10 to-transparent blur-2xl" />
-          <div className="oliskey-liquid-glass relative rounded-[2rem] border border-white/70 bg-white/75 p-5 shadow-2xl shadow-slate-900/10 backdrop-blur-2xl dark:border-slate-700/70 dark:bg-slate-900/75 sm:p-8">
-            <div className="flex items-center gap-3 border-b border-slate-200/80 pb-5 dark:border-slate-700">
-              <span className="grid size-12 place-items-center rounded-2xl bg-violet-600 text-white"><Gauge size={25} /></span>
-              <div><p className="text-sm font-semibold text-violet-700 dark:text-violet-300">Oliskey Fleet</p><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Fleet operations overview</p></div>
-            </div>
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              {['Vehicle records', 'Driver assignments', 'Daily collections', 'Maintenance plans'].map(label => <div key={label} className="rounded-2xl border border-slate-200/80 bg-white/75 p-4 dark:border-slate-700 dark:bg-slate-950/50"><CheckCircle2 size={18} className="text-violet-600 dark:text-violet-300" /><p className="mt-3 text-sm font-semibold">{label}</p></div>)}
-            </div>
-            <p className="mt-4 text-xs leading-5 text-slate-500 dark:text-slate-400">Illustrative capability summary, not live account data.</p>
-          </div>
+          <figure className="relative overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white shadow-2xl shadow-slate-900/15 dark:border-slate-700/70 dark:bg-slate-900">
+            <div className="flex items-center gap-1.5 border-b border-slate-200/80 px-4 py-3 dark:border-slate-700/70" aria-hidden><span className="size-2.5 rounded-full bg-slate-300 dark:bg-slate-600" /><span className="size-2.5 rounded-full bg-slate-300 dark:bg-slate-600" /><span className="size-2.5 rounded-full bg-slate-300 dark:bg-slate-600" /><span className="ml-3 truncate text-xs text-slate-400">tricycles.oliskey.com</span></div>
+            <img src="/products/fleet-dashboard.webp" alt="Oliskey Fleet admin dashboard showing bank obligation, collections, items needing attention and an operations summary" width={1600} height={1000} className="block h-auto w-full" />
+            <figcaption className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">The admin dashboard, with demo company data.</figcaption>
+          </figure>
         </div>
       </div>
     </section>

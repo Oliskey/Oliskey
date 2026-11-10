@@ -17,6 +17,7 @@ export interface OliskeyProduct {
   icon: LucideIcon;
   /** Card header gradient (Tailwind). */
   tint: string;
+  /** A real screenshot of the app, shown faintly in its card (demo data only). */
   image?: string;
   points: string[];
   /** Words people search for; site search matches these too. */
@@ -50,6 +51,7 @@ export const PRODUCTS: OliskeyProduct[] = [
     appLabel: 'Open Fleet',
     icon: Gauge,
     tint: 'from-violet-600 to-indigo-700',
+    image: '/products/fleet-dashboard.webp',
     points: ['Vehicle, staff and driver records', 'Collections, remittances and finance', 'Mobile-first fleet workflows'],
     keywords: ['fleet', 'tricycle', 'keke', 'transport', 'drivers', 'remittance', 'vehicles', 'maintenance'],
   },
@@ -64,6 +66,7 @@ export const PRODUCTS: OliskeyProduct[] = [
     appLabel: 'Open Alpha',
     icon: CandlestickChart,
     tint: 'from-[#5B3DF5] to-[#1E6FD9]',
+    image: '/products/alpha-terminal.webp',
     points: ['Demo credits on live crypto prices', 'An AI that shows every win and loss', 'Free lessons on trading and risk'],
     keywords: ['alpha', 'oliskey alpha', 'trading', 'trading app', 'demo trading', 'practice trading', 'forex', 'crypto', 'signals', 'ai trading'],
   },

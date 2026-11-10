@@ -38,23 +38,11 @@ const AlphaProductPage: React.FC = () => (
         </div>
         <div className="relative">
           <div aria-hidden className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-[#5B3DF5]/20 via-[#1E6FD9]/10 to-transparent blur-2xl" />
-          <div className="relative overflow-hidden rounded-[2rem] border border-slate-800 bg-black p-5 text-white shadow-2xl shadow-slate-900/20 sm:p-7">
-            <div className="flex items-center gap-3 border-b border-white/10 pb-5">
-              <span className="grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-[#7C5CFF] to-[#3BA4FF] text-white"><CandlestickChart size={24} /></span>
-              <div><p className="text-sm font-semibold">Oliskey Alpha</p><p className="mt-1 text-xs text-white/60">Demo account · α10,000.00</p></div>
-            </div>
-            {/* an illustration, not live data */}
-            <svg viewBox="0 0 300 120" className="mt-5 h-32 w-full" role="img" aria-label="Illustration of a price chart">
-              {[[14, 62, 40, 1], [34, 54, 34, 1], [54, 46, 30, 0], [74, 52, 26, 1], [94, 40, 34, 1], [114, 34, 22, 0], [134, 38, 30, 1], [154, 28, 26, 1], [174, 22, 20, 0], [194, 26, 28, 1], [214, 18, 24, 1], [234, 12, 22, 0], [254, 16, 26, 1], [274, 8, 22, 1]].map(([x, y, h, up]) => (
-                <g key={x}><line x1={x} x2={x} y1={y - 6} y2={y + h + 6} stroke={up ? '#00D27A' : '#FF3D5A'} strokeWidth="1.2" /><rect x={x - 5} y={y} width="10" height={h} rx="2" fill={up ? '#00D27A' : '#FF3D5A'} /></g>
-              ))}
-            </svg>
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <span className="rounded-full bg-[#FF3D5A] py-3 text-center text-sm font-bold text-black">Down</span>
-              <span className="rounded-full bg-[#00D27A] py-3 text-center text-sm font-bold text-black">Up</span>
-            </div>
-            <p className="mt-4 text-xs leading-5 text-white/50">Illustration, not live account data.</p>
-          </div>
+          <figure className="relative overflow-hidden rounded-[1.75rem] border border-slate-800 bg-black shadow-2xl shadow-slate-900/25">
+            <div className="flex items-center gap-1.5 border-b border-white/10 px-4 py-3" aria-hidden><span className="size-2.5 rounded-full bg-white/20" /><span className="size-2.5 rounded-full bg-white/20" /><span className="size-2.5 rounded-full bg-white/20" /><span className="ml-3 truncate text-xs text-white/40">alpha.oliskey.com</span></div>
+            <img src="/products/alpha-terminal.webp" alt="Oliskey Alpha trading screen: a live candle chart with Up and Down buttons, amount and duration, and a demo balance" width={1600} height={1000} className="block h-auto w-full" />
+            <figcaption className="px-4 py-3 text-xs text-white/50">The trading screen, on a demo account.</figcaption>
+          </figure>
         </div>
       </div>
     </section>

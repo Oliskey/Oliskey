@@ -34,7 +34,7 @@ const Products: React.FC = () => (
       {PRODUCTS.map(({ id, name, eyebrow, description, appUrl, appLabel, detailsUrl, icon: Icon, image, tint, points }) => (
         <article id={id} key={id} className="group flex min-w-0 scroll-mt-24 flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
           <div className={`relative min-h-48 overflow-hidden bg-gradient-to-br ${tint} p-6 text-white sm:min-h-52 sm:p-7`}>
-            {image ? <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-25 mix-blend-screen" /> : <div aria-hidden className="absolute -right-10 -top-10 h-64 w-64 rounded-full border-[36px] border-white/10" />}
+            {image ? <img src={image} alt="" decoding="async" className="absolute inset-0 h-full w-full object-cover object-left-top opacity-30 mix-blend-screen" /> : <div aria-hidden className="absolute -right-10 -top-10 h-64 w-64 rounded-full border-[36px] border-white/10" />}
             <div className="relative flex items-start justify-between gap-4">
               <div><p className="text-sm font-semibold text-white/75">{eyebrow}</p><Link to={detailsUrl} className="mt-3 inline-block rounded-sm text-3xl font-bold tracking-tight transition hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">{name}</Link></div>
               <span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md"><Icon size={25} /></span>

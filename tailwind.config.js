@@ -7,6 +7,7 @@ export default {
         "./components/**/*.{js,ts,jsx,tsx}",
         "./pages/**/*.{js,ts,jsx,tsx}",
         "./context/**/*.{js,ts,jsx,tsx}",
+        "./data/**/*.{js,ts,jsx,tsx}",
     ],
     darkMode: 'class',
     theme: {

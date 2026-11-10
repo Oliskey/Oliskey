@@ -20,6 +20,8 @@ export interface PublicRoute {
     product?: boolean;
     /** Fleet-specific structured data, separate from the school application schema. */
     fleetProduct?: boolean;
+    /** Oliskey Alpha structured data. */
+    alphaProduct?: boolean;
     /** Lower priority for secondary pages in the sitemap. */
     priority?: number;
 }
@@ -137,10 +139,18 @@ export const PUBLIC_ROUTES: PublicRoute[] = [
         priority: 0.9,
     },
     {
+        path: '/trading-app',
+        label: 'Oliskey Alpha',
+        title: 'Oliskey Alpha — Practise Trading with Demo Credits | Oliskey',
+        description: 'Learn to trade without risking money. Oliskey Alpha lets you practise Fixed Time, InZone and Forex-style trades with demo credits on live crypto prices, follow an AI that shows its full record, and study free lessons.',
+        alphaProduct: true,
+        priority: 0.9,
+    },
+    {
         path: '/products',
         label: 'Products',
         title: 'Oliskey Products — Business Software, Automation & AI',
-        description: 'Explore Oliskey software products for education, fleet operations and business workflows. Start with a ready-made product or talk to us about software and automation designed around your organisation.',
+        description: 'Explore Oliskey software products for education, fleet operations, trading practice and business workflows. Start with a ready-made product or talk to us about software and automation designed around your organisation.',
         priority: 0.95,
     },
     { path: '/services', label: 'Services', title: 'Business Software Development & Workflow Automation — Oliskey', description: 'Explore Oliskey services for custom business software, workflow automation, system integration and practical AI tools. Start with the operational problem you need to solve.', priority: 0.8 },
@@ -163,8 +173,10 @@ export function jsonLdFor(route: PublicRoute): object[] {
         '@type': 'Organization',
         '@id': `${SITE_ORIGIN}/#organization`,
         name: SITE_NAME,
+        legalName: 'Oliskeylee Ltd',
         url: SITE_ORIGIN,
         logo: `${APP_ORIGIN}/icons/app-icon-512.png`,
+        // each product (here and on its own site) names this organisation as publisher, by this same @id
     };
     const website = {
         '@type': 'WebSite',
@@ -177,6 +189,7 @@ export function jsonLdFor(route: PublicRoute): object[] {
     if (route.product) {
         graph.push({
             '@type': 'SoftwareApplication',
+            '@id': `${SITE_ORIGIN}/#product-school`,
             name: 'Oliskey School App',
             applicationCategory: 'EducationalApplication',
             operatingSystem: 'Web, Android, iOS',
@@ -193,6 +206,7 @@ export function jsonLdFor(route: PublicRoute): object[] {
     if (route.fleetProduct) {
         graph.push({
             '@type': 'SoftwareApplication',
+            '@id': `${SITE_ORIGIN}/#product-fleet`,
             name: 'Oliskey Fleet',
             applicationCategory: 'BusinessApplication',
             operatingSystem: 'Web',
@@ -208,10 +222,24 @@ export function jsonLdFor(route: PublicRoute): object[] {
             publisher: { '@id': `${SITE_ORIGIN}/#organization` },
         });
     }
+
+    const alphaApp = {
+        '@type': 'SoftwareApplication',
+        '@id': `${SITE_ORIGIN}/#product-alpha`,
+        name: 'Oliskey Alpha',
+        applicationCategory: 'EducationalApplication',
+        operatingSystem: 'Web, Android, iOS',
+        url: 'https://alpha.oliskey.com/',
+        description: 'Practise trading with demo credits on live crypto prices, follow an AI that shows its full record, and learn with free lessons. Demo credits have no cash value.',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'NGN' },
+        publisher: { '@id': `${SITE_ORIGIN}/#organization` },
+    };
+    if (route.alphaProduct) graph.push(alphaApp);
     if (route.path === '/products') {
         graph.push(
             {
                 '@type': 'SoftwareApplication',
+                '@id': `${SITE_ORIGIN}/#product-school`,
                 name: 'Oliskey School App',
                 applicationCategory: 'EducationalApplication',
                 operatingSystem: 'Web, Android, iOS',
@@ -221,13 +249,15 @@ export function jsonLdFor(route: PublicRoute): object[] {
             },
             {
                 '@type': 'SoftwareApplication',
+                '@id': `${SITE_ORIGIN}/#product-fleet`,
                 name: 'Oliskey Fleet',
                 applicationCategory: 'BusinessApplication',
                 operatingSystem: 'Web',
                 url: 'https://tricycles.oliskey.com/',
                 description: 'Fleet operations software for tricycle businesses, including vehicle, driver, collections, maintenance and finance workflows.',
                 publisher: { '@id': `${SITE_ORIGIN}/#organization` },
-            }
+            },
+            alphaApp,
         );
     }
     if (route.path !== '/') {

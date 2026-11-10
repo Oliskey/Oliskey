@@ -183,7 +183,7 @@ const Home: React.FC = () => {
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">The Oliskey product ecosystem</p>
           <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-4xl">Purpose-built software. One connected ecosystem.</h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
-            Explore our two active products: Oliskey Education for schools and Oliskey Fleet for transport operations.
+            Explore our three active products: Oliskey Education for schools, Oliskey Fleet for transport operations and Oliskey Alpha for learning to trade.
           </p>
           <Link to="/products" className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:bg-white dark:text-slate-950 dark:hover:bg-blue-100">
             Explore all products <ArrowUpRight size={17} aria-hidden="true" />
@@ -325,7 +325,7 @@ const Home: React.FC = () => {
           <div className="space-y-4">
             {[
               { question: 'What does Oliskey build?', answer: 'We build practical software products, business-specific systems, workflow automations and AI-enabled tools. The right solution depends on the problem you want to solve.' },
-              { question: 'Does Oliskey only work with schools?', answer: 'No. School software is one of our products, and Oliskey Fleet is another. Our wider focus is helping organisations simplify work through useful software and automation.' },
+              { question: 'Does Oliskey only work with schools?', answer: 'No. School software is one of our products; Oliskey Fleet and Oliskey Alpha are others. Our wider focus is helping organisations simplify work through useful software and automation.' },
               { question: 'Can you build something for my business?', answer: 'Tell us about your current process, the repetitive work you want to reduce and the outcome you need. We will discuss the problem and whether a ready-made product, automation or custom software is the best fit.' },
               { question: 'Do I need to know exactly what technology I need?', answer: 'No. Start by explaining what is taking too much time or causing problems. We can help clarify the workflow before discussing the technology.' },
               { question: 'Can I explore existing products first?', answer: 'Yes. Browse our products to see what is available and read about each product before opening its application.' },

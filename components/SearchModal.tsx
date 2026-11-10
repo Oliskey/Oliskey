@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, X, ChevronRight, BookOpen, Layers, Briefcase, FileText } from 'lucide-react';
+import { Search, X, ChevronRight, BookOpen, Layers, Briefcase, FileText, ExternalLink } from 'lucide-react';
 // @ts-ignore
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
+import { PRODUCTS } from '../data/products';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -13,8 +14,10 @@ interface SearchResult {
   id: string | number;
   title: string;
   description: string;
-  type: 'Service' | 'Course' | 'Project' | 'Blog';
+  type: 'Product' | 'Service' | 'Course' | 'Project' | 'Blog';
   url: string;
+  /** Products: the live app, opened in a new tab. */
+  appUrl?: string;
 }
 
 const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
@@ -45,6 +48,11 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
 
     const lowerQuery = query.toLowerCase();
 
+    // products first: a search for a product name or what it does finds it, with a button to open it
+    const matchedProducts = PRODUCTS
+      .filter(p => [p.name, p.short, p.description, ...p.keywords].some(t => t.toLowerCase().includes(lowerQuery)))
+      .map(p => ({ id: p.id, title: p.name, description: p.short, type: 'Product' as const, url: p.detailsUrl, appUrl: p.appUrl }));
+
     const matchedServices = services
       .filter(s => s.title.toLowerCase().includes(lowerQuery) || s.description.toLowerCase().includes(lowerQuery))
       .map(s => ({ id: s.title, title: s.title, description: s.description, type: 'Service' as const, url: '/services' }));
@@ -61,7 +69,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
       .filter(b => b.title.toLowerCase().includes(lowerQuery) || b.excerpt.toLowerCase().includes(lowerQuery))
       .map(b => ({ id: b.id, title: b.title, description: b.excerpt, type: 'Blog' as const, url: '/blog' }));
 
-    setResults([...matchedServices, ...matchedCourses, ...matchedProjects, ...matchedPosts]);
+    setResults([...matchedProducts, ...matchedServices, ...matchedCourses, ...matchedProjects, ...matchedPosts]);
   }, [query, services, courses, portfolio, blogPosts]);
 
   const handleNavigate = (url: string) => {
@@ -69,8 +77,9 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     onClose();
   };
 
-  const getIcon = (type: string) => {
+  const getIcon = (type: string, url = '') => {
     switch (type) {
+      case 'Product': { const P = PRODUCTS.find(p => p.detailsUrl === url); const I = P?.icon ?? Search; return <I size={16} className="text-violet-500" />; }
       case 'Service': return <Layers size={16} className="text-blue-500" />;
       case 'Course': return <BookOpen size={16} className="text-green-500" />;
       case 'Project': return <Briefcase size={16} className="text-purple-500" />;
@@ -100,7 +109,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
               ref={inputRef}
               type="text"
               className="flex-1 bg-transparent text-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
-              placeholder="Search services, courses, projects..."
+              placeholder="Search products, services, courses..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -118,18 +127,18 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
               {results.length > 0 ? (
                 <ul className="space-y-1">
                   {results.map((result, idx) => (
-                    <li key={`${result.type}-${result.id}-${idx}`}>
+                    <li key={`${result.type}-${result.id}-${idx}`} className="flex items-center gap-2">
                       <button
                         onClick={() => handleNavigate(result.url)}
                         className="flex w-full items-center rounded-xl p-3 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
                       >
                         <div className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 shadow-sm group-hover:border-primary-200 dark:group-hover:border-blue-800 group-hover:shadow-md transition-all">
-                          {getIcon(result.type)}
+                          {getIcon(result.type, result.url)}
                         </div>
-                        <div className="ml-4 flex-auto">
-                          <p className="font-semibold text-slate-900 dark:text-white">
+                        <div className="ml-4 min-w-0 flex-auto">
+                          <p className="truncate font-semibold text-slate-900 dark:text-white">
                             {result.title}
-                            <span className="ml-2 text-xs font-medium text-slate-400 dark:text-slate-500 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800">
+                            <span className="ml-2 hidden text-xs font-medium text-slate-400 dark:text-slate-500 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 sm:inline">
                               {result.type}
                             </span>
                           </p>
@@ -137,6 +146,12 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                         </div>
                         <ChevronRight className="ml-3 h-5 w-5 flex-none text-slate-300 dark:text-slate-600" />
                       </button>
+                      {result.appUrl ? (
+                        <a href={result.appUrl} target="_blank" rel="noopener" onClick={onClose} aria-label={`Open ${result.title}`}
+                          className="mr-1 inline-flex min-h-9 flex-none items-center gap-1.5 rounded-full bg-slate-900 px-3.5 text-xs font-semibold text-white transition hover:bg-blue-600 dark:bg-white dark:text-slate-900">
+                          Open <ExternalLink size={12} />
+                        </a>
+                      ) : null}
                     </li>
                   ))}
                 </ul>
@@ -151,6 +166,12 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
           {/* Default State / Quick Links */}
           {!query && (
             <div className="p-4 border-t border-gray-50 dark:border-slate-800 bg-gray-50/50 dark:bg-slate-900/50 rounded-b-2xl">
+              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">Products</p>
+              <div className="mb-4 flex gap-2 flex-wrap">
+                {PRODUCTS.map(p => (
+                  <button key={p.id} onClick={() => handleNavigate(p.detailsUrl)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-full text-sm font-medium text-slate-700 dark:text-slate-200 hover:border-blue-300 dark:hover:border-blue-500 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"><p.icon size={14} /> {p.name}</button>
+                ))}
+              </div>
               <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">Quick Links</p>
               <div className="flex gap-2 flex-wrap">
                 <button onClick={() => handleNavigate('/services')} className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-sm text-slate-600 dark:text-slate-300 hover:border-primary-300 dark:hover:border-blue-500 hover:text-primary-600 dark:hover:text-blue-400 transition-colors">Web Development</button>

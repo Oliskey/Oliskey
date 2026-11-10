@@ -3,6 +3,8 @@ import { Search, User, LogOut, LayoutDashboard, ChevronRight, ArrowRight, Sun, M
 // @ts-ignore
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import SearchModal from './SearchModal';
+import AppsMenu from './AppsMenu';
+import { PRODUCTS } from '../data/products';
 import Logo from './Logo';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -170,6 +172,9 @@ const Navbar: React.FC = () => {
                 </Link>
               )}
 
+              {/* Every Oliskey product, one tap away */}
+              <AppsMenu />
+
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
@@ -219,6 +224,7 @@ const Navbar: React.FC = () => {
               >
                 <Search size={24} strokeWidth={2} />
               </button>
+              <AppsMenu className={`transition-opacity duration-300 ${isOpen ? 'pointer-events-none opacity-0' : 'opacity-100'}`} />
 
               {/* Animated Hamburger Icon */}
               <button
@@ -293,6 +299,20 @@ const Navbar: React.FC = () => {
                 )}
               </div>
             ))}
+          </div>
+
+          {/* Open any Oliskey product straight from the menu */}
+          <div className="px-6 pb-6 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Open an app</p>
+            <div className="grid gap-2">
+              {PRODUCTS.map(({ id, name, short, appUrl, icon: Icon, tint }) => (
+                <a key={id} href={appUrl} target="_blank" rel="noopener" className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-slate-50 p-3 transition active:scale-[.98] dark:border-slate-800 dark:bg-slate-900">
+                  <span className={`grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br ${tint} text-white`}><Icon size={19} /></span>
+                  <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold text-slate-900 dark:text-white">{name}</span><span className="block truncate text-xs text-slate-500 dark:text-slate-400">{short}</span></span>
+                  <ArrowRight size={18} className="shrink-0 -rotate-45 text-slate-400" />
+                </a>
+              ))}
+            </div>
           </div>
 
           {/* Footer Actions */}

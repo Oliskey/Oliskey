@@ -35,6 +35,7 @@ const Profile = lazy(() => import('./pages/Profile'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Products = lazy(() => import('./pages/Products'));
 const FleetProductPage = lazy(() => import('./pages/FleetProductPage'));
+const AlphaProductPage = lazy(() => import('./pages/AlphaProductPage'));
 const ProductOperations = lazy(() => import('./pages/ProductOperations'));
 const CourseDetail = lazy(() => import('./pages/CourseDetail'));
 const BlogPostDetail = lazy(() => import('./pages/BlogPostDetail'));
@@ -181,6 +182,7 @@ const RouteContent: React.FC = () => {
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/fleet-operations" element={<FleetProductPage />} />
+                <Route path="/trading-app" element={<AlphaProductPage />} />
                 <Route path="/app" element={<AppShowcase />} />
                 <Route path="/school-app" element={<Navigate to="/school-management" replace />} />
                 {SCHOOL_PAGE_PATHS.map((p) => <Route key={p} path={p} element={<SchoolFeaturePage />} />)}

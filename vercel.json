@@ -46,6 +46,8 @@
       "source": "/school-app",
       "destination": "/school-management",
       "permanent": true
-    }
+    },
+    { "source": "/alpha", "destination": "/trading-app", "permanent": true },
+    { "source": "/oliskey-alpha", "destination": "/trading-app", "permanent": true }
   ]
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowUpRight, CheckCircle2, AlertCircle, Copy, ExternalLink, Gauge, GraduationCap, Globe, Search, ShieldCheck, Activity, ClipboardCheck } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, CheckCircle2, AlertCircle, Copy, ExternalLink, Gauge, GraduationCap, CandlestickChart, Globe, Search, ShieldCheck, Activity, ClipboardCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const products = [
@@ -35,6 +35,22 @@ const products = [
     accent: 'violet',
     checklist: ['Unique page title and meta description', 'Canonical URL matches the product domain', 'Sitemap and robots.txt accessible', 'Product domain covered in Search Console'],
   },
+  {
+    id: 'alpha',
+    name: 'Oliskey Alpha',
+    category: 'Trading practice app',
+    domain: 'https://alpha.oliskey.com/',
+    repo: 'https://github.com/Oliskey/oliskey-alpha',
+    deploy: 'https://vercel.com/oliskeylee',
+    sitemap: 'https://alpha.oliskey.com/sitemap.xml',
+    robots: 'https://alpha.oliskey.com/robots.txt',
+    seoProperty: 'https://search.google.com/search-console?resource_id=sc-domain%3Aoliskey.com',
+    title: 'Oliskey Alpha: practice trading with demo credits and live crypto prices',
+    description: 'Practise Fixed Time, InZone and Forex trades with demo credits on live crypto prices, follow an AI that shows its real record, and study free lessons.',
+    icon: CandlestickChart,
+    accent: 'violet',
+    checklist: ['Unique page title and meta description', 'Canonical URL matches the product domain', 'Publisher points to www.oliskey.com', 'Product page on www.oliskey.com/trading-app'],
+  },
 ];
 
 const LinkButton = ({ href, children }: { href: string; children: React.ReactNode }) => <a href={href} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">{children}<ExternalLink size={14} /></a>;
@@ -63,7 +79,7 @@ const ProductOperations: React.FC = () => {
           <a href="https://search.google.com/search-console" target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 sm:self-auto">Open Search Console <ArrowUpRight size={17} /></a>
         </div>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.map(p => {
             const ProductIcon = p.icon;
             return <button key={p.id} type="button" onClick={() => setSelected(p.id)} className={`rounded-2xl border p-5 text-left transition sm:p-6 ${selected === p.id ? 'border-blue-500 bg-blue-50 shadow-sm ring-2 ring-blue-500/10 dark:bg-blue-950/30' : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900'}`}>

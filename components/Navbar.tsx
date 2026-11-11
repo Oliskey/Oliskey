@@ -95,14 +95,18 @@ const Navbar: React.FC = () => {
 
   return (
     <>
+      {/* Top bar: transparent at the top; once you scroll it gathers into a floating glass capsule (full width while the phone
+          menu is open). Moves on the glide curve; only its padding, colour and shadow change. */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-300 ${scrolled || isOpen
-          ? 'oliskey-liquid-glass bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-white/70 dark:border-slate-700/70 shadow-sm'
-          : 'bg-white/0 dark:bg-slate-950/0 backdrop-blur-none border-transparent'
-          }`}
+        className={`fixed top-0 left-0 right-0 z-[60] transition-[padding] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${scrolled && !isOpen ? 'px-3 pt-3 sm:px-5' : 'px-0 pt-0'}`}
       >
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20 items-center">
+        <div className={`relative z-10 mx-auto max-w-7xl px-4 transition-[background-color,box-shadow,border-color,border-radius] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] sm:px-6 lg:px-8 ${isOpen
+          ? 'border-b border-transparent bg-white dark:bg-slate-950'
+          : scrolled
+            ? 'oliskey-liquid-glass rounded-full border border-white/70 shadow-[0_10px_40px_-12px_rgba(15,23,42,0.25)] dark:border-white/10'
+            : 'rounded-none border border-transparent'
+          }`}>
+          <div className={`flex items-center justify-between transition-[height] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${scrolled && !isOpen ? 'h-16' : 'h-20'}`}>
             {/* Logo */}
             <a
               href="/"

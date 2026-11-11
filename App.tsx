@@ -1,3 +1,4 @@
+import SmoothScroll from './components/motion/SmoothScroll';
 import React, { useEffect, Suspense, lazy, useState } from 'react';
 // @ts-ignore
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useNavigate, useNavigationType } from 'react-router-dom';
@@ -278,6 +279,7 @@ const AppContent: React.FC = () => {
       {/* Main Application Structure - Rendered immediately so it's ready behind the splash */}
       <Router>
         <RouteListener />
+        <SmoothScroll />
         <div
           className={`flex flex-col min-h-screen relative bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-300 ${showSplash ? 'h-screen overflow-hidden' : ''}`}
         >

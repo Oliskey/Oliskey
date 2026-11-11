@@ -2,6 +2,8 @@ import React from 'react';
 import { ArrowRight, ExternalLink, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PRODUCTS } from '../data/products';
+import ThemedShot from '../components/ThemedShot';
+import Tilt3D from '../components/motion/Tilt3D';
 
 // The product hub: every live product with what it does, its page here, and a button that opens it.
 const Products: React.FC = () => (
@@ -31,10 +33,10 @@ const Products: React.FC = () => (
     </section>
 
     <section className="mx-auto grid max-w-7xl gap-5 px-5 pb-16 sm:px-8 sm:pb-24 md:grid-cols-2 lg:grid-cols-3 lg:gap-7">
-      {PRODUCTS.map(({ id, name, eyebrow, description, appUrl, appLabel, detailsUrl, icon: Icon, image, tint, points }) => (
-        <article id={id} key={id} className="group flex min-w-0 scroll-mt-24 flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
+      {PRODUCTS.map(({ id, name, eyebrow, description, appUrl, appLabel, detailsUrl, icon: Icon, shots, tint, points }) => (
+        <Tilt3D as="article" id={id} key={id} max={5} className="group flex min-w-0 scroll-mt-24 flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
           <div className={`relative min-h-48 overflow-hidden bg-gradient-to-br ${tint} p-6 text-white sm:min-h-52 sm:p-7`}>
-            {image ? <img src={image} alt="" decoding="async" className="absolute inset-0 h-full w-full object-cover object-left-top opacity-30 mix-blend-screen" /> : <div aria-hidden className="absolute -right-10 -top-10 h-64 w-64 rounded-full border-[36px] border-white/10" />}
+            <ThemedShot shots={shots} alt="" className="absolute inset-0 h-full w-full object-cover object-left-top opacity-25" />
             <div className="relative flex items-start justify-between gap-4">
               <div><p className="text-sm font-semibold text-white/75">{eyebrow}</p><Link to={detailsUrl} className="mt-3 inline-block rounded-sm text-3xl font-bold tracking-tight transition hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">{name}</Link></div>
               <span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md"><Icon size={25} /></span>
@@ -49,7 +51,7 @@ const Products: React.FC = () => (
               <Link to={detailsUrl} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800">Learn more <ArrowRight size={16} /></Link>
             </div>
           </div>
-        </article>
+        </Tilt3D>
       ))}
     </section>
 

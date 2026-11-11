@@ -162,7 +162,13 @@ textarea:focus-visible {
 }
 
 .route-content-enter {
-  animation: oliskey-page-enter 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  /* each new page arrives out of depth: it rises from slightly behind the screen and settles flat (3D, then no transform at all) */
+  animation: oliskey-page-enter-3d 560ms cubic-bezier(0.32, 0.72, 0, 1);
+  transform-origin: 50% 0;
+}
+@keyframes oliskey-page-enter-3d {
+  from { opacity: 0; transform: perspective(1400px) translate3d(0, 18px, -60px) rotateX(5deg); }
+  to { opacity: 1; transform: none; }
 }
 
 .route-content-restore {
@@ -176,3 +182,62 @@ textarea:focus-visible {
     transform: none !important;
   }
 }
+
+/* ── Motion system (Frontend Skills: one tokens file; only transform and opacity move; Reduce Motion = fades only) ── */
+:root {
+  --ease-respond: cubic-bezier(0.2, 0.8, 0.2, 1);   /* press, hover */
+  --ease-glide: cubic-bezier(0.32, 0.72, 0, 1);     /* things that travel and arrive */
+  --ease-exit: cubic-bezier(0.3, 0, 0.8, 0.15);     /* leaving */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);    /* fades, colour */
+  --dur-press: 120ms;
+  --dur-hover: 160ms;
+  --dur-reveal: 720ms;   /* marketing reveals: a little slower than in-app moves, still calm */
+}
+
+/* Scroll reveal: added by components/motion/Reveal.tsx when the element enters the screen. */
+.reveal { opacity: 0; transform: translate3d(0, 18px, 0); transition: opacity var(--dur-reveal) var(--ease-glide), transform var(--dur-reveal) var(--ease-glide); transition-delay: var(--reveal-delay, 0ms); }
+.reveal.is-in { opacity: 1; transform: none; }
+
+/* A slow drifting strip of words (paused for Reduce Motion). */
+@keyframes oliskey-ticker { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-50%, 0, 0); } }
+.ticker-track { animation: oliskey-ticker 48s linear infinite; }
+.ticker:hover .ticker-track { animation-play-state: paused; }
+
+/* Data travelling along a connection line. */
+@keyframes oliskey-flow { to { stroke-dashoffset: -64; } }
+.flow-line { stroke-dasharray: 6 26; animation: oliskey-flow 1.6s linear infinite; }
+
+/* Gentle idle float for papers and screens. */
+@keyframes oliskey-float { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -6px, 0); } }
+.float-idle { animation: oliskey-float 6s var(--ease-standard) infinite; }
+
+/* Hero grid: light passing over a quiet dot grid. */
+@keyframes oliskey-sweep { from { transform: translate3d(-40%, 0, 0); } to { transform: translate3d(140%, 0, 0); } }
+.grid-sweep { animation: oliskey-sweep 7s var(--ease-standard) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { transform: none; transition: opacity 200ms linear; }
+  .ticker-track, .flow-line, .float-idle, .grid-sweep { animation: none !important; }
+}
+
+/* 3D cards (Tilt3D): the soft light that follows the pointer */
+:root { --tilt-glare: rgba(255, 255, 255, 0.55); }
+.dark { --tilt-glare: rgba(148, 163, 184, 0.12); }
+
+/* BusinessFilm: orders, payments and reminders keep arriving once the shop is online */
+.film-order { opacity: 0; }
+.film-orders.is-live .film-order { animation: film-order 3.6s var(--ease-glide) infinite both; }
+@keyframes film-order {
+  0% { opacity: 0; transform: translate3d(0, 22px, 0) scale(0.9); }
+  12% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+  62% { opacity: 1; transform: translate3d(0, -64px, 0) scale(1); }
+  84%, 100% { opacity: 0; transform: translate3d(0, -88px, 0) scale(0.98); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .film-orders.is-live .film-order { animation: none; opacity: 1; transform: translate3d(0, calc(var(--i) * -36px), 0); }
+}
+
+/* Smooth wheel scrolling (Lenis, desktop only) */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }

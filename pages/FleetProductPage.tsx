@@ -1,3 +1,5 @@
+import ThemedShot from '../components/ThemedShot';
+import { productById } from '../data/products';
 import React from 'react';
 import { ArrowRight, CalendarClock, ExternalLink, Gauge, ShieldCheck, Truck, Users, Wallet, Wrench } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -36,7 +38,7 @@ const FleetProductPage: React.FC = () => (
           <div aria-hidden className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-violet-500/15 via-blue-500/10 to-transparent blur-2xl" />
           <figure className="relative overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white shadow-2xl shadow-slate-900/15 dark:border-slate-700/70 dark:bg-slate-900">
             <div className="flex items-center gap-1.5 border-b border-slate-200/80 px-4 py-3 dark:border-slate-700/70" aria-hidden><span className="size-2.5 rounded-full bg-slate-300 dark:bg-slate-600" /><span className="size-2.5 rounded-full bg-slate-300 dark:bg-slate-600" /><span className="size-2.5 rounded-full bg-slate-300 dark:bg-slate-600" /><span className="ml-3 truncate text-xs text-slate-400">tricycles.oliskey.com</span></div>
-            <img src="/products/fleet-dashboard.webp" alt="Oliskey Fleet admin dashboard showing bank obligation, collections, items needing attention and an operations summary" width={1600} height={1000} className="block h-auto w-full" />
+            <ThemedShot shots={productById('fleet').shots} alt="Oliskey Fleet admin dashboard showing bank obligation, collections, items needing attention and an operations summary" eager className="block h-auto w-full" />
             <figcaption className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">The admin dashboard, with demo company data.</figcaption>
           </figure>
         </div>

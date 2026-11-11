@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowRight, BarChart3, Bell, Bot, BookOpen, CandlestickChart, CheckCircle2, ExternalLink, LineChart, ShieldCheck, Target, Timer } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { productById } from '../data/products';
+import ThemedShot from '../components/ThemedShot';
 
 // Oliskey Alpha's page on the main site. Honest by design: demo credits only, no promise of profit, real-money trading not offered.
 const alpha = productById('alpha');
@@ -40,7 +41,7 @@ const AlphaProductPage: React.FC = () => (
           <div aria-hidden className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-[#5B3DF5]/20 via-[#1E6FD9]/10 to-transparent blur-2xl" />
           <figure className="relative overflow-hidden rounded-[1.75rem] border border-slate-800 bg-black shadow-2xl shadow-slate-900/25">
             <div className="flex items-center gap-1.5 border-b border-white/10 px-4 py-3" aria-hidden><span className="size-2.5 rounded-full bg-white/20" /><span className="size-2.5 rounded-full bg-white/20" /><span className="size-2.5 rounded-full bg-white/20" /><span className="ml-3 truncate text-xs text-white/40">alpha.oliskey.com</span></div>
-            <img src="/products/alpha-terminal.webp" alt="Oliskey Alpha trading screen: a live candle chart with Up and Down buttons, amount and duration, and a demo balance" width={1600} height={1000} className="block h-auto w-full" />
+            <ThemedShot shots={productById('alpha').shots} alt="Oliskey Alpha trading screen: a live candle chart with Up and Down buttons, amount and duration, and a demo balance" eager className="block h-auto w-full" />
             <figcaption className="px-4 py-3 text-xs text-white/50">The trading screen, on a demo account.</figcaption>
           </figure>
         </div>

@@ -97,6 +97,23 @@ Why it looked like a toy before, and what fixed it:
   - The room uses a 2k lightmap with padded islands (mipmapped, like the trading floor).
   - People keep their own textures and are lit at runtime by an indoor environment.
 
+
+### Fleet world (2026-11-11)
+- **Drivers in every situation:**
+  - in their kekes (one waiting, one paying from his seat)
+  - one driving in through an open bay door, back wheels still outside
+  - outside: paying on their phones, or talking
+- **Staff and admin:**
+  - The area staff (John Ade) records a payment on a tablet.
+  - The company admin (Folake Ajose) follows collections at the operations desk.
+- **Real app screens:** the phones, tablet and desk monitors show the real Oliskey Fleet app:
+  - phones: Make payment, Payment history
+  - tablet: Record payment
+  - desk monitors: Finance and Collections
+  - These were captured from the app's own demo mode, running locally with its seed data.
+- **Real proportions:** kekes have clear windscreens (drivers are visible) and the driver's saddle sits at real height.
+- **Camera tour:** room → operations wall → a driver paying the staff → a driver paying from his keke → the bay door.
+
 ## Motion
 - Page entrance 260 ms rise 10 px (`route-enter`); scroll reveals 0.7 s rise 24 px (GSAP ScrollTrigger, once).
 - Easing tokens: respond (0.2,0.8,0.2,1), glide (0.32,0.72,0,1), exit (0.3,0,0.8,0.15).

@@ -10,6 +10,7 @@ import kitsJson from './kits.json';
 import District from './District';
 import scales from './lightmaps.json';
 import type { Stop, Zone } from './stops';
+import { hq } from './hq';
 
 // The live Oliskey headquarters. Architecture comes from Blender as GLB with light baked in (one lightmap per zone for day,
 // one for night), so the browser only multiplies colour by stored light — realistic and cheap on phones.
@@ -47,7 +48,7 @@ function tex(url: string, srgb = true, flip = false) {
   if (!t) {
     let done = () => {};
     texReady.set(url, new Promise<void>((r) => { done = r; }));
-    t = loader.load(url, () => done(), undefined, () => done());
+    t = loader.load(hq(url), () => done(), undefined, () => done());
     t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
     t.flipY = flip; t.anisotropy = 4;
     texCache.set(url, t);
@@ -66,6 +67,10 @@ export function screenImage(name: string, mode: Mode): string | null {
   if (name === 'screen_school_board_a') return '/hq/tex/school_board_a.webp';
   if (name === 'screen_school_board_b') return '/hq/tex/school_board_b.webp';
   if (name.startsWith('screen_school_admin')) return `/products/school-${v}.webp`;
+  // the Fleet world: the real Fleet app — drivers paying on their phones, the staff tablet, the admin's collections
+  if (name.startsWith('screen_fleet_phone')) return name === 'screen_fleet_phone5' ? `/hq/tex/fleet_history_${v}.webp` : `/hq/tex/fleet_pay_${v}.webp`;
+  if (name.startsWith('screen_fleet_tablet')) return `/hq/tex/fleet_staff_${v}.webp`;
+  if (name.startsWith('screen_fleet_desk')) return `/hq/tex/fleet_admin_${v}.webp`;
   for (const pid of ['school', 'fleet', 'alpha']) {
     if (name === `screen_lobby_${pid}` || name === `screen_${pid}_main`) return `/products/${pid}-${v}.webp`;
   }
@@ -140,7 +145,7 @@ function tiled(file: string, metres: number, srgb = true) {
   const key = `${file}@${metres}`;
   let t = surfCache.get(key);
   if (!t) {
-    t = loader.load(`/hq/surf/${file}.webp`);
+    t = loader.load(hq(`/hq/surf/${file}.webp`));
     t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
     t.repeat.set(1 / metres, 1 / metres); t.channel = 1; t.anisotropy = 8;
     surfCache.set(key, t);
@@ -157,7 +162,7 @@ function applySurface(m: THREE.MeshStandardMaterial) {
 const lmUrl = (z: Zone, mode: Mode, phone: boolean) => `/hq/lm/${z}-${mode}${phone && LM_SIZE[z] > 1024 ? '-1k' : ''}.webp`;
 
 const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: string | null; envVer: number; onLit?: () => void }> = ({ zone, mode, phone, hover, envVer, onLit }) => {
-  const { scene } = useGLTF(`/hq/glb/${zone}.glb`);
+  const { scene } = useGLTF(hq(`/hq/glb/${zone}.glb`));
   const { scene: root } = useThree();
   const ticker = useRef<THREE.Texture | null>(null);
   useFrame((_, dt) => { if (ticker.current) ticker.current.offset.x = (ticker.current.offset.x + dt * 0.012) % 1; });
@@ -268,7 +273,7 @@ const Surroundings: React.FC<{ mode: Mode; lite: boolean; envVer: number }> = ({
   const [bg, setBg] = useState<THREE.Texture | null>(null);
   useEffect(() => {
     let live = true;
-    new THREE.TextureLoader().load(`/hq/env/${mode}-bg.jpg`, (t) => {
+    new THREE.TextureLoader().load(hq(`/hq/env/${mode}-bg.jpg`), (t) => {
       if (!live) return;
       t.colorSpace = THREE.SRGBColorSpace; t.mapping = THREE.EquirectangularReflectionMapping;
       setBg(t);
@@ -298,7 +303,7 @@ const ROOM_Y: Record<string, [number, number]> = { school: [22, 44], fleet: [44,
 const Seals: React.FC<{ zones: readonly Zone[]; mode: Mode }> = ({ zones, mode }) => {
   const mats = useMemo(() => ({
     wall: new THREE.MeshStandardMaterial({ color: 0x0b1a3a, roughness: 0.55, metalness: 0.0 }),
-    logo: new THREE.MeshBasicMaterial({ map: (() => { const t = new THREE.TextureLoader().load('/hq/tex/logo_sign.webp'); t.colorSpace = THREE.SRGBColorSpace; return t; })(), toneMapped: false }),
+    logo: new THREE.MeshBasicMaterial({ map: (() => { const t = new THREE.TextureLoader().load(hq('/hq/tex/logo_sign.webp')); t.colorSpace = THREE.SRGBColorSpace; return t; })(), toneMapped: false }),
   }), []);
   useEffect(() => { mats.wall.envMap = ENV[mode]; mats.wall.envMapIntensity = mode === 'day' ? 0.9 : 0.6; mats.wall.color.set(mode === 'day' ? 0x13285a : 0x0b1a3a); mats.wall.needsUpdate = true; }, [mode, mats]);
   const walls: React.ReactNode[] = [];
@@ -355,7 +360,7 @@ const Doors: React.FC<{ mode: Mode }> = ({ mode }) => {
 const PROP_FILES = (propsJson as { models: Record<string, string> }).models;
 type PropItem = { m: string; zone: Zone; p: [number, number, number]; yaw: number; s: number };
 const Prop: React.FC<{ item: PropItem; mode: Mode }> = ({ item, mode }) => {
-  const { scene } = useGLTF(`/hq/props/${PROP_FILES[item.m]}.glb`);
+  const { scene } = useGLTF(hq(`/hq/props/${PROP_FILES[item.m]}.glb`));
   const obj = useMemo(() => {
     const c = scene.clone(true);
     c.traverse((o) => {
@@ -387,8 +392,8 @@ const STATE_TEX: Record<string, string> = {
 };
 const noRay = () => {};
 const TradingFloor: React.FC<{ mode: Mode; phone: boolean }> = ({ mode, phone }) => {
-  const kit = useGLTF('/hq/glb/alpha_kit.glb').scene;
-  const crowd = useGLTF('/hq/glb/alpha_people.glb').scene;
+  const kit = useGLTF(hq('/hq/glb/alpha_kit.glb')).scene;
+  const crowd = useGLTF(hq('/hq/glb/alpha_people.glb')).scene;
   const { gl } = useThree();
   const indoor = useMemo(() => { const pm = new THREE.PMREMGenerator(gl); const t = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); return t; }, [gl]);
   const built = useMemo(() => {
@@ -479,7 +484,7 @@ const TradingFloor: React.FC<{ mode: Mode; phone: boolean }> = ({ mode, phone })
 
 /** People of a world (their own textures: sharp faces and hands), lit by an indoor environment like the room's lights. */
 const Crowd: React.FC<{ zone: Zone; mode: Mode }> = ({ zone, mode }) => {
-  const { scene } = useGLTF(`/hq/glb/${zone}_people.glb`);
+  const { scene } = useGLTF(hq(`/hq/glb/${zone}_people.glb`));
   const { gl } = useThree();
   const indoor = useMemo(() => { const pm = new THREE.PMREMGenerator(gl); const t = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); return t; }, [gl]);
   const mats = useMemo(() => {
@@ -619,7 +624,7 @@ const Env: React.FC<{ mode: Mode; onEnv: () => void }> = ({ mode, onEnv }) => {
       return;
     }
     let live = true;
-    new RGBELoader().load('/hq/env/day.hdr', (t) => {
+    new RGBELoader().load(hq('/hq/env/day.hdr'), (t) => {
       t.mapping = THREE.EquirectangularReflectionMapping;
       ENV.day = pm.fromEquirectangular(t).texture; t.dispose(); pm.dispose();
       if (live) onEnv();

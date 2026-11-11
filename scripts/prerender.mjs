@@ -2,6 +2,8 @@
 // text summary for crawlers, plus sitemap.xml and robots.txt. The app takes over in the browser as usual.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+const HQ = JSON.parse(readFileSync(new URL('../src/three/hqManifest.json', import.meta.url), 'utf8'));
+const hq = (p) => (HQ[p] ? `${p}?v=${HQ[p]}` : p);
 
 const src = readFileSync('src/lib/routes.ts', 'utf8');
 const SITE = /SITE = '([^']+)'/.exec(src)[1];
@@ -19,7 +21,7 @@ const worldKey = Object.keys(manifest).find((k) => k === 'src/three/World.tsx') 
 const worldJs = worldKey ? [...new Set(chunkFiles(worldKey))] : [];
 const preload3d = (zone) => [
   ...worldJs.map((f) => `<link rel="modulepreload" href="/${f}" />`),
-  `<link rel="preload" href="/hq/glb/${zone}.glb" as="fetch" crossorigin />`,
+  `<link rel="preload" href="${hq(`/hq/glb/${zone}.glb`)}" as="fetch" crossorigin />`,
 ].join('\n    ');
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 

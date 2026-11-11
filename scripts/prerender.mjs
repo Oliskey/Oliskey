@@ -30,7 +30,7 @@ const PRODUCTS = [
   { path: '/alpha', name: 'Oliskey Alpha', app: 'https://alpha.oliskey.com/', cat: 'FinanceApplication', sub: 'Trading practice and market learning app', os: 'Web, Android, iOS' },
   { path: '/labs', name: 'Oliskey Labs', cat: null, sub: 'Research and new technology' },
 ];
-const ORG = { '@type': 'Organization', '@id': 'https://www.oliskey.com/#org', name: 'Oliskey', legalName: 'Oliskeylee Ltd.', url: 'https://www.oliskey.com/',
+const ORG = { '@type': 'Organization', '@id': 'https://www.oliskey.com/#organization', name: 'Oliskey', legalName: 'Oliskeylee Ltd.', url: 'https://www.oliskey.com/',
   logo: 'https://www.oliskey.com/apple-touch-icon.png', email: 'oliskeylee@gmail.com', address: { '@type': 'PostalAddress', addressLocality: 'Lagos', addressCountry: 'NG' },
   sameAs: PRODUCTS.filter((p) => p.app).map((p) => p.app) };
 const ld = (o) => `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', ...o }).replace(/</g, '\\u003c')}</script>`;

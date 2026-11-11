@@ -96,7 +96,7 @@ export const PRODUCTS: Product[] = [
     path: '/labs',
     icon: FlaskConical,
     tint: '#7C5CFF',
-    shots: { light: '/hq/stills/labs-day.webp', dark: '/hq/stills/labs-night.webp' },
+    shots: { light: '/products/labs-light.webp', dark: '/products/labs-dark.webp' },
     points: [
       { title: 'AI research', text: 'Exploring how AI can make school, transport and trading software simpler to use.' },
       { title: 'Prototypes', text: 'New ideas are built as small prototypes and tested before they become products.' },

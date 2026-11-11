@@ -7,15 +7,42 @@ import { homeStops, type Zone } from '../three/stops';
 import { RoomBlocks } from '../components/RoomBlocks';
 import ProductSheet from '../components/ProductSheet';
 import ProductTile from '../components/ProductTile';
+import ThemedImage from '../components/ThemedImage';
 import CTA from '../components/CTA';
 import { SectionHead } from '../components/Section';
-import { CONTACT, PRODUCTS, productById, type ProductId } from '../lib/products';
-import { SOLUTIONS, INDUSTRIES } from '../lib/content';
+import { PRODUCTS, productById, type ProductId } from '../lib/products';
 import { useReveal } from '../lib/reveal';
 
 const Panel: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
   <div className={`scene-panel w-full p-6 sm:p-7 md:w-[440px] ${className}`}>{children}</div>
 );
+
+/** The closing scene of a world: what it changes, and the way to its own page for the full story. */
+const WorldFinale: React.FC<{ id: ProductId; onOther: () => void }> = ({ id, onOther }) => {
+  const p = productById(id);
+  const Icon = p.icon;
+  return (
+    <StopBlock tall align="center">
+      <div className="scene-panel w-full overflow-hidden md:w-[620px]">
+        <div className="relative aspect-[16/8] bg-surface">
+          <ThemedImage light={p.shots.light} dark={p.shots.dark} alt={`${p.name} dashboard`} className="h-full w-full object-cover object-left-top" />
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-raised via-raised/10 to-transparent" />
+        </div>
+        <div className="-mt-10 p-6 sm:p-8">
+          <span className="relative grid h-12 w-12 place-items-center rounded-[14px] text-white shadow-lg" style={{ background: p.tint }}><Icon size={22} /></span>
+          <h2 className="mt-4 text-[28px] font-bold leading-tight tracking-tight text-ink sm:text-[34px]">From manual to digital with {p.name}</h2>
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+            {p.points.map((pt) => <li key={pt.title} className="flex items-start gap-2 text-[15px] text-ink"><Check size={17} className="mt-0.5 shrink-0 text-accent" />{pt.title}</li>)}
+          </ul>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Link to={p.path} className="btn-primary">Learn more about {p.name.replace('Oliskey ', '')}<ArrowRight size={16} /></Link>
+            <button type="button" onClick={onOther} className="btn-secondary">Choose another world</button>
+          </div>
+        </div>
+      </div>
+    </StopBlock>
+  );
+};
 
 const Home: React.FC = () => {
   const [sheet, setSheet] = useState<ProductId | null>(null);
@@ -37,7 +64,7 @@ const Home: React.FC = () => {
   }, [justChose, room]);
   return (
     <>
-      <Journey zones={zones} stops={stops} stills={['outside', 'entrance', 'lobby', ...(room ? [room, room, room] : [])]}
+      <Journey zones={zones} stops={stops} stills={['outside', 'entrance', 'lobby', ...(room ? [room, room, room, room, room] : [])]}
         onSelect={(id) => (id === room ? setSheet(id as ProductId) : choose(id as ProductId))}
         label={`A walk through the Oliskey headquarters${room ? ` into the ${productById(room).name} world` : ''}`}>
         {/* 1 · the entrance */}
@@ -88,61 +115,29 @@ const Home: React.FC = () => {
           </Panel>
         </StopBlock>
 
-        {room && <RoomBlocks key={room} id={room} heading="h2" onShow={() => setSheet(room)} />}
+        {room && (
+          <>
+            <StopBlock align="right" key={`${room}-preview`}>
+              <Panel>
+                <p className="eyebrow">Your world</p>
+                <h2 className="mt-3 text-[28px] font-bold leading-tight tracking-tight text-ink sm:text-[32px]">{productById(room).name}</h2>
+                <p className="mt-3 text-[16px] leading-relaxed text-muted">{productById(room).tagline}. Keep scrolling to step inside.</p>
+                <ChevronDown size={20} className="mt-4 animate-bounce text-accent" />
+              </Panel>
+            </StopBlock>
+            <RoomBlocks key={room} id={room} heading="h2" onShow={() => setSheet(room)} />
+            <WorldFinale id={room} onOther={() => { setParams({}, { replace: true, preventScrollReset: true }); document.getElementById('showroom')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }} />
+          </>
+        )}
       </Journey>
 
       <ProductSheet id={sheet} onClose={() => setSheet(null)} />
 
-      {/* after the walk: everything in one calm, scannable place */}
+      {/* after the walk: the other worlds, then the account call to action (details live on each product's own page) */}
       <section className="relative bg-page py-20 md:py-28">
         <div className="page-x">
-          <div data-reveal><SectionHead eyebrow="Our products" title="Explore the Oliskey product world" lead="Four products, each with its own place at headquarters." /></div>
-          <div className="mt-12 grid gap-5 sm:grid-cols-2">{PRODUCTS.map((p) => <div key={p.id} data-reveal><ProductTile p={p} /></div>)}</div>
-        </div>
-      </section>
-
-      <section className="bg-surface py-20 md:py-28">
-        <div className="page-x grid gap-12 lg:grid-cols-[1fr_1.2fr]">
-          <div data-reveal><SectionHead eyebrow="Solutions" title="Start from the job you need done" lead="Pick what you are trying to do; we point you to the right product." /></div>
-          <ul className="grid gap-px overflow-hidden rounded-card border border-line bg-line">
-            {SOLUTIONS.map((s) => (
-              <li key={s.title} data-reveal className="bg-raised">
-                <Link to={s.to} className="group flex items-center gap-4 p-5 transition-colors hover:bg-surface sm:p-6">
-                  <div className="min-w-0 flex-1"><h3 className="text-[17px] font-semibold text-ink">{s.title}</h3><p className="mt-1 text-[15px] text-muted">{s.text}</p></div>
-                  <ArrowRight size={18} className="shrink-0 text-faint transition-transform group-hover:translate-x-0.5 group-hover:text-ink" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="py-20 md:py-28">
-        <div className="page-x">
-          <div data-reveal><SectionHead eyebrow="Industries" title="Built for the places we know" /></div>
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {INDUSTRIES.map((i) => {
-              const Icon = i.icon;
-              return (
-                <div key={i.title} data-reveal>
-                  <Icon size={26} className="text-accent" strokeWidth={1.8} />
-                  <h3 className="mt-4 text-[18px] font-semibold text-ink">{i.title}</h3>
-                  <p className="mt-2 text-[15px] leading-relaxed text-muted">{i.text}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-t border-line py-20 md:py-28">
-        <div className="page-x grid gap-10 lg:grid-cols-2">
-          <div data-reveal><SectionHead eyebrow="About Oliskey" title="A software company in Lagos" lead={`${CONTACT.company} designs and builds the Oliskey products — from the screens people tap to the systems behind them.`} /></div>
-          <dl data-reveal className="grid content-start gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2">
-            {[['Company', CONTACT.company], ['Based in', CONTACT.city], ['Live products', 'School, Fleet, Alpha'], ['In research', 'Oliskey Labs']].map(([k, v]) => (
-              <div key={k} className="bg-raised p-5 sm:p-6"><dt className="text-[13px] font-medium text-muted">{k}</dt><dd className="mt-1 text-[18px] font-semibold text-ink">{v}</dd></div>
-            ))}
-          </dl>
+          <div data-reveal><SectionHead eyebrow="Oliskey worlds" title={room ? 'Explore another world' : 'Every product is a world'} lead="Each one turns a manual way of working into a digital one." /></div>
+          <div className="mt-12 grid gap-5 sm:grid-cols-2">{PRODUCTS.filter((p) => p.id !== room).map((p) => <div key={p.id} data-reveal><ProductTile p={p} /></div>)}</div>
         </div>
       </section>
 

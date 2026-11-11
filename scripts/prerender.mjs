@@ -7,6 +7,19 @@ const src = readFileSync('src/lib/routes.ts', 'utf8');
 const SITE = /SITE = '([^']+)'/.exec(src)[1];
 const routes = [...src.matchAll(/\{ path: '([^']+)', title: '([^']+)', description: '([^']+)' \}/g)].map((m) => ({ path: m[1], title: m[2], description: m[3] }));
 const shell = readFileSync('dist/index.html', 'utf8');
+// Preload what the 3D scene needs, so it downloads alongside the page instead of after it.
+let manifest = {};
+try { manifest = JSON.parse(readFileSync('dist/.vite/manifest.json', 'utf8')); } catch { /* no manifest */ }
+const chunkFiles = (key, seen = new Set()) => {
+  const m = manifest[key]; if (!m || seen.has(key)) return [];
+  seen.add(key);
+  return [m.file, ...(m.imports || []).flatMap((k) => chunkFiles(k, seen))];
+};
+const worldJs = [...new Set(chunkFiles('src/three/World.tsx'))];
+const preload3d = (zone) => [
+  ...worldJs.map((f) => `<link rel="modulepreload" href="/${f}" />`),
+  `<link rel="preload" href="/hq/glb/${zone}.glb" as="fetch" crossorigin />`,
+].join('\n    ');
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 
 for (const r of routes) {
@@ -17,6 +30,7 @@ for (const r of routes) {
     `<meta property="og:title" content="${esc(r.title)}" />`, `<meta property="og:description" content="${esc(r.description)}" />`,
     `<meta property="og:url" content="${url}" />`, `<meta property="og:image" content="${SITE}/hq/stills/outside-day.webp" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
+    ['/', '/school', '/fleet', '/alpha', '/labs'].includes(r.path) ? preload3d(r.path === '/' ? 'hq' : r.path.slice(1)) : '',
     r.path === '/' ? `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'Organization', name: 'Oliskey', legalName: 'Oliskeylee Ltd.', url: SITE, logo: `${SITE}/apple-touch-icon.png`, address: { '@type': 'PostalAddress', addressLocality: 'Lagos', addressCountry: 'NG' } })}</script>` : '',
   ].join('\n    ');
   const html = shell

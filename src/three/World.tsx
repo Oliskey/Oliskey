@@ -25,6 +25,7 @@ export interface WorldProps {
   onReady?: () => void;
   snap?: boolean;
   onLost?: () => void;
+  fade?: React.RefObject<HTMLDivElement>;
 }
 
 const EXPOSURE = { day: Number(new URLSearchParams(location.search).get('exp') || 0.8), night: Number(new URLSearchParams(location.search).get('expn') || 0.75) };
@@ -35,10 +36,13 @@ const LM_SIZE: Record<Zone, number> = { hq: 2048, school: 1024, fleet: 1024, alp
 const SCALES = scales as Record<string, number>;
 const loader = new THREE.TextureLoader();
 const texCache = new Map<string, THREE.Texture>();
+const texReady = new Map<string, Promise<void>>();
 function tex(url: string, srgb = true, flip = false) {
   let t = texCache.get(url);
   if (!t) {
-    t = loader.load(url);
+    let done = () => {};
+    texReady.set(url, new Promise<void>((r) => { done = r; }));
+    t = loader.load(url, () => done(), undefined, () => done());
     t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
     t.flipY = flip; t.anisotropy = 4;
     texCache.set(url, t);
@@ -104,7 +108,7 @@ function applySurface(m: THREE.MeshStandardMaterial) {
 }
 const lmUrl = (z: Zone, mode: Mode, phone: boolean) => `/hq/lm/${z}-${mode}${phone && LM_SIZE[z] > 1024 ? '-1k' : ''}.webp`;
 
-const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: string | null; envVer: number }> = ({ zone, mode, phone, hover, envVer }) => {
+const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: string | null; envVer: number; onLit?: () => void }> = ({ zone, mode, phone, hover, envVer, onLit }) => {
   const { scene } = useGLTF(`/hq/glb/${zone}.glb`);
   const { scene: root } = useThree();
 
@@ -136,6 +140,10 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
       if (name.endsWith('_leds')) { const m = new THREE.MeshBasicMaterial({ color: 0x3d86ff }); mesh.material = m; leds.push(m); return; }
       if (name.endsWith('_glass')) {
         const m = new THREE.MeshStandardMaterial({ color: 0xdbe8ff, roughness: 0.04, metalness: 0.0, transparent: true, opacity: 0.14, depthWrite: false, envMapIntensity: 1.2 });
+        if (zone === 'hq') m.onBeforeCompile = (sh) => {
+          sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp;').replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvWp = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+          sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp;').replace('void main() {', 'void main() {\n  if (abs(vWp.x) < 2.55 && vWp.y < 3.78 && abs(vWp.z) < 0.12) discard;');
+        };
         mesh.material = m; mesh.renderOrder = 2; glass.push(m); return;
       }
       if (name === 'water') {
@@ -154,6 +162,7 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
   // light, screens and glass follow the time of day
   useEffect(() => {
     const lm = lightmap(lmUrl(zone, mode, phone));
+    texReady.get(lmUrl(zone, mode, phone))?.then(() => onLit?.());   // fade the 3D in only once it is lit
     const k = (SCALES[`${zone}-${mode}`] ?? 1) * Number(new URLSearchParams(location.search).get('lmk') || Math.PI) * EXPOSURE[mode];   // exposure lives in the light, so it holds with or without the effects pass
     for (const m of parts.statics) {
       m.lightMap = lm; m.lightMapIntensity = k;
@@ -163,11 +172,14 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
       m.envMapIntensity = m.metalness > 0.5 ? (mode === 'day' ? 0.7 : 0.35) : mode === 'day' ? 0.12 : 0.05;
       m.needsUpdate = true;
     }
+    // screen pictures load after the light, so the room appears first and the displays switch on a moment later
+    texReady.get(lmUrl(zone, mode, phone))?.then(() => {
     for (const { mesh, mat } of parts.screens) {
-      const url = screenImage(mesh.userData.screen, mode);
-      if (url) { mat.map = tex(url); mat.needsUpdate = true; }
-      mat.color.setScalar(mode === 'day' ? 0.92 : 0.85);
-    }
+        const url = screenImage(mesh.userData.screen, mode);
+        if (url) { mat.map = tex(url); mat.needsUpdate = true; }
+        mat.color.setScalar(mode === 'day' ? 0.92 : 0.85);
+      }
+    });
     for (const m of parts.lamps) m.color.setScalar(mode === 'day' ? 1.6 : 3.2);
     for (const m of parts.leds) m.color.set(0x3d86ff).multiplyScalar(mode === 'day' ? 1.0 : 2.6);
     for (const m of [...parts.glass, ...parts.water]) { m.envMap = ENV[mode]; m.needsUpdate = true; }
@@ -217,6 +229,36 @@ const Surroundings: React.FC<{ mode: Mode }> = ({ mode }) => {
 };
 const SKY_ROT = Number(new URLSearchParams(location.search).get('skyrot') || 0) * (Math.PI / 180);
 
+/** Automatic sliding glass doors at the entrance: they part as the camera approaches and close behind it. */
+const Doors: React.FC<{ mode: Mode }> = ({ mode }) => {
+  const left = useRef<THREE.Group>(null), right = useRef<THREE.Group>(null);
+  const open = useRef(0);
+  const mats = useMemo(() => ({
+    glass: new THREE.MeshStandardMaterial({ color: 0xdbe8ff, roughness: 0.04, transparent: true, opacity: 0.18, depthWrite: false }),
+    frame: new THREE.MeshStandardMaterial({ color: 0x2b2f36, roughness: 0.35, metalness: 0.8 }),
+  }), []);
+  useEffect(() => { for (const m of [mats.glass, mats.frame]) { m.envMap = ENV[mode]; m.needsUpdate = true; } mats.glass.opacity = mode === 'day' ? 0.18 : 0.1; }, [mode, mats]);
+  useFrame(({ camera }, dt) => {
+    const d = Math.hypot(camera.position.x, camera.position.z - 0.6);           // distance to the doorway
+    const want = 1 - THREE.MathUtils.smoothstep(d, 5, 14);
+    open.current += (want - open.current) * Math.min(1, dt * 3.2);              // motorised, eased
+    const x = 1.28 + open.current * 2.45;
+    if (left.current) left.current.position.x = -x;
+    if (right.current) right.current.position.x = x;
+  });
+  const Leaf = React.forwardRef<THREE.Group>((_, ref) => (
+    <group ref={ref} position={[0, 0.6 + 1.58, 0.0]}>
+      <mesh material={mats.glass} renderOrder={3}><boxGeometry args={[2.5, 3.1, 0.03]} /></mesh>
+      <mesh material={mats.frame} position={[0, 1.57, 0]}><boxGeometry args={[2.56, 0.07, 0.07]} /></mesh>
+      <mesh material={mats.frame} position={[0, -1.57, 0]}><boxGeometry args={[2.56, 0.07, 0.07]} /></mesh>
+      <mesh material={mats.frame} position={[-1.26, 0, 0]}><boxGeometry args={[0.06, 3.1, 0.07]} /></mesh>
+      <mesh material={mats.frame} position={[1.26, 0, 0]}><boxGeometry args={[0.06, 3.1, 0.07]} /></mesh>
+      <mesh material={mats.frame} position={[0, 0, 0.05]}><boxGeometry args={[0.03, 0.9, 0.04]} /></mesh>
+    </group>
+  ));
+  return <group><Leaf ref={left} /><Leaf ref={right} /></group>;
+};
+
 /** Real furniture and plants (Khronos glTF sample models, CC BY 4.0), lit by the environment map. */
 const PROP_FILES = (propsJson as { models: Record<string, string> }).models;
 type PropItem = { m: string; zone: Zone; p: [number, number, number]; yaw: number; s: number };
@@ -251,36 +293,90 @@ const Props: React.FC<{ zones: readonly Zone[]; mode: Mode }> = ({ zones, mode }
 
 
 
-/** Camera that glides along the stops as the page scrolls; drag or move the pointer to look around a little. */
-const Rig: React.FC<{ stops: Stop[]; progress: React.MutableRefObject<number>; phone: boolean; snap?: boolean; look: React.MutableRefObject<{ x: number; y: number }> }> = ({ stops, progress, phone, snap, look }) => {
+/** Camera rig. Stops are grouped into runs of continuous movement (a spline through each run's points); a stop marked
+ *  `cut` ends its run, and the move to the next run is a cinematic cut: the camera pushes in, the frame fades, and it opens
+ *  inside the next space — so choosing a world takes you straight there instead of walking through other worlds.
+ *  Motion is a critically-damped spring (weighted start and stop, like a real camera move) with a slight hand-held sway. */
+const Rig: React.FC<{ stops: Stop[]; progress: React.MutableRefObject<number>; phone: boolean; snap?: boolean; look: React.MutableRefObject<{ x: number; y: number }>; fade?: React.RefObject<HTMLDivElement> }> = ({ stops, progress, phone, snap, look, fade }) => {
   const { camera, size } = useThree();
-  const path = useMemo(() => {
-    const shots = stops.map((s) => (phone && s.phone) || s.desk);
-    const eye = new THREE.CatmullRomCurve3(shots.map((s) => new THREE.Vector3(...s.eye)), false, 'centripetal');
-    // via points keep looking where the next real stop looks
-    const ats = shots.map((s, i) => {
-      if (!stops[i].via) return new THREE.Vector3(...s.at);
-      const next = stops.slice(i).find((x) => !x.via) ?? stops[stops.length - 1];
-      return new THREE.Vector3(...((phone && next.phone) || next.desk).at);
+  const plan = useMemo(() => {
+    const shot = (s: Stop) => (phone && s.phone) || s.desk;
+    type Run = { eye: THREE.CatmullRomCurve3; at: THREE.CatmullRomCurve3; n: number };
+    const runs: Run[] = [];
+    const real: { run: number; ci: number; fov: number; cut: boolean }[] = [];
+    let cur: Stop[] = [];
+    const flush = () => {
+      if (!cur.length) return;
+      const pts = cur.length === 1 ? [cur[0], cur[0]] : cur;
+      const eye = new THREE.CatmullRomCurve3(pts.map((x) => new THREE.Vector3(...shot(x).eye)), false, 'centripetal');
+      const ats = pts.map((x, i) => {
+        if (!x.via) return new THREE.Vector3(...shot(x).at);
+        const next = pts.slice(i).find((y) => !y.via) ?? pts[pts.length - 1];
+        return new THREE.Vector3(...shot(next).at);
+      });
+      runs.push({ eye, at: new THREE.CatmullRomCurve3(ats, false, 'centripetal'), n: pts.length });
+      cur = [];
+    };
+    stops.forEach((st) => {
+      cur.push(st);
+      if (!st.via) real.push({ run: runs.length, ci: cur.length - 1, fov: shot(st).fov, cut: !!st.cut });
+      if (st.cut) flush();
     });
-    const at = new THREE.CatmullRomCurve3(ats, false, 'centripetal');
-    const fov = shots.map((s, i) => (stops[i].via ? 0 : s.fov));
-    const real = stops.map((s, i) => (s.via ? -1 : i)).filter((i) => i >= 0);
-    return { eye, at, fov, real, n: stops.length };
+    flush();
+    return { runs, real };
   }, [stops, phone]);
-  const shown = useRef(progress.current);
-  const tmp = useMemo(() => ({ e: new THREE.Vector3(), a: new THREE.Vector3(), d: new THREE.Vector3(), side: new THREE.Vector3() }), []);
+  const st = useRef({ s: progress.current, v: 0, t: 0 });
+  const tmp = useMemo(() => ({ e: new THREE.Vector3(), a: new THREE.Vector3(), d: new THREE.Vector3(), side: new THREE.Vector3(), e2: new THREE.Vector3(), a2: new THREE.Vector3() }), []);
 
-  useFrame((_, dt) => {
-    const goal = Math.max(0, Math.min(path.real.length - 1, progress.current));
-    const k = snap ? 1 : 1 - Math.pow(0.0009, Math.min(dt, 0.05));   // frame-rate independent glide
-    shown.current += (goal - shown.current) * k;
-    const s = shown.current, i = Math.min(path.real.length - 2, Math.floor(s)), f = s - i;
-    const ci0 = path.real[i], ci1 = path.real[Math.min(i + 1, path.real.length - 1)];
-    const ci = ci0 + (ci1 - ci0) * f;
-    const t = ci / (path.n - 1);
-    path.eye.getPoint(t, tmp.e); path.at.getPoint(t, tmp.a);
-    const fov = path.fov[ci0] + (path.fov[ci1] - path.fov[ci0]) * f;
+  const pose = (k: number, e: THREE.Vector3, a: THREE.Vector3) => {
+    // pose at real stop k + fraction, inside one run
+    const i = Math.floor(k), f = k - i;
+    const r0 = plan.real[i], r1 = plan.real[Math.min(i + 1, plan.real.length - 1)];
+    const run = plan.runs[r0.run];
+    const ci = r1.run === r0.run ? r0.ci + (r1.ci - r0.ci) * f : r0.ci;
+    const t = run.n > 1 ? ci / (run.n - 1) : 0;
+    run.eye.getPoint(Math.min(1, t), e); run.at.getPoint(Math.min(1, t), a);
+  };
+
+  useFrame((_, dt0) => {
+    const dt = Math.min(dt0, 0.05);
+    const last = plan.real.length - 1;
+    const goal = Math.max(0, Math.min(last, progress.current));
+    const S = st.current;
+    if (snap) { S.s = goal; S.v = 0; } else {
+      const w = 5.2;                                   // spring stiffness: settles in ~0.8 s
+      S.v += (w * w * (goal - S.s) - 2 * w * S.v) * dt;
+      S.s += S.v * dt;
+    }
+    S.t += dt;
+    const s = Math.max(0, Math.min(last, S.s));
+    const i = Math.min(Math.max(0, last - 1), Math.floor(s)), f = s - i;
+    const r0 = plan.real[i], r1 = plan.real[Math.min(i + 1, last)];
+    let fov = r0.fov + (r1.fov - r0.fov) * f;
+    let veil = 0;
+    if (r0.cut && r1 !== r0 && r1.run !== r0.run) {
+      // cinematic cut: push in on the current view, fade, open on the next space easing back into place
+      const ease = (x: number) => x * x * (3 - 2 * x);
+      if (f < 0.5) {
+        pose(i, tmp.e, tmp.a);
+        const p = ease(f * 2);
+        tmp.d.subVectors(tmp.a, tmp.e); tmp.e.addScaledVector(tmp.d, 0.55 * p);
+        fov = r0.fov * (1 - 0.18 * p);
+      } else {
+        pose(i + 1, tmp.e, tmp.a);
+        const p = ease((1 - f) * 2);
+        tmp.d.subVectors(tmp.a, tmp.e).normalize(); tmp.e.addScaledVector(tmp.d, -1.6 * p);
+        fov = r1.fov * (1 + 0.1 * p);
+      }
+      veil = Math.max(0, 1 - Math.abs(f - 0.5) / 0.22);
+    } else {
+      pose(s, tmp.e, tmp.a);
+    }
+    if (fade?.current) fade.current.style.opacity = String(veil);
+    // hand-held feel: a gentle sway that grows with speed and fades to stillness at rest
+    const speed = Math.min(1, Math.abs(S.v) * 1.4);
+    const sway = 0.012 + 0.05 * speed;
+    tmp.e.x += Math.sin(S.t * 0.9) * sway; tmp.e.y += Math.sin(S.t * 1.7) * sway * 0.5;
     // look-around: yaw/pitch offset around the eye
     tmp.d.subVectors(tmp.a, tmp.e);
     const yaw = look.current.x * 0.32, pitch = -look.current.y * 0.16;
@@ -322,10 +418,12 @@ const Ready: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
   return null;
 };
 
-const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, active, onSelect, onReady, snap, onLost }) => {
+const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, active, onSelect, onReady, snap, onLost, fade }) => {
   const [dpr, setDpr] = useState(phone ? Math.min(1.25, window.devicePixelRatio || 1) : Math.min(1.5, window.devicePixelRatio || 1));
   const [hover, setHover] = useState<string | null>(null);
   const [envVer, setEnvVer] = useState(0);
+  const [litOnce, setLitOnce] = useState(false);
+  const lit = React.useCallback(() => setLitOnce(true), []);
   const onEnv = React.useCallback(() => setEnvVer((v) => v + 1), []);
   const look = useRef({ x: 0, y: 0 });
   const drag = useRef<{ x: number; y: number; lx: number; ly: number } | null>(null);
@@ -377,26 +475,21 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
       <Env mode={mode} onEnv={onEnv} />
       <Surroundings mode={mode} />
       {!phone && <Props zones={zones} mode={mode} key={`props-${envVer}`} />}
+      {zones.includes('hq') && <Doors mode={mode} key={`doors-${envVer}`} />}
       <group
         onPointerMove={(e) => { const d = pick(e); setHover(d?.screen ?? null); document.body.style.cursor = d ? 'pointer' : ''; }}
         onPointerOut={() => { setHover(null); document.body.style.cursor = ''; }}
         onClick={(e) => { const d = pick(e); if (d && onSelect && (!drag.current || Math.abs(e.nativeEvent.clientX - drag.current.x) < 6)) { e.stopPropagation(); onSelect(d.display); } }}
       >
         {zones.map((z) => (
-          <Suspense key={z} fallback={null}><ZoneModel zone={z} mode={mode} phone={phone} hover={hover} envVer={envVer} /></Suspense>
+          <Suspense key={z} fallback={null}><ZoneModel zone={z} mode={mode} phone={phone} hover={hover} envVer={envVer} onLit={z === zones[0] ? lit : undefined} /></Suspense>
         ))}
       </group>
       {!phone && !new URLSearchParams(location.search).has('nofx') && <Suspense fallback={null}><Effects night={mode === 'night'} /></Suspense>}
-      <Rig stops={stops} progress={progress} phone={phone} snap={snap} look={look} />
-      <Suspense fallback={null}><ZoneGate zone={zones[0]} onReady={onReady} /></Suspense>
+      <Rig stops={stops} progress={progress} phone={phone} snap={snap} look={look} fade={fade} />
+      {litOnce && <Ready onReady={onReady} />}
     </Canvas>
   );
-};
-
-/** Signals "ready" once the first zone (the one the camera starts in) has loaded and drawn. */
-const ZoneGate: React.FC<{ zone: Zone; onReady?: () => void }> = ({ zone, onReady }) => {
-  useGLTF(`/hq/glb/${zone}.glb`);
-  return <Ready onReady={onReady} />;
 };
 
 export default World;

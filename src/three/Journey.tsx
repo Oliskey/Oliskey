@@ -39,6 +39,7 @@ const Journey: React.FC<{
   label: string;
 }> = ({ zones, stops, stills, onSelect, children, label }) => {
   const box = useRef<HTMLDivElement>(null);
+  const fade = useRef<HTMLDivElement>(null);   // the veil the camera fades through on a cinematic cut
   const progress = useRef(0);
   const [use3d] = useState(canUse3d);
   const [gen, setGen] = useState(0);   // bumped to rebuild the 3D scene if the browser drops it
@@ -92,11 +93,12 @@ const Journey: React.FC<{
           <div className={`absolute inset-0 transition-opacity duration-700 ${ready ? 'opacity-100' : 'opacity-0'}`}>
             <Guard key={gen} onFail={restart}>
               <Suspense fallback={null}>
-                <World zones={zones} stops={stops} progress={progress} mode={mode} phone={phone} active={active} onSelect={onSelect} onReady={() => setReady(true)} snap={snap} onLost={restart} />
+                <World zones={zones} stops={stops} progress={progress} mode={mode} phone={phone} active={active} onSelect={onSelect} onReady={() => { setReady(true); (window as unknown as { __ready3d?: number }).__ready3d = performance.now(); }} snap={snap} onLost={restart} fade={fade} />
               </Suspense>
             </Guard>
           </div>
         )}
+        <div ref={fade} aria-hidden className="pointer-events-none absolute inset-0 bg-page opacity-0" />
         {/* soft shade where text sits, so panels stay readable on any frame */}
         <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-page/55 to-transparent md:hidden" />
       </div>
@@ -109,7 +111,7 @@ export default Journey;
 
 /** A text block the camera stops at. Content inside is clickable; the empty area lets the scene receive drags and clicks. */
 export const StopBlock: React.FC<{ children: React.ReactNode; align?: 'left' | 'right' | 'center'; tall?: boolean; id?: string; top?: boolean }> = ({ children, align = 'left', tall, id, top }) => (
-  <section id={id} data-stop className={`page-x flex ${tall ? 'min-h-[100svh]' : 'min-h-[130svh]'} ${top ? 'items-start pt-[88px]' : 'items-end pb-[max(24px,6svh)]'} md:items-center md:pb-0 md:pt-0 ${align === 'right' ? 'md:justify-end' : align === 'center' ? 'md:justify-center' : ''}`}>
+  <section id={id} data-stop className={`page-x flex ${tall ? 'min-h-[100svh]' : 'min-h-[130svh]'} ${top ? 'items-start pt-[88px]' : tall ? 'items-end pb-[max(24px,6svh)]' : 'items-end pb-[21svh]'} md:items-center md:pb-0 md:pt-0 ${align === 'right' ? 'md:justify-end' : align === 'center' ? 'md:justify-center' : ''}`}>
     <div className="pointer-events-auto w-full md:w-auto">{children}</div>
   </section>
 );

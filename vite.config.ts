@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     target: 'es2020',
+    manifest: true,
     chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {

@@ -3,7 +3,7 @@
 // `via` points are passed through between stops (doorways, around furniture) but never rest.
 export type V3 = [number, number, number];
 export interface Shot { eye: V3; at: V3; fov: number }
-export interface Stop { id: string; desk: Shot; phone?: Shot; via?: boolean }
+export interface Stop { id: string; desk: Shot; phone?: Shot; via?: boolean; /** the move from this stop to the next is a cinematic cut */ cut?: boolean }
 
 const b = (x: number, y: number, z: number): V3 => [x, z, -y];
 const s = (eye: V3, at: V3, fov: number): Shot => ({ eye: b(...eye), at: b(...at), fov });
@@ -16,20 +16,25 @@ const ARRIVAL: Stop[] = [
   via('door', [0, -0.8, 2.0]),
   { id: 'lobby', desk: s([-5.5, 2.6, 2.2], [2.5, 15, 3.1], 52), phone: s([-1.6, 1.6, 2.0], [0.4, 15, 4.4], 72) },
 ];
-// doorways between the showroom and each room, in walking order
-const CORRIDOR: Record<'school' | 'fleet' | 'alpha' | 'labs', Stop[]> = {
-  school: [via('around-1', [6.0, 8.0, 2.3]), via('around-2', [10.6, 13.5, 2.3]), via('around-3', [9.8, 19.5, 2.3]), via('school-door', [7.6, 22.4, 2.3])],
-  fleet: [via('school-mid', [3.0, 31.0, 2.7]), via('to-fleet', [0.5, 41.5, 2.6]), via('fleet-door', [0, 44.6, 2.6])],
-  alpha: [via('fleet-mid', [0.2, 55.0, 2.9]), via('to-alpha', [1.0, 62.5, 2.9]), via('alpha-door', [0.4, 66.5, 2.6])],
-  labs: [via('alpha-mid', [1.6, 77.0, 2.6]), via('to-labs', [0.8, 85.5, 2.5]), via('labs-door', [0.4, 88.6, 2.5])],
+// In the showroom, each world has its own display. Choosing a world moves the camera up to that display first (you see
+// the world you picked), then cuts straight inside it.
+const TOTEM: Record<'school' | 'fleet' | 'alpha' | 'labs', [number, number]> = { school: [-7.6, 15.2], fleet: [-2.6, 16.4], alpha: [2.6, 16.4], labs: [7.6, 15.2] };
+const preview = (w: 'school' | 'fleet' | 'alpha' | 'labs'): Stop => {
+  const [x, y] = TOTEM[w];
+  return { id: `${w}-preview`, cut: true, desk: s([x * 0.75, y - 4.6, 2.75], [x, y, 2.95], 44), phone: s([x, y - 6.2, 2.9], [x, y, 2.6], 58) };
 };
-const ORDER = ['school', 'fleet', 'alpha', 'labs'] as const;
+// The closing view of each world: a wide, calm shot to end on.
+const FINALE: Record<'school' | 'fleet' | 'alpha' | 'labs', Stop> = {
+  school: { id: 'school-end', desk: s([-9.0, 42.4, 3.4], [3, 27, 0.8], 58), phone: s([-9.4, 42.8, 3.6], [2, 28, 0.6], 76) },
+  fleet: { id: 'fleet-end', desk: s([9.4, 64.6, 3.4], [-1, 47, 0.8], 58), phone: s([9.6, 64.8, 3.6], [0, 48, 0.6], 76) },
+  alpha: { id: 'alpha-end', desk: s([-9.0, 86.4, 3.4], [2, 68.5, 0.9], 58), phone: s([-9.4, 86.8, 3.6], [1, 69, 0.6], 76) },
+  labs: { id: 'labs-end', desk: s([-9.0, 108.4, 3.3], [4, 92, 1.0], 58), phone: s([-9.4, 108.8, 3.5], [3, 93, 0.7], 76) },
+};
 
-/** Home walk: arrival, then (if a room is chosen) the corridor to it and its three room stops. */
-export function homeStops(room: (typeof ORDER)[number] | null): Stop[] {
-  if (!room) return ARRIVAL;
-  const path = ORDER.slice(0, ORDER.indexOf(room) + 1).flatMap((r) => CORRIDOR[r]);
-  return [...ARRIVAL, ...path, ...ROOM_STOPS[room]];
+/** Home walk: arrival; then, once a world is chosen, its display in the showroom, a cut inside, three stops and a closing view. */
+export function homeStops(world: 'school' | 'fleet' | 'alpha' | 'labs' | null): Stop[] {
+  if (!world) return ARRIVAL;
+  return [...ARRIVAL, via('showroom-turn', [TOTEM[world][0] * 0.4, 8.5, 2.5]), preview(world), ...ROOM_STOPS[world], FINALE[world]];
 }
 
 // Each product page walks its own room in three steps: the room, the main display, a closer detail.

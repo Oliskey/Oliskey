@@ -72,7 +72,8 @@ export const PRODUCTS: Product[] = [
     ],
     room: 'A keke bay where drivers pay from their phones, the area staff records cash on a tablet, and the operations desk sees every payment come in.',
     tour: [
-      { eyebrow: 'Drivers on the Fleet app', title: 'Pay from the phone, see what is left', text: 'Drivers see their next payment and what remains, pay by transfer or POS with the reference, and check their full payment history.' },
+      { eyebrow: 'Drivers on the Fleet app', title: 'Pay from the phone, see what is left', text: 'Drivers see their next payment and what remains, and pay by transfer or POS with the reference.' },
+      { eyebrow: 'Even from the keke', title: 'Payments without leaving the seat', text: 'A driver can pay and check his payment history between trips; the staff and the office see it at once.' },
       { eyebrow: 'Arriving at the bay', title: 'Every keke and driver on record', text: 'Vehicles, drivers, collections, remittances and maintenance live in one place, so the operator knows what each keke really earns.' },
     ],
     keywords: ['fleet', 'tricycle', 'keke', 'transport', 'drivers', 'remittance', 'vehicles', 'maintenance', 'logistics'],

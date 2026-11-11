@@ -187,6 +187,14 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
         const m = mesh.material as THREE.MeshStandardMaterial;
         if (!statics.includes(m)) {
           statics.push(m);
+          if (zone === 'fleet' && m.name === 'black') {
+            // phones and tablets baked into the room before the hold was reworked: hidden; people now hold their own
+            m.customProgramCacheKey = () => 'fleet-old-devices';
+            m.onBeforeCompile = (sh) => {
+              sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp;').replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvWp = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+              sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp;\nconst vec4 OLD[4] = vec4[4](vec4(3.400, 1.969, -54.199, 0.12), vec4(1.473, 2.033, -53.982, 0.12), vec4(0.751, 2.033, -52.510, 0.17), vec4(1.973, 2.033, -49.316, 0.12));').replace('void main() {', 'void main() {\n  if (distance(vWp, OLD[0].xyz) < OLD[0].w || distance(vWp, OLD[1].xyz) < OLD[1].w || distance(vWp, OLD[2].xyz) < OLD[2].w || distance(vWp, OLD[3].xyz) < OLD[3].w) discard;');
+            };
+          }
           if (zone === 'hq' && (m.name === 'metal' || m.name === 'blue')) m.customProgramCacheKey = () => `logo-cut-${m.name}`;   // the two cuts differ: separate shader programs
           if (zone === 'hq' && (m.name === 'metal' || m.name === 'blue')) m.onBeforeCompile = (sh) => {
             // the old baked sculpture is replaced by <LogoSculpture/>, drawn to the exact proportions of the Oliskey mark

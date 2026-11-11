@@ -61,8 +61,13 @@ export const ROOM_STOPS: Record<'school' | 'fleet' | 'alpha' | 'labs', Stop[]> =
   ],
   fleet: [
     { id: 'room', desk: s([-4.5, 45.4, 2.7], [5, 56, 0.9], 54), phone: s([-4.8, 45.0, 2.6], [4.5, 56, 1.8], 74) },
-    { id: 'display', desk: s([0.6, 54.4, 2.1], [-11, 54.3, 2.6], 52), phone: s([2.6, 51.2, 2.1], [-11, 51.2, 3.0], 66) },
-    { id: 'detail', desk: s([0.0, 49.5, 1.5], [4.5, 55.5, 0.9], 50), phone: s([-0.5, 48.0, 1.7], [4.5, 55.5, 1.5], 70) },
+    { id: 'display', desk: s([-1.6, 50.6, 2.1], [-11, 54.0, 2.1], 52), phone: s([-1.2, 49.6, 2.1], [-11, 53.0, 2.6], 66) },
+    // a driver paying the area staff from his phone, recorded on the staff tablet
+    { id: 'detail', desk: s([-0.3, 54.9, 1.85], [1.4, 53.4, 1.25], 50), phone: s([-0.5, 55.3, 1.9], [1.4, 53.4, 1.3], 64) },
+    // a driver paying from his seat in the keke
+    { id: 'drivers', desk: s([3.05, 56.3, 2.0], [3.75, 54.2, 1.55], 56), phone: s([3.0, 56.45, 2.05], [3.75, 54.2, 1.6], 66) },
+    // the aisle between the kekes, to the bay where a keke is driving in
+    { id: 'arriving', desk: s([6.6, 55.6, 2.0], [10.6, 60.0, 1.3], 54), phone: s([6.4, 55.4, 2.0], [10.6, 60.0, 1.5], 70) },
   ],
   alpha: [
     { id: 'room', drop: 3.4, desk: s([7.5, 68.6, 2.6], [-8, 77, 1.6], 54), phone: s([7.6, 68.4, 2.6], [-8, 77, 2.4], 74) },

@@ -35,9 +35,9 @@ const EXPOSURE = { day: Number(new URLSearchParams(location.search).get('exp') |
 /** Reflection maps per time of day (photographic HDRI by day; the room-light environment at night). */
 const ENV: Record<Mode, THREE.Texture | null> = { day: null, night: null };
 const Effects = React.lazy(() => import('./Effects'));
-const LM_SIZE: Record<Zone, number> = { hq: 2048, school: 2048, fleet: 1024, alpha: 2048, labs: 1024 };
+const LM_SIZE: Record<Zone, number> = { hq: 2048, school: 2048, fleet: 2048, alpha: 2048, labs: 1024 };
 /** Zones whose lightmap islands are padded enough (8 px) for a few mip levels: smooth, shimmer-free far ceilings and floors. */
-const MIPPED: Partial<Record<Zone, boolean>> = { alpha: true, school: true };
+const MIPPED: Partial<Record<Zone, boolean>> = { alpha: true, school: true, fleet: true };
 let GL: THREE.WebGLRenderer | null = null;
 const SCALES = scales as Record<string, number>;
 const loader = new THREE.TextureLoader();
@@ -699,6 +699,7 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
       <Seals zones={zones} mode={mode} key={`seals-${envVer}`} />
       {zones.includes('alpha') && <Suspense fallback={null}><TradingFloor mode={mode} phone={phone} /></Suspense>}
       {zones.includes('school') && <Suspense fallback={null}><Crowd zone="school" mode={mode} /></Suspense>}
+      {zones.includes('fleet') && <Suspense fallback={null}><Crowd zone="fleet" mode={mode} /></Suspense>}
       <group
         onPointerMove={(e) => { const d = pick(e); setHover(d?.screen ?? null); document.body.style.cursor = d ? 'pointer' : ''; }}
         onPointerOut={() => { setHover(null); document.body.style.cursor = ''; }}

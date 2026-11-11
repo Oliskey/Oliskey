@@ -70,7 +70,11 @@ export const PRODUCTS: Product[] = [
       { title: 'Maintenance and costs', text: 'Log repairs and spending so you know what each vehicle really earns.' },
       { title: 'Built for the phone', text: 'Fleet runs well on a phone, where operators already work.' },
     ],
-    room: 'A fleet bay where every keke is tracked: drivers, daily payments and repairs on the operations dashboard instead of a notebook.',
+    room: 'A keke bay where drivers pay from their phones, the area staff records cash on a tablet, and the operations desk sees every payment come in.',
+    tour: [
+      { eyebrow: 'Drivers on the Fleet app', title: 'Pay from the phone, see what is left', text: 'Drivers see their next payment and what remains, pay by transfer or POS with the reference, and check their full payment history.' },
+      { eyebrow: 'Arriving at the bay', title: 'Every keke and driver on record', text: 'Vehicles, drivers, collections, remittances and maintenance live in one place, so the operator knows what each keke really earns.' },
+    ],
     keywords: ['fleet', 'tricycle', 'keke', 'transport', 'drivers', 'remittance', 'vehicles', 'maintenance', 'logistics'],
   },
   {

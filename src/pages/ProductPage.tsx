@@ -9,7 +9,7 @@ import ProductTile from '../components/ProductTile';
 import ThemedImage from '../components/ThemedImage';
 import CTA from '../components/CTA';
 import { SectionHead } from '../components/Section';
-import { CONTACT, PRODUCTS, productById, type ProductId } from '../lib/products';
+import { PRODUCTS, productById, type ProductId } from '../lib/products';
 import { useReveal } from '../lib/reveal';
 
 // One page per product. The top is a walk through the product's own room at headquarters; below it, the real app.
@@ -20,7 +20,7 @@ const ProductPage: React.FC<{ id: ProductId }> = ({ id }) => {
   const primary = <Link to="/get-started" className="btn-primary">Create your account<ArrowRight size={16} /></Link>;
   const secondary = p.app
     ? <a href={p.app.url} target="_blank" rel="noreferrer" className="btn-secondary">{p.app.label}<ArrowUpRight size={16} /></a>
-    : <a href={`mailto:${CONTACT.email}?subject=Oliskey%20Labs`} className="btn-secondary">Talk to us</a>;
+    : <Link to="/contact?topic=partnership&product=labs" className="btn-secondary">Talk to us</Link>;
 
   return (
     <>

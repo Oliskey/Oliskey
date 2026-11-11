@@ -17,6 +17,7 @@ const Pricing = lazy(() => import('./pages/Pricing'));
 const AuthPage = lazy(() => import('./pages/Auth').then((m) => ({ default: m.AuthPage })));
 const Account = lazy(() => import('./pages/Auth').then((m) => ({ default: m.Account })));
 const NotFound = lazy(() => import('./pages/NotFound'));
+const Contact = lazy(() => import('./pages/Contact'));
 
 /** New pages start at the top; Back/Forward keeps the browser's own scroll restoration. Head tags follow the route. */
 const RouteEffects: React.FC = () => {
@@ -64,6 +65,8 @@ const App: React.FC = () => (
                 <Route path="/resources" element={<Resources />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/pricing" element={<Pricing />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/support" element={<Navigate to="/contact?topic=support" replace />} />
                 <Route path="/get-started" element={<AuthPage mode="signup" />} />
                 <Route path="/sign-in" element={<AuthPage mode="signin" />} />
                 <Route path="/account" element={<Account />} />

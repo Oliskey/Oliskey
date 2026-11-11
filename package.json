@@ -16,6 +16,7 @@
     "@supabase/supabase-js": "^2.45.4",
     "gsap": "^3.12.5",
     "lucide-react": "^0.460.0",
+    "nodemailer": "^6.9.16",
     "postprocessing": "^6.36.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -23,9 +24,11 @@
     "three": "^0.169.0"
   },
   "devDependencies": {
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/three": "^0.169.0",
+    "@vercel/node": "^3.2.29",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",

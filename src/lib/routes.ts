@@ -15,6 +15,7 @@ export const ROUTES: PublicRoute[] = [
   { path: '/resources', title: 'Resources — Oliskey', description: 'Open every Oliskey app, get help and contact the team.' },
   { path: '/about', title: 'About Oliskey', description: 'Oliskeylee Ltd. is a software company in Lagos, Nigeria, building Oliskey School, Oliskey Fleet, Oliskey Alpha and Oliskey Labs.' },
   { path: '/pricing', title: 'Pricing — Oliskey', description: 'Pricing for Oliskey School and how to get started with Oliskey Fleet, Oliskey Alpha and Oliskey Labs.' },
+  { path: '/contact', title: 'Contact & support — Oliskey', description: 'Send Oliskey a message: support, a price quote, using a product or a partnership. We reply by email.' },
   { path: '/get-started', title: 'Create your Oliskey account', description: 'Create one Oliskey account to get started with Oliskey products.' },
   { path: '/sign-in', title: 'Sign in — Oliskey', description: 'Sign in to your Oliskey account.' },
 ];

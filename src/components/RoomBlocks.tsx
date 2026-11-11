@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUpRight, Check } from 'lucide-react';
 import { StopBlock } from '../three/Journey';
-import { CONTACT, productById, type ProductId } from '../lib/products';
+import { productById, type ProductId } from '../lib/products';
 
 /** The three text blocks for a product room: introduction, what it does, inside the room. Used on Home and product pages. */
 export const RoomBlocks: React.FC<{ id: ProductId; onShow: () => void; heading?: 'h1' | 'h2' }> = ({ id, onShow, heading = 'h1' }) => {
@@ -12,7 +12,7 @@ export const RoomBlocks: React.FC<{ id: ProductId; onShow: () => void; heading?:
   const primary = <Link to="/get-started" className="btn-primary">Create your account<ArrowRight size={16} /></Link>;
   const secondary = p.app
     ? <a href={p.app.url} target="_blank" rel="noreferrer" className="btn-secondary">{p.app.label}<ArrowUpRight size={16} /></a>
-    : <a href={`mailto:${CONTACT.email}?subject=Oliskey%20Labs`} className="btn-secondary">Talk to us</a>;
+    : <Link to="/contact?topic=partnership&product=labs" className="btn-secondary">Talk to us</Link>;
   return (
     <>
         <StopBlock tall={heading === 'h1'}>

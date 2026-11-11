@@ -19,7 +19,7 @@ const Footer: React.FC = () => (
       </div>
       <Col title="Products">{PRODUCTS.map((p) => <A key={p.id} to={p.path}>{p.name}</A>)}</Col>
       <Col title="Company"><A to="/about">About</A><A to="/solutions">Solutions</A><A to="/industries">Industries</A><A to="/pricing">Pricing</A></Col>
-      <Col title="Get in touch"><A to="/resources">Resources</A><A to={`mailto:${CONTACT.email}`}>Email us</A><A to={CONTACT.whatsapp}>WhatsApp</A><A to="/get-started">Create an account</A></Col>
+      <Col title="Get in touch"><A to="/contact">Contact & support</A><A to="/resources">Resources</A><A to={`mailto:${CONTACT.email}`}>Email us</A><A to={CONTACT.whatsapp}>WhatsApp</A><A to="/get-started">Create an account</A></Col>
     </div>
     <div className="page-x flex flex-col gap-2 border-t border-line py-6 text-[13px] text-muted sm:flex-row sm:justify-between">
       <p>© {new Date().getFullYear()} {CONTACT.company} All rights reserved.</p>

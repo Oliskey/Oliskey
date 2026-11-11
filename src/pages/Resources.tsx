@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowUpRight, Mail, MessageCircle } from 'lucide-react';
 import { PageTop, SectionHead } from '../components/Section';
 import { CONTACT, PRODUCTS } from '../lib/products';
@@ -31,6 +32,7 @@ const Resources: React.FC = () => {
         })}
       </ul>
       <h2 className="mt-16 text-section text-ink" data-reveal>Get help</h2>
+      <Link data-reveal to="/contact?topic=support" className="btn-primary mt-6">Contact support</Link>
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <a data-reveal href={`mailto:${CONTACT.email}`} className="flex items-center gap-4 rounded-2xl border border-line bg-raised p-5 hover:bg-surface"><Mail className="text-accent" /><div><p className="font-semibold text-ink">Email</p><p className="text-[15px] text-muted">{CONTACT.email}</p></div></a>
         <a data-reveal href={CONTACT.whatsapp} target="_blank" rel="noreferrer" className="flex items-center gap-4 rounded-2xl border border-line bg-raised p-5 hover:bg-surface"><MessageCircle className="text-accent" /><div><p className="font-semibold text-ink">WhatsApp</p><p className="text-[15px] text-muted">Message the Oliskey team</p></div></a>

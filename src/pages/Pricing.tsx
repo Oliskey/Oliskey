@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import { PageTop, SectionHead } from '../components/Section';
 import CTA from '../components/CTA';
-import { CONTACT, productById } from '../lib/products';
+import { productById } from '../lib/products';
 import { useReveal } from '../lib/reveal';
 
 // Oliskey School licence levels (yearly). Prices are in Nigerian naira.
@@ -33,16 +33,16 @@ const Pricing: React.FC = () => {
           ))}
         </div>
         <div data-reveal className="mt-8 flex flex-wrap gap-3">
-          <a href={`mailto:${CONTACT.email}?subject=Oliskey%20School%20quote`} className="btn-primary">Get a quote for your school</a>
+          <Link to="/contact?topic=quote&product=school" className="btn-primary">Get a quote for your school</Link>
           <Link to="/school" className="btn-secondary">About Oliskey School</Link>
         </div>
 
         <h2 data-reveal className="mt-24 text-section text-ink">Other products</h2>
         <div className="mt-6 grid gap-px overflow-hidden rounded-card border border-line bg-line">
           {[
-            [fleet.name, 'Pricing depends on the size of your fleet. Message us and we will set you up.', <a key="f" href={CONTACT.whatsapp} target="_blank" rel="noreferrer" className="btn-secondary">Message us</a>],
+            [fleet.name, 'Pricing depends on the size of your fleet. Message us and we will set you up.', <Link key="f" to="/contact?topic=quote&product=fleet" className="btn-secondary">Get a quote</Link>],
             [alpha.name, 'Practice runs on demo credits. Open the app to start.', <a key="a" href={alpha.app!.url} target="_blank" rel="noreferrer" className="btn-secondary">Open Oliskey Alpha<ArrowUpRight size={16} /></a>],
-            ['Oliskey Labs', 'Custom software and research projects are priced per project.', <a key="l" href={`mailto:${CONTACT.email}?subject=Oliskey%20Labs`} className="btn-secondary">Talk to us</a>],
+            ['Oliskey Labs', 'Custom software and research projects are priced per project.', <Link key="l" to="/contact?topic=partnership&product=labs" className="btn-secondary">Talk to us</Link>],
           ].map(([n, d, a]) => (
             <div key={n as string} data-reveal className="flex flex-col gap-4 bg-raised p-6 sm:flex-row sm:items-center sm:justify-between">
               <div><p className="text-[17px] font-semibold text-ink">{n}</p><p className="mt-1 text-[15px] text-muted">{d}</p></div>{a}

@@ -1,0 +1,31 @@
+import { PGlite } from '@electric-sql/pglite';
+import { readFileSync } from 'node:fs';
+const db = new PGlite();
+const q = async (sql, label) => { try { const r = await db.query(sql); console.log('OK  ', label, r.rows.length ? JSON.stringify(r.rows) : ''); return true; } catch (e) { console.log('FAIL', label, '-', e.message.split('\n')[0]); return false; } };
+// Supabase-like setup: roles, auth schema, auth.uid() from a session setting
+await db.exec(`create role anon nologin; create role authenticated nologin;
+  create schema auth; create table auth.users (id uuid primary key);
+  create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+  grant usage on schema auth to anon, authenticated; grant execute on function auth.uid() to anon, authenticated; grant usage on schema public to anon, authenticated;
+  insert into auth.users values ('11111111-1111-1111-1111-111111111111'), ('22222222-2222-2222-2222-222222222222');`);
+await db.exec(readFileSync('/home/claude/web/oliskey/supabase/migrations/20261111120000_contact_messages.sql', 'utf8'));
+await db.exec(readFileSync('/home/claude/web/oliskey/supabase/migrations/20261111120000_contact_messages.sql', 'utf8'));   // re-run must be safe
+console.log('migration applied twice');
+const ins = (extra = '', cols = '') => `insert into public.contact_messages (id, name, email, topic, message${cols}) values (gen_random_uuid(), 'Ada Obi', 'ada@example.com', 'support', 'Our attendance page is not loading.'${extra})`;
+await db.exec(`set role anon; select set_config('request.jwt.claim.sub', '', false);`);
+await q(ins(), 'anon can send a message');
+await q(`select * from public.contact_messages`, 'anon reading messages (must FAIL)');
+await q(ins(", '11111111-1111-1111-1111-111111111111'", ', user_id'), 'anon pretending to be a user (must FAIL)');
+await q(`insert into public.contact_messages (id, name, email, topic, message, status) values (gen_random_uuid(), 'Ada', 'ada@example.com', 'support', 'hello there friend', 'resolved')`, 'anon setting status (must FAIL)');
+await q(`insert into public.contact_messages (id, name, email, topic, message) values (gen_random_uuid(), 'A', 'bad', 'nope', 'short')`, 'invalid data (must FAIL)');
+await q(`update public.contact_messages set status = 'resolved'`, 'anon update (must FAIL)');
+await q(`delete from public.contact_messages`, 'anon delete (must FAIL)');
+await db.exec(`reset role; set role authenticated; select set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', false);`);
+await q(ins(", '11111111-1111-1111-1111-111111111111'", ', user_id'), 'customer 1 sends as themselves');
+await q(ins(", '22222222-2222-2222-2222-222222222222'", ', user_id'), 'customer 1 sending as customer 2 (must FAIL)');
+await q(`select topic, status from public.contact_messages`, 'customer 1 reads (only own row expected)');
+await db.exec(`select set_config('request.jwt.claim.sub', '22222222-2222-2222-2222-222222222222', false);`);
+await q(`select topic, status from public.contact_messages`, 'customer 2 reads (expect none)');
+await q(`select email from public.contact_messages`, 'customer reading email column (must FAIL)');
+await db.exec(`reset role;`);
+await q(`select count(*)::int as total from public.contact_messages`, 'owner sees all');

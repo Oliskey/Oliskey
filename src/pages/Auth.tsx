@@ -63,6 +63,41 @@ export const AuthPage: React.FC<{ mode: 'signin' | 'signup' }> = ({ mode }) => {
   );
 };
 
+type Request = { id: string; created_at: string; topic: string; product: string | null; status: string; message: string };
+const TOPIC_LABEL: Record<string, string> = { support: 'Support', sales: 'Using a product', quote: 'Price quote', partnership: 'Partnership', other: 'Other' };
+const STATUS_LABEL: Record<string, string> = { new: 'Received', in_progress: 'In progress', resolved: 'Resolved' };
+
+/** The signed-in customer's own messages (row-level security returns only theirs). */
+const MyRequests: React.FC = () => {
+  const [rows, setRows] = useState<Request[] | null>(null);
+  const [failed, setFailed] = useState(false);
+  React.useEffect(() => {
+    supabase.from('contact_messages').select('id, created_at, topic, product, status, message').order('created_at', { ascending: false }).limit(20)
+      .then(({ data, error }) => { if (error) setFailed(true); else setRows((data as Request[]) ?? []); });
+  }, []);
+  return (
+    <section className="mt-14">
+      <div className="flex items-end justify-between gap-4"><h2 className="text-section text-ink">Your requests</h2><Link to="/contact" className="btn-secondary">New request</Link></div>
+      {failed && <p className="mt-6 text-[15px] text-muted">Your requests can’t be shown right now.</p>}
+      {rows && rows.length === 0 && <p className="mt-6 text-[15px] text-muted">No requests yet. Need help? Send us a message.</p>}
+      {rows && rows.length > 0 && (
+        <ul className="mt-6 divide-y divide-line rounded-card border border-line bg-raised">
+          {rows.map((r) => (
+            <li key={r.id} className="flex flex-col gap-1 p-5 sm:flex-row sm:items-center sm:gap-6">
+              <div className="min-w-0 flex-1">
+                <p className="text-[15px] font-semibold text-ink">{TOPIC_LABEL[r.topic] ?? r.topic}{r.product ? ` · ${r.product[0].toUpperCase()}${r.product.slice(1)}` : ''}</p>
+                <p className="mt-0.5 truncate text-[14px] text-muted">{r.message}</p>
+              </div>
+              <span className="text-[13px] text-muted">{new Date(r.created_at).toLocaleDateString()}</span>
+              <span className={`inline-flex w-fit rounded-full px-3 py-1 text-[13px] font-semibold ${r.status === 'resolved' ? 'bg-[#12B76A]/12 text-[#0A7A45] dark:text-[#5BE3A5]' : 'bg-accent/10 text-accent-ink'}`}>{STATUS_LABEL[r.status] ?? r.status}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+};
+
 export const Account: React.FC = () => {
   const { session, ready } = useAuth();
   if (!ready) return <div className="min-h-[100svh]" />;
@@ -77,6 +112,7 @@ export const Account: React.FC = () => {
         <Link to="/products" className="btn-primary">See the products</Link>
         <button type="button" className="btn-secondary" onClick={() => supabase.auth.signOut()}>Sign out</button>
       </div>
+      <MyRequests />
     </section>
   );
 };

@@ -60,11 +60,11 @@ const Home: React.FC = () => {
     if (!justChose) return;
     setJustChose(false);
     // after choosing, glide on to the room's first block
-    requestAnimationFrame(() => document.querySelectorAll<HTMLElement>('[data-stop]')[3]?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' }));
+    requestAnimationFrame(() => document.querySelectorAll<HTMLElement>('[data-stop]')[2]?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' }));
   }, [justChose, room]);
   return (
     <>
-      <Journey zones={zones} stops={stops} stills={['outside', 'entrance', 'lobby', ...(room ? [room, room, room, room, room] : [])]}
+      <Journey zones={zones} stops={stops} stills={['outside', 'entrance', ...(room ? ['lobby', room, room, room, room, room] : [])]}
         onSelect={(id) => (id === room ? setSheet(id as ProductId) : choose(id as ProductId))}
         label={`A walk through the Oliskey headquarters${room ? ` into the ${productById(room).name} world` : ''}`}>
         {/* 1 · the entrance */}
@@ -84,21 +84,12 @@ const Home: React.FC = () => {
           </div>
         </StopBlock>
 
-        {/* 2 · stepping in */}
-        <StopBlock align="center">
-          <Panel className="md:w-[480px] md:text-center">
+        {/* 2 · at the glass doors: choose a world before going in */}
+        <StopBlock id="showroom" align="center">
+          <Panel className="md:w-[520px]">
             <p className="eyebrow">From manual to digital</p>
-            <h2 className="mt-3 text-[28px] font-bold leading-tight tracking-tight text-ink sm:text-[32px]">Paper, notebooks and phone calls become one clear system.</h2>
-            <p className="mt-3 text-[16px] leading-relaxed text-muted sm:text-[17px]">Records stay safe, money is tracked, and customers can find you online — not only when they walk in.</p>
-          </Panel>
-        </StopBlock>
-
-        {/* 3 · the showroom */}
-        <StopBlock id="showroom" align="right">
-          <Panel>
-            <p className="eyebrow">The showroom</p>
-            <h2 className="mt-3 text-[28px] font-bold leading-tight tracking-tight text-ink sm:text-[32px]">Choose a world to explore.</h2>
-            <p className="mt-3 text-[16px] leading-relaxed text-muted">Each Oliskey product is its own digital world. Pick one — tap a screen or a button — then keep scrolling to go inside.</p>
+            <h2 className="mt-3 text-[28px] font-bold leading-tight tracking-tight text-ink sm:text-[32px]">Choose the world you want to explore.</h2>
+            <p className="mt-3 text-[16px] leading-relaxed text-muted">Each Oliskey product turns paper, notebooks and phone calls into one clear system. Pick a world, keep scrolling — the doors open and you walk in.</p>
             <div className="mt-5 grid grid-cols-2 gap-2" role="group" aria-label="Worlds">
               {PRODUCTS.map((p) => {
                 const Icon = p.icon;
@@ -114,6 +105,17 @@ const Home: React.FC = () => {
             </div>
           </Panel>
         </StopBlock>
+
+        {/* 3 · inside the showroom, on the way to the chosen world */}
+        {room && (
+          <StopBlock align="right" key={`${room}-lobby`}>
+            <Panel>
+              <p className="eyebrow">Welcome inside</p>
+              <h2 className="mt-3 text-[28px] font-bold leading-tight tracking-tight text-ink sm:text-[32px]">The Oliskey showroom</h2>
+              <p className="mt-3 text-[16px] leading-relaxed text-muted">Every product has its own screen here. We are heading to the {productById(room).name} world.</p>
+            </Panel>
+          </StopBlock>
+        )}
 
         {room && (
           <>

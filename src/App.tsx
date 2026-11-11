@@ -22,7 +22,12 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const RouteEffects: React.FC = () => {
   const { pathname } = useLocation();
   const type = useNavigationType();
-  useEffect(() => { if (type !== 'POP') window.scrollTo(0, 0); }, [pathname, type]);
+  // only a real page change starts at the top — changing ?room= on the same page must never jump the visitor back
+  const last = React.useRef(pathname);
+  useEffect(() => {
+    if (last.current !== pathname && type !== 'POP') window.scrollTo(0, 0);
+    last.current = pathname;
+  }, [pathname, type]);
   useEffect(() => {
     const r = routeFor(pathname);
     document.title = r?.title ?? 'Oliskey';

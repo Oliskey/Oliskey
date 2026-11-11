@@ -13,6 +13,9 @@ const via = (id: string, p: V3): Stop => ({ id, via: true, desk: s(p, p, 0) });
 const ARRIVAL: Stop[] = [
   { id: 'outside', desk: s([-13, -33, 2.2], [-5.5, 0, 6.8], 46), phone: s([-3, -60, 3.2], [0, 0, -5.5], 60) },
   { id: 'entrance', desk: s([0, -10.5, 2.1], [0, 12, 3.6], 48), phone: s([0, -12.5, 2.0], [0, 12, 4.4], 68) },
+];
+// walking in through the sliding doors to the showroom (only once a world is chosen)
+const WALK_IN: Stop[] = [
   via('door', [0, -0.8, 2.0]),
   { id: 'lobby', desk: s([-5.5, 2.6, 2.2], [2.5, 15, 3.1], 52), phone: s([-1.6, 1.6, 2.0], [0.4, 15, 4.4], 72) },
 ];
@@ -34,7 +37,7 @@ const FINALE: Record<'school' | 'fleet' | 'alpha' | 'labs', Stop> = {
 /** Home walk: arrival; then, once a world is chosen, its display in the showroom, a cut inside, three stops and a closing view. */
 export function homeStops(world: 'school' | 'fleet' | 'alpha' | 'labs' | null): Stop[] {
   if (!world) return ARRIVAL;
-  return [...ARRIVAL, via('showroom-turn', [TOTEM[world][0] * 0.4, 8.5, 2.5]), preview(world), ...ROOM_STOPS[world], FINALE[world]];
+  return [...ARRIVAL, ...WALK_IN, via('showroom-turn', [TOTEM[world][0] * 0.4, 8.5, 2.5]), preview(world), ...ROOM_STOPS[world], FINALE[world]];
 }
 
 // Each product page walks its own room in three steps: the room, the main display, a closer detail.

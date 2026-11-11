@@ -1,35 +1,24 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <meta name="color-scheme" content="light dark" />
-  <script>try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.classList.add(t);document.documentElement.style.colorScheme=t}catch(e){}</script>
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-  <title>Oliskey — System. Culture. Creativity.</title>
-  <meta name="description"
-    content="Oliskey builds reliable systems, enduring culture, and limitless creativity. Platform for products in SaaS, AI, EdTech, media and ventures. Discover our products, team, and investor opportunities." />
-  <link rel="icon" type="image/svg+xml"
-    href="data:image/svg+xml,<svg viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'><g stroke='white' stroke-width='8' stroke-linecap='round'><circle cx='35' cy='62' r='22' /><circle cx='65' cy='62' r='22' /><circle cx='50' cy='36' r='22' /></g><path d='M 65.55 20.44 A 22 22 0 0 1 72 36' stroke='%233b82f6' stroke-width='8' stroke-linecap='round' /></svg>" />
-
-  <!-- Performance Optimizations -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://picsum.photos">
-  <link rel="dns-prefetch" href="https://picsum.photos">
-
-  <!-- Preload Critical Image (Co-founder) if possible -->
-  <link rel="preload" as="image" href="/co-founder.jpg">
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
-
-<body>
-  <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
-</body>
-
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#050b1a" media="(prefers-color-scheme: dark)" />
+    <script>
+      // apply the saved or system theme before the first paint, so there is no flash of the wrong theme
+      try { var t = localStorage.getItem('theme'); if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.classList.add(t); document.documentElement.style.colorScheme = t; } catch (e) {}
+    </script>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>Oliskey — Technology for education, transport, finance and innovation</title>
+    <meta name="description" content="Oliskey builds software for schools, transport operators and traders: Oliskey School, Oliskey Fleet, Oliskey Alpha and Oliskey Labs." />
+    <!--seo-->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

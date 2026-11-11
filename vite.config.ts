@@ -3,13 +3,14 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  server: {
-    host: true,        // Listen on 0.0.0.0 (all interfaces). Fixes 'refused to connect' in most environments.
-    port: 5173,        // Hardcoded port
-    strictPort: true,  // Fail if 5173 is busy (preserves Auth redirects)
-  },
   build: {
-    outDir: 'dist',
-    sourcemap: false
-  }
+    target: 'es2020',
+    chunkSizeWarningLimit: 1200,
+    rollupOptions: {
+      output: {
+        // three.js and the 3D layer load only on pages that show a 3D environment
+        manualChunks: { three: ['three'], r3f: ['@react-three/fiber', '@react-three/drei'], gsap: ['gsap'] },
+      },
+    },
+  },
 });

@@ -6,6 +6,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { GroundedSkybox } from 'three/examples/jsm/objects/GroundedSkybox.js';
 import propsJson from './props.json';
+import District from './District';
 import scales from './lightmaps.json';
 import type { Stop, Zone } from './stops';
 
@@ -207,7 +208,7 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
 
 /** Surroundings: the same photographic HDRI used for lighting in Blender, projected onto a ground dome so the horizon,
  *  trees and sky sit at a believable distance (a park by day, a starlit sky with town glow at night). */
-const Surroundings: React.FC<{ mode: Mode }> = ({ mode }) => {
+const Surroundings: React.FC<{ mode: Mode; lite: boolean; envVer: number }> = ({ mode, lite }) => {
   const { scene, gl } = useThree();
   const [bg, setBg] = useState<THREE.Texture | null>(null);
   useEffect(() => {
@@ -224,14 +225,15 @@ const Surroundings: React.FC<{ mode: Mode }> = ({ mode }) => {
   }, [mode, scene, gl]);
   const sky = useMemo(() => {
     if (!bg) return null;
-    const m = new GroundedSkybox(bg, 18, 420);
-    m.position.y = 18 - 0.25; m.rotation.y = SKY_ROT;
+    const m = new GroundedSkybox(bg, 60, 600);
+    m.position.y = 60 - 0.5; m.rotation.y = SKY_ROT;
     (m.material as THREE.MeshBasicMaterial).toneMapped = false;
     return m;
   }, [bg]);
   useEffect(() => () => { sky?.geometry.dispose(); (sky?.material as THREE.Material | undefined)?.dispose(); bg?.dispose(); }, [sky, bg]);
-  return sky ? <primitive object={sky} /> : null;
+  return <>{sky && <primitive object={sky} />}<District mode={mode} env={ENV[mode]} lite={lite} /></>;
 };
+const DEBUG = new URLSearchParams(location.search).has('debug');
 const SKY_ROT = Number(new URLSearchParams(location.search).get('skyrot') || 0) * (Math.PI / 180);
 
 /** Closed walls at the ends of a world (navy feature walls with the Oliskey mark), so a world never looks into another one. */
@@ -330,7 +332,7 @@ const Props: React.FC<{ zones: readonly Zone[]; mode: Mode }> = ({ zones, mode }
  *  `cut` ends its run, and the move to the next run is a cinematic cut: the camera pushes in, the frame fades, and it opens
  *  inside the next space — so choosing a world takes you straight there instead of walking through other worlds.
  *  Motion is a critically-damped spring (weighted start and stop, like a real camera move) with a slight hand-held sway. */
-const Rig: React.FC<{ stops: Stop[]; progress: React.MutableRefObject<number>; phone: boolean; snap?: boolean; look: React.MutableRefObject<{ x: number; y: number }>; fade?: React.RefObject<HTMLDivElement> }> = ({ stops, progress, phone, snap, look, fade }) => {
+const Rig: React.FC<{ stops: Stop[]; progress: React.MutableRefObject<number>; phone: boolean; snap?: boolean; look: React.MutableRefObject<{ x: number; y: number }>; aim: React.MutableRefObject<{ x: number; y: number }>; fade?: React.RefObject<HTMLDivElement> }> = ({ stops, progress, phone, snap, look, aim, fade }) => {
   const { camera, size } = useThree();
   const plan = useMemo(() => {
     const shot = (s: Stop) => (phone && s.phone) || s.desk;
@@ -376,12 +378,17 @@ const Rig: React.FC<{ stops: Stop[]; progress: React.MutableRefObject<number>; p
     const last = plan.real.length - 1;
     const goal = Math.max(0, Math.min(last, progress.current));
     const S = st.current;
+    const before = S.s;
     if (snap) { S.s = goal; S.v = 0; } else {
       const w = 5.2;                                   // spring stiffness: settles in ~0.8 s
       S.v += (w * w * (goal - S.s) - 2 * w * S.v) * dt;
       S.s += S.v * dt;
     }
     S.t += dt;
+    // after a drag, scrolling eases the view back toward the planned direction: about 80% recovered per stop scrolled
+    const back = Math.exp(-1.6 * Math.abs(S.s - before));
+    aim.current.x *= back; aim.current.y *= back;
+    if (DEBUG) (window as unknown as { __rig: unknown }).__rig = { s: S.s, goal, aim: { ...aim.current }, look: { ...look.current } };
     const s = Math.max(0, Math.min(last, S.s));
     const i = Math.min(Math.max(0, last - 1), Math.floor(s)), f = s - i;
     const r0 = plan.real[i], r1 = plan.real[Math.min(i + 1, last)];
@@ -426,7 +433,8 @@ const Rig: React.FC<{ stops: Stop[]; progress: React.MutableRefObject<number>; p
 
 const Env: React.FC<{ mode: Mode; onEnv: () => void }> = ({ mode, onEnv }) => {
   const { gl, scene } = useThree();
-  if (new URLSearchParams(location.search).has('debug')) (window as unknown as { __scene: THREE.Scene }).__scene = scene;
+  const { camera: dbgCam } = useThree();
+  if (new URLSearchParams(location.search).has('debug')) { (window as unknown as { __scene: THREE.Scene }).__scene = scene; (window as unknown as { __camera: THREE.Camera }).__camera = dbgCam; }
   useEffect(() => {
     if (ENV[mode]) { onEnv(); return; }
     const pm = new THREE.PMREMGenerator(gl);
@@ -503,7 +511,7 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
     >
       <PerformanceMonitor onDecline={() => setDpr((d) => Math.max(1, d - 0.25))} />
       <Env mode={mode} onEnv={onEnv} />
-      <Surroundings mode={mode} />
+      <Surroundings mode={mode} lite={phone} envVer={envVer} />
       {!phone && <Props zones={zones} mode={mode} key={`props-${envVer}`} />}
       {zones.includes('hq') && <Doors mode={mode} key={`doors-${envVer}`} />}
       <Seals zones={zones} mode={mode} key={`seals-${envVer}`} />
@@ -517,7 +525,7 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
         ))}
       </group>
       {!phone && !new URLSearchParams(location.search).has('nofx') && <Suspense fallback={null}><Effects night={mode === 'night'} /></Suspense>}
-      <Rig stops={stops} progress={progress} phone={phone} snap={snap} look={look} fade={fade} />
+      <Rig stops={stops} progress={progress} phone={phone} snap={snap} look={look} aim={target} fade={fade} />
       {litOnce && <Ready onReady={onReady} />}
     </Canvas>
   );

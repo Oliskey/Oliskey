@@ -171,7 +171,7 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
     const k = (SCALES[`${zone}-${mode}`] ?? 1) * Number(new URLSearchParams(location.search).get('lmk') || Math.PI) * EXPOSURE[mode];   // exposure lives in the light, so it holds with or without the effects pass
     for (const m of parts.statics) {
       m.lightMap = lm; m.lightMapIntensity = k;
-      if (!m.roughnessMap && m.metalness < 0.5) m.roughness = Math.max(m.roughness, 0.5);   // satin, not mirror: no hard sun glints
+      if (!m.roughnessMap && m.metalness < 0.5) m.roughness = Math.max(m.roughness, m.name === 'floor_epoxy' ? 0.7 : 0.5);   // satin, not mirror: no hard sun glints
       const glossy = m.roughness < 0.6 || !!m.roughnessMap || m.metalness > 0.5;
       m.envMap = glossy ? ENV[mode] : null;
       m.envMapIntensity = m.metalness > 0.5 ? (mode === 'day' ? 0.7 : 0.35) : mode === 'day' ? 0.12 : 0.05;
@@ -412,7 +412,7 @@ const Rig: React.FC<{ stops: Stop[]; progress: React.MutableRefObject<number>; p
     tmp.e.x += Math.sin(S.t * 0.9) * sway; tmp.e.y += Math.sin(S.t * 1.7) * sway * 0.5;
     // look-around: yaw/pitch offset around the eye
     tmp.d.subVectors(tmp.a, tmp.e);
-    const yaw = look.current.x * 0.32, pitch = -look.current.y * 0.16;
+    const yaw = look.current.x * Math.PI, pitch = -look.current.y * 0.55;
     tmp.d.applyAxisAngle(THREE.Object3D.DEFAULT_UP, -yaw);
     tmp.side.crossVectors(tmp.d, THREE.Object3D.DEFAULT_UP).normalize();
     tmp.d.applyAxisAngle(tmp.side, pitch);
@@ -466,21 +466,18 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
     // pointer parallax (mouse) and drag-to-look (mouse and touch); the view springs back when you let go
     let raf = 0;
     const tick = () => {
-      look.current.x += (target.current.x - look.current.x) * 0.08;
-      look.current.y += (target.current.y - look.current.y) * 0.08;
+      look.current.x += (target.current.x - look.current.x) * 0.12;
+      look.current.y += (target.current.y - look.current.y) * 0.12;
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     const move = (e: PointerEvent) => {
-      if (drag.current) {
-        target.current.x = Math.max(-1, Math.min(1, drag.current.lx + (e.clientX - drag.current.x) / (window.innerWidth * 0.5)));
-        target.current.y = Math.max(-1, Math.min(1, drag.current.ly + (e.clientY - drag.current.y) / (window.innerHeight * 0.7)));
-      } else if (e.pointerType === 'mouse') {
-        target.current.x = (e.clientX / window.innerWidth - 0.5) * 0.25;
-        target.current.y = (e.clientY / window.innerHeight - 0.5) * 0.2;
-      }
+      if (!drag.current) return;
+      // drag to look around: a full screen-width drag turns the view half way round; the view stays where it is left
+      target.current.x = drag.current.lx + (e.clientX - drag.current.x) / window.innerWidth;
+      target.current.y = Math.max(-1, Math.min(1, drag.current.ly + (e.clientY - drag.current.y) / (window.innerHeight * 0.8)));
     };
-    const up = () => { drag.current = null; target.current.x = 0; target.current.y = 0; };
+    const up = () => { drag.current = null; };   // no spring back: scrolling continues from the direction the visitor chose
     window.addEventListener('pointermove', move, { passive: true });
     window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
     return () => { cancelAnimationFrame(raf); window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up); };
@@ -499,7 +496,7 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
       dpr={dpr}
       gl={{ antialias: !phone, powerPreference: 'high-performance', toneMapping: (({ aces: THREE.ACESFilmicToneMapping, neutral: THREE.NeutralToneMapping } as Record<string, THREE.ToneMapping>)[new URLSearchParams(location.search).get('tm') || ''] ?? THREE.AgXToneMapping), outputColorSpace: THREE.SRGBColorSpace }}
       camera={{ fov: 50, near: 0.1, far: 900, position: [0, 3, 40] }}
-      onPointerDown={(e) => { drag.current = { x: e.clientX, y: e.clientY, lx: target.current.x, ly: target.current.y }; }}
+      onPointerDown={(e) => { drag.current = { x: e.clientX, y: e.clientY, lx: target.current.x, ly: target.current.y }; document.body.style.cursor = 'grabbing'; }}
       onPointerMissed={() => setHover(null)}
       onCreated={({ gl }) => { gl.domElement.addEventListener('webglcontextlost', (e) => { e.preventDefault(); onLost?.(); }, { once: true }); }}
       aria-hidden

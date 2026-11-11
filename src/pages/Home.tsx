@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Check, ChevronDown } from 'lucide-react';
@@ -49,19 +49,12 @@ const Home: React.FC = () => {
   const [params, setParams] = useSearchParams();
   const pick = params.get('room');
   const room = (PRODUCTS.some((p) => p.id === pick) ? pick : null) as ProductId | null;
-  const [justChose, setJustChose] = useState(false);
   useReveal();
-  // the chosen room decides the rest of the walk: which zones load and where the camera goes after the showroom
   // only the showroom building and the chosen world are loaded: worlds never see each other, and phones keep memory free
   const zones = useMemo<Zone[]>(() => (room ? ['hq', room] : ['hq']), [room]);
   const stops = useMemo(() => homeStops(room), [room]);
-  const choose = (id: ProductId) => { setParams({ room: id }, { replace: true, preventScrollReset: true }); setJustChose(true); };
-  useEffect(() => {
-    if (!justChose) return;
-    setJustChose(false);
-    // after choosing, glide on to the room's first block
-    requestAnimationFrame(() => document.querySelectorAll<HTMLElement>('[data-stop]')[2]?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' }));
-  }, [justChose, room]);
+  // choosing a world only selects it: the camera moves when the visitor scrolls, never on its own
+  const choose = (id: ProductId) => setParams({ room: id }, { replace: true, preventScrollReset: true });
   return (
     <>
       <Journey zones={zones} stops={stops} stills={['outside', 'entrance', ...(room ? ['lobby', room, room, room, room, room] : [])]}

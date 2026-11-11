@@ -224,19 +224,6 @@ textarea:focus-visible {
 :root { --tilt-glare: rgba(255, 255, 255, 0.55); }
 .dark { --tilt-glare: rgba(148, 163, 184, 0.12); }
 
-/* BusinessFilm: orders, payments and reminders keep arriving once the shop is online */
-.film-order { opacity: 0; }
-.film-orders.is-live .film-order { animation: film-order 3.6s var(--ease-glide) infinite both; }
-@keyframes film-order {
-  0% { opacity: 0; transform: translate3d(0, 22px, 0) scale(0.9); }
-  12% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
-  62% { opacity: 1; transform: translate3d(0, -64px, 0) scale(1); }
-  84%, 100% { opacity: 0; transform: translate3d(0, -88px, 0) scale(0.98); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .film-orders.is-live .film-order { animation: none; opacity: 1; transform: translate3d(0, calc(var(--i) * -36px), 0); }
-}
-
 /* Smooth wheel scrolling (Lenis, desktop only) */
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }

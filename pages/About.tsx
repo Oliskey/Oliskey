@@ -37,42 +37,6 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Founder Section */}
-      <section className="bg-white dark:bg-slate-950 py-16 border-t border-gray-100 dark:border-slate-800 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">The person behind the mission</h2>
-            <p className="text-slate-500 dark:text-slate-400 mt-2">Building practical technology, one real problem at a time.</p>
-          </div>
-
-          <div className="flex justify-center">
-            <div className="group relative max-w-lg w-full bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-slate-800 transition-all hover:shadow-2xl">
-              {/* Image Container - Aspect Ratio tailored for PORTRAIT photo (3:4) */}
-              <div className="aspect-[3/4] overflow-hidden bg-slate-200 dark:bg-slate-800 relative">
-                <OptimizedImage
-                  src="/co-founder.jpg"
-                  alt="Oliskey Lee"
-                  className="w-full h-full"
-                  imgClassName="object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                />
-
-                {/* Gradient Overlay for text readability (Only if image loaded or just over placeholder for style) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90 pointer-events-none z-10"></div>
-
-                {/* Text Content Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-8 text-white z-20">
-                  <h3 className="text-2xl font-bold mb-1">Oliskey Lee</h3>
-                  <p className="text-blue-400 font-bold tracking-wide uppercase text-sm mb-3">Founder</p>
-                  <p className="text-slate-200 text-sm leading-relaxed opacity-90">
-                    Turning everyday frustrations into software, automation and AI tools that people can actually use.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Values */}
       <section className="bg-slate-50 dark:bg-slate-900 py-16 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

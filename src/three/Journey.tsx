@@ -85,7 +85,7 @@ const Journey: React.FC<{
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden bg-surface" role="img" aria-label={label}>
         {/* stills: the poster before 3D is ready, and the whole experience without WebGL */}
         {stills.map((s, i) => (
-          <picture key={`${s}-${i}`} className={`absolute inset-0 transition-opacity duration-700 ease-glide ${(use3d ? !ready && i === 0 : i === Math.min(still, stills.length - 1)) ? 'opacity-100' : 'opacity-0'}`}>
+          <picture key={`${s}-${i}`} className={`absolute inset-0 transition-opacity duration-700 ease-glide ${(use3d ? !ready && i === Math.min(still, stills.length - 1) : i === Math.min(still, stills.length - 1)) ? 'opacity-100' : 'opacity-0'}`}>
             <img src={`/hq/stills/${s}-${mode}.webp`} alt="" className="h-full w-full object-cover" loading={i === 0 ? 'eager' : 'lazy'} decoding="async" {...{ fetchpriority: i === 0 ? 'high' : 'auto' }} />
           </picture>
         ))}

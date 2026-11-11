@@ -132,6 +132,11 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
         const m = mesh.material as THREE.MeshStandardMaterial;
         if (!statics.includes(m)) {
           statics.push(m);
+          if (zone === 'hq' && m.name === 'metal_dark') m.onBeforeCompile = (sh) => {
+            // keep the entrance clear: no glazing post in the middle of the doorway
+            sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp;').replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvWp = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+            sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp;').replace('void main() {', 'void main() {\n  if (abs(vWp.x) < 0.09 && abs(vWp.z) < 0.13 && vWp.y < 9.7) discard;');
+          };
           if (mesh.geometry.getAttribute('uv1')) applySurface(m);
         }
         return;
@@ -228,6 +233,34 @@ const Surroundings: React.FC<{ mode: Mode }> = ({ mode }) => {
   return sky ? <primitive object={sky} /> : null;
 };
 const SKY_ROT = Number(new URLSearchParams(location.search).get('skyrot') || 0) * (Math.PI / 180);
+
+/** Closed walls at the ends of a world (navy feature walls with the Oliskey mark), so a world never looks into another one. */
+const ROOM_Y: Record<string, [number, number]> = { school: [22, 44], fleet: [44, 66], alpha: [66, 88], labs: [88, 110] };
+const Seals: React.FC<{ zones: readonly Zone[]; mode: Mode }> = ({ zones, mode }) => {
+  const mats = useMemo(() => ({
+    wall: new THREE.MeshStandardMaterial({ color: 0x0b1a3a, roughness: 0.55, metalness: 0.0 }),
+    logo: new THREE.MeshBasicMaterial({ map: (() => { const t = new THREE.TextureLoader().load('/hq/tex/logo_sign.webp'); t.colorSpace = THREE.SRGBColorSpace; return t; })(), toneMapped: false }),
+  }), []);
+  useEffect(() => { mats.wall.envMap = ENV[mode]; mats.wall.envMapIntensity = mode === 'day' ? 0.9 : 0.6; mats.wall.color.set(mode === 'day' ? 0x13285a : 0x0b1a3a); mats.wall.needsUpdate = true; }, [mode, mats]);
+  const walls: React.ReactNode[] = [];
+  for (const z of zones) {
+    if (z === 'hq') continue;
+    const [y0, y1] = ROOM_Y[z];
+    const prev = { school: 'hq', fleet: 'school', alpha: 'fleet', labs: 'alpha' }[z] as Zone;
+    const next = { school: 'fleet', fleet: 'alpha', alpha: 'labs', labs: null }[z] as Zone | null;
+    if (!zones.includes(prev)) walls.push(
+      <group key={`${z}-in`} position={[0, 0.6 + 2.75, -(y0 + 0.2)]}>
+        <mesh material={mats.wall}><boxGeometry args={[22.4, 5.5, 0.12]} /></mesh>
+        <mesh material={mats.logo} position={[0, 0.4, -0.07]} rotation-y={Math.PI}><planeGeometry args={[4, 1]} /></mesh>
+      </group>);
+    if (next && !zones.includes(next)) walls.push(
+      <group key={`${z}-out`} position={[0, 0.6 + 2.0, -(y1 - 0.22)]}>
+        <mesh material={mats.wall}><boxGeometry args={[7.2, 4.05, 0.1]} /></mesh>
+        <mesh material={mats.logo} position={[0, 0.3, 0.06]}><planeGeometry args={[3.2, 0.8]} /></mesh>
+      </group>);
+  }
+  return <>{walls}</>;
+};
 
 /** Automatic sliding glass doors at the entrance: they part as the camera approaches and close behind it. */
 const Doors: React.FC<{ mode: Mode }> = ({ mode }) => {
@@ -476,6 +509,7 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
       <Surroundings mode={mode} />
       {!phone && <Props zones={zones} mode={mode} key={`props-${envVer}`} />}
       {zones.includes('hq') && <Doors mode={mode} key={`doors-${envVer}`} />}
+      <Seals zones={zones} mode={mode} key={`seals-${envVer}`} />
       <group
         onPointerMove={(e) => { const d = pick(e); setHover(d?.screen ?? null); document.body.style.cursor = d ? 'pointer' : ''; }}
         onPointerOut={() => { setHover(null); document.body.style.cursor = ''; }}

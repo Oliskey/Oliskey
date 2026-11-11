@@ -52,8 +52,8 @@ const Home: React.FC = () => {
   const [justChose, setJustChose] = useState(false);
   useReveal();
   // the chosen room decides the rest of the walk: which zones load and where the camera goes after the showroom
-  const ORDER: ProductId[] = ['school', 'fleet', 'alpha', 'labs'];
-  const zones = useMemo<Zone[]>(() => ['hq', ...(room ? ORDER.slice(0, ORDER.indexOf(room) + 1) : [])], [room]);
+  // only the showroom building and the chosen world are loaded: worlds never see each other, and phones keep memory free
+  const zones = useMemo<Zone[]>(() => (room ? ['hq', room] : ['hq']), [room]);
   const stops = useMemo(() => homeStops(room), [room]);
   const choose = (id: ProductId) => { setParams({ room: id }, { replace: true, preventScrollReset: true }); setJustChose(true); };
   useEffect(() => {

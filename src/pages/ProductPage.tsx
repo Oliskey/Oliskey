@@ -24,7 +24,7 @@ const ProductPage: React.FC<{ id: ProductId }> = ({ id }) => {
 
   return (
     <>
-      <Journey key={id} zones={[id]} stops={ROOM_STOPS[id]} stills={[id]} onSelect={(x) => setSheet(x as ProductId)} label={`The ${p.name} room: ${p.room}`}>
+      <Journey key={id} zones={[id]} stops={ROOM_STOPS[id]} onSelect={(x) => setSheet(x as ProductId)} label={`The ${p.name} room: ${p.room}`}>
         <RoomBlocks id={id} onShow={() => setSheet(id)} />
       </Journey>
       <ProductSheet id={sheet} onClose={() => setSheet(null)} />

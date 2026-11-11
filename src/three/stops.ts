@@ -66,3 +66,13 @@ export const ROOM_STOPS: Record<'school' | 'fleet' | 'alpha' | 'labs', Stop[]> =
 
 /** Which GLB zones a page needs. */
 export type Zone = 'hq' | 'school' | 'fleet' | 'alpha' | 'labs';
+
+/** Phone & tablet framing: the text card covers the lower half of a tall screen, so the camera sits a little higher and
+ *  looks slightly down — the subject (desks, kekes, benches, screens) lands in the visible upper half, not the ceiling. */
+function framePhone(list: Stop[]) {
+  for (const st of list) {
+    if (!st.phone || st.via || st.id === 'outside' || st.id.endsWith('-preview')) continue;
+    st.phone = { ...st.phone, eye: [st.phone.eye[0], st.phone.eye[1] + 0.55, st.phone.eye[2]], at: [st.phone.at[0], st.desk.at[1] - 1.3, st.phone.at[2]] };
+  }
+}
+framePhone(ARRIVAL); framePhone(WALK_IN); Object.values(ROOM_STOPS).forEach(framePhone); Object.values(FINALE).forEach((f) => framePhone([f]));

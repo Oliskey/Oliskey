@@ -57,13 +57,13 @@ const Home: React.FC = () => {
   const choose = (id: ProductId) => setParams({ room: id }, { replace: true, preventScrollReset: true });
   return (
     <>
-      <Journey zones={zones} stops={stops} stills={['outside', 'entrance', ...(room ? ['lobby', room, room, room, room, room] : [])]}
+      <Journey zones={zones} stops={stops}
         onSelect={(id) => (id === room ? setSheet(id as ProductId) : choose(id as ProductId))}
         label={`A walk through the Oliskey headquarters${room ? ` into the ${productById(room).name} world` : ''}`}>
         {/* 1 · the entrance */}
-        <StopBlock tall>
+        <StopBlock tall shade>
           <div className="relative w-full max-w-[640px]">
-            <div aria-hidden className="pointer-events-none absolute -inset-y-[40vh] -left-[12vw] z-0 hidden w-[68vw] bg-gradient-to-r from-page/90 via-page/65 to-transparent md:block" />
+            
             <div className="scene-panel relative z-10 p-6 md:border-0 md:bg-transparent md:p-0 md:shadow-none md:backdrop-blur-0">
               <p className="eyebrow">Welcome to Oliskey</p>
               <h1 className="mt-3 text-[30px] font-bold leading-[1.06] tracking-[-0.03em] text-ink md:mt-4 md:text-display">We turn manual work into digital business.</h1>

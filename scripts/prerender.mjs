@@ -15,7 +15,8 @@ const chunkFiles = (key, seen = new Set()) => {
   seen.add(key);
   return [m.file, ...(m.imports || []).flatMap((k) => chunkFiles(k, seen))];
 };
-const worldJs = [...new Set(chunkFiles('src/three/World.tsx'))];
+const worldKey = Object.keys(manifest).find((k) => k === 'src/three/World.tsx') || Object.keys(manifest).find((k) => /World/.test(k));
+const worldJs = worldKey ? [...new Set(chunkFiles(worldKey))] : [];
 const preload3d = (zone) => [
   ...worldJs.map((f) => `<link rel="modulepreload" href="/${f}" />`),
   `<link rel="preload" href="/hq/glb/${zone}.glb" as="fetch" crossorigin />`,

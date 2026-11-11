@@ -17,7 +17,7 @@ export function canUse3d() {
 const isPhone = () => window.matchMedia('(max-width: 1023px)').matches || window.matchMedia('(pointer: coarse)').matches
   || ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8) <= 4;
 
-/** If anything in the 3D layer throws, the page keeps working with the rendered stills. */
+/** If anything in the 3D layer throws, the scene is rebuilt (and resumes at the current stop). */
 class Guard extends React.Component<{ onFail: () => void; children: React.ReactNode }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
@@ -28,16 +28,15 @@ class Guard extends React.Component<{ onFail: () => void; children: React.ReactN
 /**
  * A scroll journey: the 3D scene stays pinned behind the page while text blocks (marked data-stop) scroll over it.
  * When a block's centre reaches the middle of the screen the camera has arrived at that stop. Native scrolling is never
- * taken over. Without WebGL (or with Reduce Motion) the same stops are shown as rendered stills that cross-fade.
+ * taken over. The 3D is always shown (no still-picture fallback); a quiet veil covers the moment before it is lit.
  */
 const Journey: React.FC<{
   zones: readonly Zone[];
   stops: Stop[];
-  stills: string[];            // one still per real stop, by name (rendered from the same scene)
   onSelect?: (id: string) => void;
   children: React.ReactNode;   // the text blocks
   label: string;
-}> = ({ zones, stops, stills, onSelect, children, label }) => {
+}> = ({ zones, stops, onSelect, children, label }) => {
   const box = useRef<HTMLDivElement>(null);
   const fade = useRef<HTMLDivElement>(null);   // the veil the camera fades through on a cinematic cut
   const progress = useRef(0);
@@ -47,8 +46,7 @@ const Journey: React.FC<{
   const [phone, setPhone] = useState(isPhone);
   const [ready, setReady] = useState(false);
   const [active, setActive] = useState(true);
-  const [still, setStill] = useState(0);
-  const { theme } = useTheme();
+    const { theme } = useTheme();
   const mode = theme === 'dark' ? 'night' : 'day';
   const snap = useMemo(() => new URLSearchParams(location.search).has('worldsnap'), []);
 
@@ -65,7 +63,6 @@ const Journey: React.FC<{
         for (let i = 0; i < c.length - 1; i++) if (c[i] <= 0 && c[i + 1] > 0) { s = i + -c[i] / (c[i + 1] - c[i]); break; }
       }
       progress.current = s;
-      setStill(Math.round(s));
     };
     const resize = () => { blocks = Array.from(el.querySelectorAll<HTMLElement>('[data-stop]')); setPhone(isPhone()); measure(); };
     measure();
@@ -83,12 +80,11 @@ const Journey: React.FC<{
   return (
     <div ref={box} className="relative">
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden bg-surface" role="img" aria-label={label}>
-        {/* stills: the poster before 3D is ready, and the whole experience without WebGL */}
-        {stills.map((s, i) => (
-          <picture key={`${s}-${i}`} className={`absolute inset-0 transition-opacity duration-700 ease-glide ${(use3d ? !ready && i === Math.min(still, stills.length - 1) : i === Math.min(still, stills.length - 1)) ? 'opacity-100' : 'opacity-0'}`}>
-            <img src={`/hq/stills/${s}-${mode}.webp`} alt="" className="h-full w-full object-cover" loading={i === 0 ? 'eager' : 'lazy'} decoding="async" {...{ fetchpriority: i === 0 ? 'high' : 'auto' }} />
-          </picture>
-        ))}
+        {/* until the 3D is lit: a quiet veil with the Oliskey mark (no still pictures) */}
+        <div aria-hidden className={`absolute inset-0 grid place-items-center bg-surface transition-opacity duration-700 ease-glide ${ready ? 'pointer-events-none opacity-0' : 'opacity-100'}`}>
+          {use3d ? <span className="h-10 w-10 animate-pulse text-faint"><svg viewBox="0 0 100 100" fill="none" className="h-full w-full"><g stroke="currentColor" strokeWidth="8" strokeLinecap="round"><circle cx="35" cy="62" r="22" /><circle cx="65" cy="62" r="22" /><circle cx="50" cy="36" r="22" /></g></svg></span>
+            : <p className="max-w-[300px] text-center text-[15px] text-muted">This browser can’t show the 3D headquarters. Everything else on this page works as usual.</p>}
+        </div>
         {use3d && (
           <div className={`absolute inset-0 transition-opacity duration-700 ${ready ? 'opacity-100' : 'opacity-0'}`}>
             <Guard key={gen} onFail={restart}>
@@ -110,8 +106,9 @@ const Journey: React.FC<{
 export default Journey;
 
 /** A text block the camera stops at. Content inside is clickable; the empty area lets the scene receive drags and clicks. */
-export const StopBlock: React.FC<{ children: React.ReactNode; align?: 'left' | 'right' | 'center'; tall?: boolean; id?: string; top?: boolean }> = ({ children, align = 'left', tall, id, top }) => (
-  <section id={id} data-stop className={`page-x flex ${tall ? 'min-h-[100svh]' : 'min-h-[130svh]'} ${top ? 'items-start pt-[88px]' : tall ? 'items-end pb-[max(24px,6svh)]' : 'items-end pb-[21svh]'} md:items-center md:pb-0 md:pt-0 ${align === 'right' ? 'md:justify-end' : align === 'center' ? 'md:justify-center' : ''}`}>
-    <div className="pointer-events-auto w-full md:w-auto">{children}</div>
+export const StopBlock: React.FC<{ children: React.ReactNode; align?: 'left' | 'right' | 'center'; tall?: boolean; id?: string; top?: boolean; shade?: boolean }> = ({ children, align = 'left', tall, id, top, shade }) => (
+  <section id={id} data-stop className={`relative page-x flex ${tall ? 'min-h-[100svh]' : 'min-h-[130svh]'} ${top ? 'items-start pt-[88px]' : tall ? 'items-end pb-[max(24px,6svh)]' : 'items-end pb-[21svh]'} md:items-center md:pb-0 md:pt-0 ${align === 'right' ? 'md:justify-end' : align === 'center' ? 'md:justify-center' : ''}`}>
+    {shade && <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-screen -translate-x-1/2 bg-gradient-to-r from-page/90 via-page/45 via-45% to-transparent to-75% [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_78%,transparent)] md:block" />}
+    <div className="pointer-events-auto relative w-full md:w-auto">{children}</div>
   </section>
 );

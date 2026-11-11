@@ -43,12 +43,16 @@ anything new needs explicit approval.
   room-environment reflections only on glossy surfaces. Screens show the real app screenshots matching the theme.
 - Camera: stops in `src/three/stops.ts`. Each text block marked `data-stop` lines up with one stop; the camera glides
   (frame-rate independent) and passes through `via` points at doorways. Desktop and phone have separate compositions.
-- Interaction: native scroll only (never hijacked); drag or move the pointer to look around (springs back); click a
-  product display to open its sheet.
-- Fallback: no WebGL, Reduce Motion or `?no3d` → Cycles stills cross-fade per stop. The first still is also the poster
-  shown until the 3D scene is ready.
-- Performance: three.js/R3F load only on 3D pages; meshopt-compressed GLBs; 1k lightmap for the plaza on phones;
-  rendering pauses off-screen and in background tabs; DPR drops automatically when frames slow down.
+- Interaction: native scroll only (never hijacked); drag (mouse or finger) to look around — the view stays where it is
+  left and scrolling eases it back toward the planned direction (~80% per stop). Choosing a world never moves the camera.
+- Home walk: outside → glass doors (choose a world) → doors slide open → showroom → the world's display → cinematic cut
+  inside → three stops → closing card (Learn more / Choose another world). Only the showroom and the chosen world load;
+  the world's doorways are sealed so worlds never see each other.
+- Always 3D (owner's decision): no still-picture fallback. A quiet veil with the Oliskey mark covers the moment before the
+  scene is lit; if the browser drops the 3D it is rebuilt and resumes at the current stop.
+- Performance: three.js/R3F load only on 3D pages (preloaded there with the first zone's GLB and lightmap); meshopt GLBs;
+  phones/tablets get lite 3D (no props/effects, 1k plaza lightmap, DPR ≤ 1.25); rendering pauses off-screen.
+- Surroundings: photographic HDRI sky + a code-built business district (towers, roads, trees, lamps) in every direction.
 
 ## Motion
 - Page entrance 260 ms rise 10 px (`route-enter`); scroll reveals 0.7 s rise 24 px (GSAP ScrollTrigger, once).
@@ -57,4 +61,4 @@ anything new needs explicit approval.
 
 ## Content rules
 - Never invent testimonials, statistics, certifications or customers. Facts used: company name, city, product facts,
-  School licence prices supplied by the owner.
+  School pricing per child per term (Free, Basic ₦1,000, Advanced ₦3,000) and the founding-school offer, from the owner.

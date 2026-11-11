@@ -471,7 +471,7 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
   const target = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    // pointer parallax (mouse) and drag-to-look (mouse and touch); the view springs back when you let go
+    // drag-to-look (mouse and touch): the view stays where it is left; scrolling eases it back toward the planned view
     let raf = 0;
     const tick = () => {
       look.current.x += (target.current.x - look.current.x) * 0.12;

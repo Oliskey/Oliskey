@@ -1,17 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Check } from 'lucide-react';
 import { PageTop, SectionHead } from '../components/Section';
 import CTA from '../components/CTA';
 import { productById } from '../lib/products';
 import { useReveal } from '../lib/reveal';
 
-// Oliskey School licence levels (yearly). Prices are in Nigerian naira.
+// Oliskey School: priced per child per term (owner's current pricing).
 const SCHOOL = [
-  { name: 'Level 1', who: 'Primary · Nigerian curriculum', licence: '₦550,000', student: '₦3,200' },
-  { name: 'Level 2', who: 'Secondary · Nigerian curriculum', licence: '₦1,350,000', student: '₦4,500' },
-  { name: 'Level 3', who: 'International or dual curriculum', licence: '₦2,500,000', student: '₦6,000' },
-  { name: 'Level 4', who: 'Enterprise and government', licence: '₦4,000,000', student: '₦8,000' },
+  { name: 'Free', price: '₦0', per: 'per child per term', points: ['Start at no cost', 'Upgrade when your school is ready'] },
+  { name: 'Basic', price: '₦1,000', per: 'per child per term', points: ['Billed per term, per child', 'Pay with Paystack'] },
+  { name: 'Advanced', price: '₦3,000', per: 'per child per term', points: ['Everything in Basic', 'Includes AI features'] },
 ];
 
 const Pricing: React.FC = () => {
@@ -20,18 +19,18 @@ const Pricing: React.FC = () => {
   return (
     <>
       <PageTop>
-        <SectionHead as="h1" eyebrow="Pricing" title="Simple, yearly pricing for schools" lead="Oliskey School is licensed per school per year, plus a small amount per student. Prices are in Nigerian naira." />
-        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <SectionHead as="h1" eyebrow="Pricing" title="Simple pricing for schools" lead="Oliskey School is priced per child, per term. Register with no upfront payment and pay from next term." />
+        <div className="mt-14 grid gap-4 md:grid-cols-3">
           {SCHOOL.map((t, i) => (
-            <div key={t.name} data-reveal className={`flex flex-col rounded-card border p-6 ${i === 1 ? 'border-accent bg-raised shadow-[0_24px_60px_-34px_rgb(var(--accent)/0.6)]' : 'border-line bg-raised'}`}>
-              <p className="text-[15px] font-semibold text-ink">{t.name}</p>
-              <p className="mt-1 min-h-[44px] text-[14px] text-muted">{t.who}</p>
-              <p className="mt-5 text-[30px] font-bold tracking-tight tabular-nums text-ink">{t.licence}</p>
-              <p className="text-[14px] text-muted">licence per year</p>
-              <p className="mt-4 border-t border-line pt-4 text-[15px] text-ink"><span className="font-semibold tabular-nums">{t.student}</span> <span className="text-muted">per student per year</span></p>
+            <div key={t.name} data-reveal className={`flex flex-col rounded-card border p-6 sm:p-7 ${i === 1 ? 'border-accent bg-raised shadow-[0_24px_60px_-34px_rgb(var(--accent)/0.6)]' : 'border-line bg-raised'}`}>
+              <p className="text-[17px] font-semibold text-ink">{t.name}</p>
+              <p className="mt-4 text-[34px] font-bold tracking-tight tabular-nums text-ink">{t.price}</p>
+              <p className="text-[14px] text-muted">{t.per}</p>
+              <ul className="mt-5 grid gap-2 border-t border-line pt-5">{t.points.map((pt) => <li key={pt} className="flex gap-2 text-[15px] text-ink"><Check size={17} className="mt-0.5 shrink-0 text-accent" />{pt}</li>)}</ul>
             </div>
           ))}
         </div>
+        <p data-reveal className="mt-6 rounded-2xl bg-accent/10 px-5 py-4 text-[15px] text-ink"><b>Founding schools:</b> the first 100 schools keep their price for 12 months. You can delete your school’s account at any time.</p>
         <div data-reveal className="mt-8 flex flex-wrap gap-3">
           <Link to="/contact?topic=quote&product=school" className="btn-primary">Get a quote for your school</Link>
           <Link to="/school" className="btn-secondary">About Oliskey School</Link>

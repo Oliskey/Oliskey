@@ -4,7 +4,7 @@ export const SITE = 'https://www.oliskey.com';
 export interface PublicRoute { path: string; title: string; description: string }
 
 export const ROUTES: PublicRoute[] = [
-  { path: '/', title: 'Oliskey — Technology for education, transport, finance and innovation', description: 'Walk through the Oliskey headquarters and explore Oliskey School, Oliskey Fleet, Oliskey Alpha and Oliskey Labs.' },
+  { path: '/', title: 'Oliskey — We turn manual work into digital business', description: 'Oliskey moves schools, transport operators and traders from paper and local reach to online systems. Enter the worlds of Oliskey School, Fleet, Alpha and Labs.' },
   { path: '/products', title: 'Products — Oliskey', description: 'Oliskey School, Oliskey Fleet, Oliskey Alpha and Oliskey Labs: software for schools, transport operators, traders and builders.' },
   { path: '/school', title: 'Oliskey School — School management for every role', description: 'Student records, attendance, fees, exams, report cards, messaging and learning tools for administrators, teachers, students and parents.' },
   { path: '/fleet', title: 'Oliskey Fleet — Tricycle and fleet operations', description: 'Vehicles, drivers, collections, remittances, maintenance and finance records for tricycle and fleet operators.' },

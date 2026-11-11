@@ -36,7 +36,7 @@ const FINALE: Record<'school' | 'fleet' | 'alpha' | 'labs', Stop> = {
 
 /** Paths to the closing view that keep clear of furniture and people. */
 const TO_FINALE: Partial<Record<'school' | 'fleet' | 'alpha' | 'labs', Stop[]>> = {
-  alpha: [via('alpha-side', [4.6, 79.5, 2.8]), via('alpha-back', [4.2, 85.6, 3.3])],
+  alpha: [via('alpha-side', [4.6, 79.5, 2.45]), via('alpha-back', [4.2, 85.6, 2.9])],
 };
 
 /** Home walk: arrival; then, once a world is chosen, its display in the showroom, a cut inside, three stops and a closing view. */
@@ -61,7 +61,7 @@ export const ROOM_STOPS: Record<'school' | 'fleet' | 'alpha' | 'labs', Stop[]> =
     { id: 'room', drop: 3.4, desk: s([7.5, 68.6, 2.6], [-8, 77, 1.6], 54), phone: s([7.6, 68.4, 2.6], [-8, 77, 2.4], 74) },
     via('alpha-aisle1', [4.2, 71.4, 2.5]),        // through the aisle between desk rows, never over a trader's head
     { id: 'display', desk: s([0.4, 72.7, 2.25], [-11, 73.4, 2.7], 50), phone: s([3.4, 72.4, 2.2], [-11, 72.4, 3.1], 66) },
-    via('alpha-aisle2', [3.0, 72.9, 2.4]),
+    via('alpha-aisle2', [3.2, 73.0, 2.9]),
     // over a trader's shoulder: the Alpha app, his chart and the trade he just won
     { id: 'detail', desk: s([3.25, 75.05, 2.42], [1.3, 73.9, 1.55], 50), phone: s([3.4, 75.2, 2.25], [1.3, 73.9, 1.75], 64) },
   ],

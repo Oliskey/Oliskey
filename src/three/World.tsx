@@ -382,6 +382,8 @@ const noRay = () => {};
 const TradingFloor: React.FC<{ mode: Mode; phone: boolean }> = ({ mode, phone }) => {
   const kit = useGLTF('/hq/glb/alpha_kit.glb').scene;
   const crowd = useGLTF('/hq/glb/alpha_people.glb').scene;
+  const { gl } = useThree();
+  const indoor = useMemo(() => { const pm = new THREE.PMREMGenerator(gl); const t = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); return t; }, [gl]);
   const built = useMemo(() => {
     // each part's geometry plus its node matrix (meshopt quantisation stores the real scale and offset on the node)
     const geo: Record<string, THREE.BufferGeometry> = {}, node: Record<string, THREE.Matrix4> = {};
@@ -392,7 +394,7 @@ const TradingFloor: React.FC<{ mode: Mode; phone: boolean }> = ({ mode, phone })
       geo[k] = m.geometry; node[k] = m.matrixWorld.clone();
     });
     const baked = (key: string) => new THREE.MeshBasicMaterial({ name: key, side: THREE.DoubleSide });
-    const mats = { kitdesk: baked('kitdesk'), kitchair: baked('kitchair'), people: baked('people') };
+    const mats = { kitdesk: baked('kitdesk'), kitchair: baked('kitchair') };
     const screenMat = (file: string) => { const m = new THREE.MeshBasicMaterial({ map: tex(`/hq/tex/${file}.webp`), toneMapped: false, side: THREE.DoubleSide }); return m; };
     const n = KITS.stations.length, fl = KITS.fl;
     const o = new THREE.Object3D();
@@ -407,7 +409,7 @@ const TradingFloor: React.FC<{ mode: Mode; phone: boolean }> = ({ mode, phone })
     const S = KITS.stations.map(station);
     // drop two pieces that read badly at a distance: the low fabric desk screen (looked like a second, blank monitor)
     // and the desk phone (two dark blobs). Boxes are in workstation metres: x (towards the trader), y (along the desk), height.
-    const CUT: [number, number, number, number, number, number][] = [[-0.41, -0.36, -0.82, 0.82, 0.72, 1.04], [-0.12, 0.12, -0.8, -0.46, 0.74, 0.88]];
+    const CUT: [number, number, number, number, number, number][] = [[-0.41, -0.36, -0.82, 0.82, 0.72, 1.04], [-0.17, 0.17, -0.86, -0.4, 0.73, 0.9], [0.08, 0.32, 0.2, 0.48, 0.735, 0.7445]];
     {
       const g = geo.kit_desk, pos = g.getAttribute('position'), m = node.kit_desk, v = new THREE.Vector3();
       const inside = (i: number) => { v.fromBufferAttribute(pos, i).applyMatrix4(m); const x = v.x, y = -v.z, z = v.y;
@@ -443,21 +445,28 @@ const TradingFloor: React.FC<{ mode: Mode; phone: boolean }> = ({ mode, phone })
       o.position.set(s.x + dx, fl, -(s.y + dy * (s.mirror ? -1 : 1))); o.rotation.set(0, yaw, 0); o.scale.set(1, 1, 1); o.updateMatrix(); return o.matrix.clone();
     });
     group.add(inst(geo.kit_chair, mats.kitchair, C));
-    crowd.traverse((x) => { const m = x as THREE.Mesh; if (m.isMesh) { m.material = mats.people; m.raycast = noRay; m.frustumCulled = false; } });   // quantised bounds can cull the whole crowd
+    // the traders keep their own textures (sharp faces and hands) and are lit by an indoor environment like the room's panels
+    const people: THREE.MeshStandardMaterial[] = [];
+    crowd.traverse((x) => {
+      const m = x as THREE.Mesh; if (!m.isMesh) return;
+      m.raycast = noRay; m.frustumCulled = false;   // quantised bounds can cull the whole crowd
+      const src = m.material as THREE.MeshStandardMaterial;
+      if (!people.includes(src)) { src.metalness = 0; src.roughness = Math.max(src.roughness, 0.55); people.push(src); }
+    });
     group.add(crowd);
-    return { group, mats, centre: group.children[1] as THREE.InstancedMesh, n };
+    return { group, mats, people, centre: group.children[1] as THREE.InstancedMesh, n };
   }, [kit, crowd]);
   useEffect(() => {
+    for (const m of built.people) { m.envMap = indoor; m.envMapIntensity = mode === 'day' ? 1.05 : 0.8; m.needsUpdate = true; }
     for (const [key, m] of Object.entries(built.mats)) {
-      const big = key === 'people';
-      m.map = tex(`/hq/lm/alpha_${key}-${mode}${phone && big ? '-1k' : ''}.webp`);
+      m.map = tex(`/hq/lm/alpha_${key}-${mode}.webp`);
       m.color.setScalar((SCALES[`alpha_${key}-${mode}`] ?? 1) * EXPOSURE[mode]);
       m.needsUpdate = true;
     }
     // the middle monitor shows the real Alpha app, in the theme of the moment
     const cm = built.centre.material as THREE.MeshBasicMaterial;
     cm.map = tex(`/products/alpha-${mode === 'day' ? 'light' : 'dark'}.webp`); cm.color.setScalar(mode === 'day' ? 0.9 : 0.85); cm.needsUpdate = true;
-  }, [built, mode, phone]);
+  }, [built, mode, phone, indoor]);
   return <primitive object={built.group} />;
 };
 

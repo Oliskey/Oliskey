@@ -61,7 +61,7 @@ export const ROOM_STOPS: Record<'school' | 'fleet' | 'alpha' | 'labs', Stop[]> =
   ],
   fleet: [
     { id: 'room', desk: s([-4.5, 45.4, 2.7], [5, 56, 0.9], 54), phone: s([-4.8, 45.0, 2.6], [4.5, 56, 1.8], 74) },
-    { id: 'display', desk: s([-1.6, 50.6, 2.1], [-11, 54.0, 2.1], 52), phone: s([-1.2, 49.6, 2.1], [-11, 53.0, 2.6], 66) },
+    { id: 'display', drop: 0.35, desk: s([-3.6, 51.0, 2.05], [-10, 55.4, 1.95], 54), phone: s([-4.4, 51.2, 2.05], [-8.4, 54.0, 2.05], 62) },
     // a driver paying the area staff from his phone, recorded on the staff tablet
     { id: 'detail', drop: 0.25, desk: s([-0.3, 54.9, 1.85], [1.4, 53.4, 1.25], 50), phone: s([-1.5, 56.3, 1.95], [1.3, 53.4, 1.45], 62) },
     // a driver paying from his seat in the keke

@@ -76,7 +76,7 @@ export function screenImage(name: string, mode: Mode): string | null {
   }
   if (name === 'screen_lobby_labs' || name === 'screen_labs_main') return '/hq/tex/labs_main.webp';
   if (name.startsWith('screen_labs_dev')) return '/hq/tex/labs_dev.webp';
-  if (name === 'screen_fleet_map') return '/hq/tex/fleet_map.webp';
+  if (name === 'screen_fleet_map') return `/hq/tex/fleet_admin_${v}.webp`;   // the real Fleet app (Finance · Collections)
   if (name === 'screen_alpha_wall1') return '/hq/tex/alpha_wall1.webp';
   if (name === 'screen_alpha_wall2') return '/hq/tex/alpha_wall2.webp';
   if (name.startsWith('screen_alpha_mon')) return '/hq/tex/alpha_mon.webp';
@@ -213,6 +213,9 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
       if (name.startsWith('screen_') || name.startsWith('logo_')) {
         const m = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false });
         mesh.material = m; mesh.userData.display = displayTarget(name); mesh.userData.screen = name;
+        if (name.startsWith('screen_fleet_desk')) {   // the operations monitors face the admin sitting behind the desk
+          mesh.rotateY(Math.PI); mesh.position.x -= 0.055; mesh.updateMatrix();
+        }
         screens.push({ mesh, mat: m });
       }
     });

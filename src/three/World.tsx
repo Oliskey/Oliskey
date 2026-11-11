@@ -187,6 +187,12 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
         const m = mesh.material as THREE.MeshStandardMaterial;
         if (!statics.includes(m)) {
           statics.push(m);
+          if (zone === 'hq' && (m.name === 'metal' || m.name === 'blue')) m.customProgramCacheKey = () => `logo-cut-${m.name}`;   // the two cuts differ: separate shader programs
+          if (zone === 'hq' && (m.name === 'metal' || m.name === 'blue')) m.onBeforeCompile = (sh) => {
+            // the old baked sculpture is replaced by <LogoSculpture/>, drawn to the exact proportions of the Oliskey mark
+            sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp;').replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvWp = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+            sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp;').replace('void main() {', m.name === 'blue' ? 'void main() {\n  if (abs(vWp.x) < 2.6 && vWp.y > 0.9 && abs(vWp.z + 10.0) < 1.4) discard;' : 'void main() {\n  if (abs(vWp.x) < 2.6 && vWp.y > 0.9 && abs(vWp.z + 10.0) < 0.5) discard;');
+          };
           if (zone === 'hq' && m.name === 'metal_dark') m.onBeforeCompile = (sh) => {
             // keep the entrance clear: no glazing post in the middle of the doorway
             sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp;').replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvWp = (modelMatrix * vec4(transformed, 1.0)).xyz;');
@@ -357,6 +363,39 @@ const Doors: React.FC<{ mode: Mode }> = ({ mode }) => {
     </group>
   ));
   return <group><Leaf ref={left} /><Leaf ref={right} /></group>;
+};
+
+/** The Oliskey mark in the showroom, to the logo's exact proportions (src/components/Logo.tsx: three rings r22, stroke 8,
+ *  centres (35,62) (65,62) (50,36), electric-blue arc on the upper right of the top ring, round ends). Rings follow the
+ *  logo's text colour: navy by day, near-white at night. */
+const LogoSculpture: React.FC<{ mode: Mode }> = ({ mode }) => {
+  const parts = useMemo(() => {
+    const k = 1.05 / 22, tube = 4 * k;                         // 1 logo unit = k metres
+    const cx = 50, cy = (62 + 62 + 36) / 3;                     // centre of the mark
+    const at = (x: number, y: number) => new THREE.Vector3((x - cx) * k, 3.95 - (y - cy) * k, -10);
+    const ring = new THREE.MeshStandardMaterial({ color: 0x0b1a3a, roughness: 0.32, metalness: 0.35 });
+    const blue = new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.3, metalness: 0.25, emissive: 0x3b82f6, emissiveIntensity: 0.12 });
+    const g = new THREE.Group();
+    const torus = new THREE.TorusGeometry(22 * k, tube, 24, 96);
+    for (const [x, y] of [[35, 62], [65, 62], [50, 36]] as const) { const m = new THREE.Mesh(torus, ring); m.position.copy(at(x, y)); g.add(m); }
+    // the accent: from straight right (0) up to the upper right (45 degrees), slightly proud of the ring, with round ends
+    const top = at(50, 36);
+    const arc = new THREE.Mesh(new THREE.TorusGeometry(22 * k, tube * 1.06, 24, 32, Math.PI / 4), blue); arc.position.copy(top); g.add(arc);
+    const cap = new THREE.SphereGeometry(tube * 1.06, 24, 16);
+    for (const a of [0, Math.PI / 4]) { const c = new THREE.Mesh(cap, blue); c.position.set(top.x + Math.cos(a) * 22 * k, top.y + Math.sin(a) * 22 * k, top.z); g.add(c); }
+    // the stem rises from the platform to where the two lower rings meet
+    const lowY = at(35, 62).y - Math.sqrt((22 * k) ** 2 - (15 * k) ** 2);
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, lowY - 0.76, 20), ring); stem.position.set(0, (lowY + 0.76) / 2, -10); g.add(stem);
+    g.traverse((o) => { (o as THREE.Mesh).raycast = () => {}; });
+    return { g, ring, blue };
+  }, []);
+  useEffect(() => {
+    const night = mode === 'night';
+    parts.ring.color.set(night ? 0xe6eaf2 : 0x0b1a3a);
+    parts.blue.emissiveIntensity = night ? 0.6 : 0.12;
+    for (const m of [parts.ring, parts.blue]) { m.envMap = ENV[mode]; m.envMapIntensity = night ? 0.9 : 1.1; m.needsUpdate = true; }
+  }, [mode, parts]);
+  return <primitive object={parts.g} />;
 };
 
 /** Real furniture and plants (Khronos glTF sample models, CC BY 4.0), lit by the environment map. */
@@ -699,6 +738,7 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
       <Surroundings mode={mode} lite={phone} envVer={envVer} />
       {!phone && <Props zones={zones} mode={mode} key={`props-${envVer}`} />}
       {zones.includes('hq') && <Doors mode={mode} key={`doors-${envVer}`} />}
+      {zones.includes('hq') && <LogoSculpture mode={mode} key={`logo-${envVer}`} />}
       <Seals zones={zones} mode={mode} key={`seals-${envVer}`} />
       {zones.includes('alpha') && <Suspense fallback={null}><TradingFloor mode={mode} phone={phone} /></Suspense>}
       {zones.includes('school') && <Suspense fallback={null}><Crowd zone="school" mode={mode} /></Suspense>}

@@ -54,6 +54,28 @@ anything new needs explicit approval.
   phones/tablets get lite 3D (no props/effects, 1k plaza lightmap, DPR ≤ 1.25); rendering pauses off-screen.
 - Surroundings: photographic HDRI sky + a code-built business district (towers, roads, trees, lamps) in every direction.
 
+
+### Alpha trading floor (realism pass, 2026-11-11)
+Why it looked like a toy before, and what fixed it:
+- **Scale.** Desks were 0.38 m high and chairs knee-high. Now: desks 0.74 m, monitors on arms at seated eye level, seats 0.47 m.
+- **Box furniture.** Each workstation is modelled once in Blender: walnut desk on steel T-legs, low acoustic screen, three
+  24-inch monitors on an arm, keyboard, mouse, desk phone, mug and notebook, and a mesh task chair on a five-star base.
+  It is drawn as instances (one draw call per part). Every other desk is mirrored, and empty chairs are pushed back and
+  turned, so the floor does not repeat.
+- **Low-resolution, noisy light.** The room lightmap went from 1k to 2k, the furniture moved out of it, and its islands are
+  padded so the browser can use three mip levels. That removes the shimmer on far ceilings and floors. The workstation and
+  the people carry their own baked textures (colour × light, reflections included).
+- **Surfaces.** Charcoal carpet tiles, a mineral-tile ceiling at 4.25 m with 0.6 × 1.2 m LED panels, and a walnut slat wall
+  carrying the LED video wall. This replaces the brown floor, the stucco ceiling and the black slab.
+- **Life.** 14 traders (posed rigged characters in recoloured office clothes):
+  - some celebrate a won practice trade, arms up, and one colleague stands and cheers;
+  - others lean back while their trade counts down.
+- **Their screens say the same.** Each trader's right-hand monitor shows "Trade closed · Won" or "Trade open · waiting for
+  close". The centre monitor shows the real Alpha app, and the far wall has the app plus a live demo-trade board.
+- **Labelled as practice.** Every price and result shown is labelled demo or practice credits.
+- **Live clocks.** World clocks show the real time in Lagos, London, New York and Tokyo.
+- **Phones.** Phones now render with hardware anti-aliasing at 1.5× pixel density, so there are no stair-stepped edges.
+
 ## Motion
 - Page entrance 260 ms rise 10 px (`route-enter`); scroll reveals 0.7 s rise 24 px (GSAP ScrollTrigger, once).
 - Easing tokens: respond (0.2,0.8,0.2,1), glide (0.32,0.72,0,1), exit (0.3,0,0.8,0.15).

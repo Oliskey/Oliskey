@@ -6,6 +6,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { GroundedSkybox } from 'three/examples/jsm/objects/GroundedSkybox.js';
 import propsJson from './props.json';
+import kitsJson from './kits.json';
 import District from './District';
 import scales from './lightmaps.json';
 import type { Stop, Zone } from './stops';
@@ -33,7 +34,10 @@ const EXPOSURE = { day: Number(new URLSearchParams(location.search).get('exp') |
 /** Reflection maps per time of day (photographic HDRI by day; the room-light environment at night). */
 const ENV: Record<Mode, THREE.Texture | null> = { day: null, night: null };
 const Effects = React.lazy(() => import('./Effects'));
-const LM_SIZE: Record<Zone, number> = { hq: 2048, school: 1024, fleet: 1024, alpha: 1024, labs: 1024 };
+const LM_SIZE: Record<Zone, number> = { hq: 2048, school: 1024, fleet: 1024, alpha: 2048, labs: 1024 };
+/** Zones whose lightmap islands are padded enough (8 px) for a few mip levels: smooth, shimmer-free far ceilings and floors. */
+const MIPPED: Partial<Record<Zone, boolean>> = { alpha: true };
+let GL: THREE.WebGLRenderer | null = null;
 const SCALES = scales as Record<string, number>;
 const loader = new THREE.TextureLoader();
 const texCache = new Map<string, THREE.Texture>();
@@ -65,8 +69,34 @@ export function screenImage(name: string, mode: Mode): string | null {
   if (name === 'screen_alpha_wall1') return '/hq/tex/alpha_wall1.webp';
   if (name === 'screen_alpha_wall2') return '/hq/tex/alpha_wall2.webp';
   if (name.startsWith('screen_alpha_mon')) return '/hq/tex/alpha_mon.webp';
+  if (name === 'screen_alpha_ticker') return '/hq/tex/alpha_ticker.webp';
+  if (name === 'screen_alpha_tv1') return `/products/alpha-${v}.webp`;
+  if (name === 'screen_alpha_tv2') return '/hq/tex/alpha_board.webp';
   return null;
 }
+/** World clocks over the trading floor: the real time now in Lagos, London, New York and Tokyo. */
+let clockTex: THREE.CanvasTexture | null = null;
+function clocks() {
+  if (clockTex) return clockTex;
+  const c = document.createElement('canvas'); c.width = 2048; c.height = 154;
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  const cities: [string, string][] = [['LAGOS', 'Africa/Lagos'], ['LONDON', 'Europe/London'], ['NEW YORK', 'America/New_York'], ['TOKYO', 'Asia/Tokyo']];
+  const draw = () => {
+    const g = c.getContext('2d')!; g.fillStyle = '#06070a'; g.fillRect(0, 0, c.width, c.height);
+    cities.forEach(([city, tz], i) => {
+      const x = i * 512;
+      if (i) { g.fillStyle = '#1c1d22'; g.fillRect(x, 20, 3, 114); }
+      let time = '--:--';
+      try { time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: tz }).format(new Date()); } catch { /* old browsers */ }
+      g.fillStyle = '#8f93a0'; g.font = '600 34px Inter, system-ui, sans-serif'; g.fillText(city, x + 40, 64);
+      g.fillStyle = '#f5f6fa'; g.font = '700 64px Inter, system-ui, sans-serif'; g.fillText(time, x + 290, 100);
+    });
+    t.needsUpdate = true;
+  };
+  draw(); window.setInterval(draw, 20000);
+  clockTex = t; return t;
+}
+
 /** Displays you can click, and the product each one opens. */
 export function displayTarget(name: string): string | null {
   const m = /^screen_(?:lobby_)?(school|fleet|alpha|labs)(?:_main)?$/.exec(name);
@@ -74,9 +104,18 @@ export function displayTarget(name: string): string | null {
 }
 
 /** Lightmaps: no mipmaps — lower mip levels would mix neighbouring UV islands and show blotches at grazing angles. */
-function lightmap(url: string) {
+function lightmap(url: string, mips = 0) {
   const t = tex(url);
-  t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.magFilter = THREE.LinearFilter; t.anisotropy = 1;
+  if (!mips) { t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.magFilter = THREE.LinearFilter; t.anisotropy = 1; return t; }
+  // limited mipmaps: the first levels smooth minified texels; deeper levels would mix neighbouring UV islands, so stop there
+  t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.magFilter = THREE.LinearFilter; t.anisotropy = 4;
+  t.onUpdate = () => {
+    if (!GL) return;
+    const g = GL.getContext() as WebGL2RenderingContext;
+    const wt = (GL.properties.get(t) as { __webglTexture?: WebGLTexture }).__webglTexture;
+    if (!wt || !(g instanceof WebGL2RenderingContext)) return;
+    g.bindTexture(g.TEXTURE_2D, wt); g.texParameteri(g.TEXTURE_2D, g.TEXTURE_MAX_LEVEL, mips);
+  };
   return t;
 }
 /** Surface detail on the second UV set (world scale, 1 unit = 1 m). Real scans (wood, grass) carry their own colour, so the
@@ -86,6 +125,7 @@ const SURF: Record<string, { f: string; m: number; tint?: number; rough?: string
   wood: { f: 'wood_real', m: 1.6, tint: 0.85 }, wood_light: { f: 'wood_real', m: 1.6, tint: 1.25 },
   floor_stone: { f: 'stone', m: 2.4 }, stair: { f: 'stone', m: 2.4 }, plaza: { f: 'pavers', m: 4.8 }, plaza_light: { f: 'pavers', m: 4.8 },
   plaster: { f: 'plaster', m: 3 }, plaster_warm: { f: 'plaster', m: 3 }, ceiling: { f: 'plaster', m: 3 }, floor_epoxy: { f: 'epoxy', m: 2 },
+  carpet: { f: 'carpet', m: 2 }, ceil_tile: { f: 'ceiltile', m: 1.2 }, slats: { f: 'slats', m: 1, tint: 0.62 },
   grass: { f: 'grass_real', m: 4, tint: 1.0 }, hedge: { f: 'grass_real', m: 1.5, tint: 0.7 },
 };
 const surfCache = new Map<string, THREE.Texture>();
@@ -112,6 +152,8 @@ const lmUrl = (z: Zone, mode: Mode, phone: boolean) => `/hq/lm/${z}-${mode}${pho
 const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: string | null; envVer: number; onLit?: () => void }> = ({ zone, mode, phone, hover, envVer, onLit }) => {
   const { scene } = useGLTF(`/hq/glb/${zone}.glb`);
   const { scene: root } = useThree();
+  const ticker = useRef<THREE.Texture | null>(null);
+  useFrame((_, dt) => { if (ticker.current) ticker.current.offset.x = (ticker.current.offset.x + dt * 0.012) % 1; });
 
   // one-time material setup
   const parts = useMemo(() => {
@@ -167,12 +209,12 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
 
   // light, screens and glass follow the time of day
   useEffect(() => {
-    const lm = lightmap(lmUrl(zone, mode, phone));
+    const lm = lightmap(lmUrl(zone, mode, phone), MIPPED[zone] ? (phone ? 2 : 3) : 0);
     texReady.get(lmUrl(zone, mode, phone))?.then(() => onLit?.());   // fade the 3D in only once it is lit
     const k = (SCALES[`${zone}-${mode}`] ?? 1) * Number(new URLSearchParams(location.search).get('lmk') || Math.PI) * EXPOSURE[mode];   // exposure lives in the light, so it holds with or without the effects pass
     for (const m of parts.statics) {
       m.lightMap = lm; m.lightMapIntensity = k;
-      if (!m.roughnessMap && m.metalness < 0.5) m.roughness = Math.max(m.roughness, m.name === 'floor_epoxy' ? 0.7 : 0.5);   // satin, not mirror: no hard sun glints
+      if (!m.roughnessMap && m.metalness < 0.5) m.roughness = Math.max(m.roughness, m.name === 'floor_epoxy' ? 0.7 : m.name === 'carpet' || m.name === 'ceil_tile' ? 1 : 0.5);   // satin, not mirror: no hard sun glints
       const glossy = m.roughness < 0.6 || !!m.roughnessMap || m.metalness > 0.5;
       m.envMap = glossy ? ENV[mode] : null;
       m.envMapIntensity = m.metalness > 0.5 ? (mode === 'day' ? 0.7 : 0.35) : mode === 'day' ? 0.12 : 0.05;
@@ -181,8 +223,14 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
     // screen pictures load after the light, so the room appears first and the displays switch on a moment later
     texReady.get(lmUrl(zone, mode, phone))?.then(() => {
     for (const { mesh, mat } of parts.screens) {
-        const url = screenImage(mesh.userData.screen, mode);
-        if (url) { mat.map = tex(url); mat.needsUpdate = true; }
+        const name = mesh.userData.screen as string;
+        if (name === 'screen_alpha_clocks') { mat.map = clocks(); mat.needsUpdate = true; continue; }
+        const url = screenImage(name, mode);
+        if (url) {
+          mat.map = tex(url);
+          if (name === 'screen_alpha_ticker') { mat.map.wrapS = THREE.RepeatWrapping; mat.map.repeat.x = (11.8 / 0.3) / (3530 / 128); mat.map.needsUpdate = true; ticker.current = mat.map; }
+          mat.needsUpdate = true;
+        }
         mat.color.setScalar(mode === 'day' ? 0.92 : 0.85);
       }
     });
@@ -321,6 +369,64 @@ const Prop: React.FC<{ item: PropItem; mode: Mode }> = ({ item, mode }) => {
   const [x, y, z] = item.p;
   return <primitive object={obj} position={[x, z, -y]} rotation={[0, (item.yaw * Math.PI) / 180, 0]} scale={item.s} />;
 };
+/** Oliskey Alpha trading floor: 18 workstations (desk set, three monitors, task chair) drawn as instances, and the traders.
+ *  Their light is baked in Blender into their own textures (albedo x light), so they cost one draw call per part. */
+type Station = { x: number; y: number; mirror: boolean; chair: [number, number, number]; state: string };
+const KITS = kitsJson as unknown as { fl: number; stations: Station[] };
+const STATE_TEX: Record<string, string> = {
+  win1: 'alpha_win1', win2: 'alpha_win2', win3: 'alpha_win3', wait1: 'alpha_wait1', wait2: 'alpha_wait2', wait3: 'alpha_wait3', idle1: 'alpha_mon', idle2: 'alpha_mon2',
+};
+const noRay = () => {};
+const TradingFloor: React.FC<{ mode: Mode; phone: boolean }> = ({ mode, phone }) => {
+  const kit = useGLTF('/hq/glb/alpha_kit.glb').scene;
+  const crowd = useGLTF('/hq/glb/alpha_people.glb').scene;
+  const built = useMemo(() => {
+    const geo: Record<string, THREE.BufferGeometry> = {};
+    kit.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) geo[(m.name.startsWith('Mesh') || !m.name ? m.parent?.name : m.name)!.replace(/_\d+$/, '')] = m.geometry; });
+    const baked = (key: string) => new THREE.MeshBasicMaterial({ name: key, side: THREE.DoubleSide });
+    const mats = { kitdesk: baked('kitdesk'), kitchair: baked('kitchair'), people: baked('people') };
+    const screenMat = (file: string) => { const m = new THREE.MeshBasicMaterial({ map: tex(`/hq/tex/${file}.webp`), toneMapped: false, side: THREE.DoubleSide }); return m; };
+    const n = KITS.stations.length, fl = KITS.fl;
+    const o = new THREE.Object3D();
+    const station = (s: Station) => { o.position.set(s.x, fl, -s.y); o.rotation.set(0, 0, 0); o.scale.set(1, 1, s.mirror ? -1 : 1); o.updateMatrix(); return o.matrix.clone(); };
+    const inst = (g: THREE.BufferGeometry, m: THREE.Material, mats4: THREE.Matrix4[]) => {
+      const im = new THREE.InstancedMesh(g, m, mats4.length); mats4.forEach((x, i) => im.setMatrixAt(i, x));
+      im.instanceMatrix.needsUpdate = true; im.raycast = noRay; im.frustumCulled = false; return im;
+    };
+    const group = new THREE.Group();
+    const S = KITS.stations.map(station);
+    group.add(inst(geo.kit_desk, mats.kitdesk, S));
+    group.add(inst(geo.kitscr_c, new THREE.MeshBasicMaterial({ toneMapped: false, side: THREE.DoubleSide }), S));
+    const byTex = new Map<string, THREE.Matrix4[]>(), left = new Map<string, THREE.Matrix4[]>();
+    KITS.stations.forEach((s, i) => {
+      const f = STATE_TEX[s.state] ?? 'alpha_mon'; byTex.set(f, [...(byTex.get(f) ?? []), S[i]]);
+      const l = i % 2 ? 'alpha_mon' : 'alpha_mon2'; left.set(l, [...(left.get(l) ?? []), S[i]]);
+    });
+    byTex.forEach((m4, f) => group.add(inst(geo.kitscr_p, screenMat(f), m4)));
+    left.forEach((m4, f) => group.add(inst(geo.kitscr_n, screenMat(f), m4)));
+    const C = KITS.stations.map((s) => {
+      const [dx, dy, yaw] = s.chair;
+      o.position.set(s.x + dx, fl, -(s.y + dy * (s.mirror ? -1 : 1))); o.rotation.set(0, yaw, 0); o.scale.set(1, 1, 1); o.updateMatrix(); return o.matrix.clone();
+    });
+    group.add(inst(geo.kit_chair, mats.kitchair, C));
+    crowd.traverse((x) => { const m = x as THREE.Mesh; if (m.isMesh) { m.material = mats.people; m.raycast = noRay; } });
+    group.add(crowd);
+    return { group, mats, centre: group.children[1] as THREE.InstancedMesh, n };
+  }, [kit, crowd]);
+  useEffect(() => {
+    for (const [key, m] of Object.entries(built.mats)) {
+      const big = key === 'people';
+      m.map = tex(`/hq/lm/alpha_${key}-${mode}${phone && big ? '-1k' : ''}.webp`);
+      m.color.setScalar((SCALES[`alpha_${key}-${mode}`] ?? 1) * EXPOSURE[mode]);
+      m.needsUpdate = true;
+    }
+    // the middle monitor shows the real Alpha app, in the theme of the moment
+    const cm = built.centre.material as THREE.MeshBasicMaterial;
+    cm.map = tex(`/products/alpha-${mode === 'day' ? 'light' : 'dark'}.webp`); cm.color.setScalar(mode === 'day' ? 0.9 : 0.85); cm.needsUpdate = true;
+  }, [built, mode, phone]);
+  return <primitive object={built.group} />;
+};
+
 const Props: React.FC<{ zones: readonly Zone[]; mode: Mode }> = ({ zones, mode }) => {
   const items = (propsJson as unknown as { items: PropItem[] }).items.filter((i) => zones.includes(i.zone));
   return <>{items.map((it, k) => <Suspense key={k} fallback={null}><Prop item={it} mode={mode} /></Suspense>)}</>;
@@ -460,7 +566,8 @@ const Ready: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
 };
 
 const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, active, onSelect, onReady, snap, onLost, fade }) => {
-  const [dpr, setDpr] = useState(phone ? Math.min(1.25, window.devicePixelRatio || 1) : Math.min(1.5, window.devicePixelRatio || 1));
+  // phones: sharper picture (1.5x) with hardware anti-aliasing; the performance monitor steps down if a device struggles
+  const [dpr, setDpr] = useState(phone ? Math.min(1.5, window.devicePixelRatio || 1) : Math.min(1.5, window.devicePixelRatio || 1));
   const [hover, setHover] = useState<string | null>(null);
   const [envVer, setEnvVer] = useState(0);
   const [litOnce, setLitOnce] = useState(false);
@@ -502,11 +609,11 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
       style={{ touchAction: 'pan-y' }}
       frameloop={active ? 'always' : 'never'}
       dpr={dpr}
-      gl={{ antialias: !phone, powerPreference: 'high-performance', toneMapping: (({ aces: THREE.ACESFilmicToneMapping, neutral: THREE.NeutralToneMapping } as Record<string, THREE.ToneMapping>)[new URLSearchParams(location.search).get('tm') || ''] ?? THREE.AgXToneMapping), outputColorSpace: THREE.SRGBColorSpace }}
+      gl={{ antialias: true, powerPreference: 'high-performance', toneMapping: (({ aces: THREE.ACESFilmicToneMapping, neutral: THREE.NeutralToneMapping } as Record<string, THREE.ToneMapping>)[new URLSearchParams(location.search).get('tm') || ''] ?? THREE.AgXToneMapping), outputColorSpace: THREE.SRGBColorSpace }}
       camera={{ fov: 50, near: 0.1, far: 900, position: [0, 3, 40] }}
       onPointerDown={(e) => { drag.current = { x: e.clientX, y: e.clientY, lx: target.current.x, ly: target.current.y }; document.body.style.cursor = 'grabbing'; }}
       onPointerMissed={() => setHover(null)}
-      onCreated={({ gl }) => { gl.domElement.addEventListener('webglcontextlost', (e) => { e.preventDefault(); onLost?.(); }, { once: true }); }}
+      onCreated={({ gl }) => { GL = gl; gl.domElement.addEventListener('webglcontextlost', (e) => { e.preventDefault(); onLost?.(); }, { once: true }); }}
       aria-hidden
     >
       <PerformanceMonitor onDecline={() => setDpr((d) => Math.max(1, d - 0.25))} />
@@ -515,6 +622,7 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
       {!phone && <Props zones={zones} mode={mode} key={`props-${envVer}`} />}
       {zones.includes('hq') && <Doors mode={mode} key={`doors-${envVer}`} />}
       <Seals zones={zones} mode={mode} key={`seals-${envVer}`} />
+      {zones.includes('alpha') && <Suspense fallback={null}><TradingFloor mode={mode} phone={phone} /></Suspense>}
       <group
         onPointerMove={(e) => { const d = pick(e); setHover(d?.screen ?? null); document.body.style.cursor = d ? 'pointer' : ''; }}
         onPointerOut={() => { setHover(null); document.body.style.cursor = ''; }}

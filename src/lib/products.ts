@@ -44,7 +44,7 @@ export const PRODUCTS: Product[] = [
       { title: 'Fees and messages', text: 'Track fees and arrears, and keep teachers and parents in one conversation.' },
       { title: 'Learning tools', text: 'Lesson notes, assignments and computer-based tests sit next to the records they belong to.' },
     ],
-    room: 'A modern classroom: student desks with tablets, and a teaching display showing the school dashboard.',
+    room: 'A modern classroom where registers, results and fees live on screens instead of paper — students on tablets, the school dashboard on the wall.',
     keywords: ['school', 'school management', 'school app', 'education', 'attendance', 'report cards', 'fees', 'cbt', 'nigeria'],
   },
   {
@@ -64,7 +64,7 @@ export const PRODUCTS: Product[] = [
       { title: 'Maintenance and costs', text: 'Log repairs and spending so you know what each vehicle really earns.' },
       { title: 'Built for the phone', text: 'Fleet runs well on a phone, where operators already work.' },
     ],
-    room: 'A fleet operations bay: tricycles parked in marked lanes, a tracking display and the operations dashboard.',
+    room: 'A fleet bay where every keke is tracked: drivers, daily payments and repairs on the operations dashboard instead of a notebook.',
     keywords: ['fleet', 'tricycle', 'keke', 'transport', 'drivers', 'remittance', 'vehicles', 'maintenance', 'logistics'],
   },
   {
@@ -84,7 +84,7 @@ export const PRODUCTS: Product[] = [
       { title: 'Free lessons', text: 'Learn how trades work and how to manage risk before you decide anything.' },
       { title: 'Charts that stay readable', text: 'Clear charts and one main action per screen, in light and dark mode.' },
     ],
-    room: 'A trading floor: rows of desks with three monitors each and a wall of live market charts.',
+    room: 'A trading floor with live market charts, where people practise and learn before they risk real money.',
     keywords: ['alpha', 'oliskey alpha', 'trading', 'trading app', 'demo trading', 'practice trading', 'forex', 'crypto', 'ai trading'],
   },
   {
@@ -103,7 +103,7 @@ export const PRODUCTS: Product[] = [
       { title: 'Custom software', text: 'Talk to us about software built around how your organisation already works.' },
       { title: 'Open to partners', text: 'Schools, operators and companies can work with us on new tools.' },
     ],
-    room: 'A technology laboratory: lab benches, a robot arm, server racks and a research wall.',
+    room: 'A technology lab where new ideas are researched and prototyped before they become Oliskey products.',
     keywords: ['labs', 'oliskey labs', 'ai research', 'innovation', 'custom software', 'prototypes'],
   },
 ];

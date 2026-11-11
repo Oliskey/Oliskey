@@ -24,6 +24,7 @@ export interface WorldProps {
   onSelect?: (id: string) => void;
   onReady?: () => void;
   snap?: boolean;
+  onLost?: () => void;
 }
 
 const EXPOSURE = { day: Number(new URLSearchParams(location.search).get('exp') || 0.8), night: Number(new URLSearchParams(location.search).get('expn') || 0.75) };
@@ -156,7 +157,8 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
     const k = (SCALES[`${zone}-${mode}`] ?? 1) * Number(new URLSearchParams(location.search).get('lmk') || Math.PI) * EXPOSURE[mode];   // exposure lives in the light, so it holds with or without the effects pass
     for (const m of parts.statics) {
       m.lightMap = lm; m.lightMapIntensity = k;
-      const glossy = m.roughness < 0.5 || !!m.roughnessMap || m.metalness > 0.5;
+      if (!m.roughnessMap && m.metalness < 0.5) m.roughness = Math.max(m.roughness, 0.5);   // satin, not mirror: no hard sun glints
+      const glossy = m.roughness < 0.6 || !!m.roughnessMap || m.metalness > 0.5;
       m.envMap = glossy ? ENV[mode] : null;
       m.envMapIntensity = m.metalness > 0.5 ? (mode === 'day' ? 0.7 : 0.35) : mode === 'day' ? 0.12 : 0.05;
       m.needsUpdate = true;
@@ -222,7 +224,14 @@ const Prop: React.FC<{ item: PropItem; mode: Mode }> = ({ item, mode }) => {
   const { scene } = useGLTF(`/hq/props/${PROP_FILES[item.m]}.glb`);
   const obj = useMemo(() => {
     const c = scene.clone(true);
-    c.traverse((o) => { const mesh = o as THREE.Mesh; if (mesh.isMesh) { mesh.material = (mesh.material as THREE.Material).clone(); } });
+    c.traverse((o) => {
+      const mesh = o as THREE.Mesh; if (!mesh.isMesh) return;
+      const src = mesh.material as THREE.MeshPhysicalMaterial;
+      // transmission/sheen force extra render passes and memory on every frame: use a plain PBR material instead
+      const m = new THREE.MeshStandardMaterial({ map: src.map, normalMap: src.normalMap, roughnessMap: src.roughnessMap, metalnessMap: src.metalnessMap,
+        aoMap: src.aoMap, color: src.color, roughness: src.roughness, metalness: src.metalness, side: src.side, alphaTest: src.alphaTest, transparent: false });
+      m.name = src.name; mesh.material = m;
+    });
     return c;
   }, [scene]);
   useEffect(() => {
@@ -313,8 +322,8 @@ const Ready: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
   return null;
 };
 
-const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, active, onSelect, onReady, snap }) => {
-  const [dpr, setDpr] = useState(phone ? 1.5 : Math.min(1.75, window.devicePixelRatio || 1));
+const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, active, onSelect, onReady, snap, onLost }) => {
+  const [dpr, setDpr] = useState(phone ? Math.min(1.25, window.devicePixelRatio || 1) : Math.min(1.5, window.devicePixelRatio || 1));
   const [hover, setHover] = useState<string | null>(null);
   const [envVer, setEnvVer] = useState(0);
   const onEnv = React.useCallback(() => setEnvVer((v) => v + 1), []);
@@ -361,12 +370,13 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
       camera={{ fov: 50, near: 0.1, far: 900, position: [0, 3, 40] }}
       onPointerDown={(e) => { drag.current = { x: e.clientX, y: e.clientY, lx: target.current.x, ly: target.current.y }; }}
       onPointerMissed={() => setHover(null)}
+      onCreated={({ gl }) => { gl.domElement.addEventListener('webglcontextlost', (e) => { e.preventDefault(); onLost?.(); }, { once: true }); }}
       aria-hidden
     >
       <PerformanceMonitor onDecline={() => setDpr((d) => Math.max(1, d - 0.25))} />
       <Env mode={mode} onEnv={onEnv} />
       <Surroundings mode={mode} />
-      <Props zones={zones} mode={mode} key={`props-${envVer}`} />
+      {!phone && <Props zones={zones} mode={mode} key={`props-${envVer}`} />}
       <group
         onPointerMove={(e) => { const d = pick(e); setHover(d?.screen ?? null); document.body.style.cursor = d ? 'pointer' : ''; }}
         onPointerOut={() => { setHover(null); document.body.style.cursor = ''; }}

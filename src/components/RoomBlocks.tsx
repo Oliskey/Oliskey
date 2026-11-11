@@ -29,7 +29,7 @@ export const RoomBlocks: React.FC<{ id: ProductId; onShow: () => void; heading?:
         </StopBlock>
         <StopBlock align="right">
           <div className="scene-panel w-full p-6 sm:p-7 md:w-[460px]">
-            <p className="eyebrow">What it does</p>
+            <p className="eyebrow">What changes when it goes digital</p>
             <ul className="mt-4 grid gap-3 sm:gap-4">
               {p.points.map((pt) => (
                 <li key={pt.title} className="flex gap-3">
@@ -42,7 +42,7 @@ export const RoomBlocks: React.FC<{ id: ProductId; onShow: () => void; heading?:
         </StopBlock>
         <StopBlock align="right">
           <div className="scene-panel w-full p-6 sm:p-7 md:w-[440px]">
-            <p className="eyebrow">Inside the room</p>
+            <p className="eyebrow">Inside this world</p>
             <p className="mt-3 text-[18px] font-medium leading-relaxed text-ink">{p.room}</p>
             <button type="button" onClick={onShow} className="btn-secondary mt-5">See the app on the display</button>
           </div>

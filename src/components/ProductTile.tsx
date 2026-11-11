@@ -18,7 +18,7 @@ const ProductTile: React.FC<{ p: Product }> = ({ p }) => {
         <div className="min-w-0 flex-1">
           <h3 className="text-[19px] font-semibold tracking-tight text-ink">{p.name}</h3>
           <p className="mt-1 text-[15px] leading-snug text-muted">{p.tagline}</p>
-          <span className="mt-4 inline-flex items-center gap-1.5 text-[15px] font-semibold text-accent-ink">Explore {p.name.replace('Oliskey ', '')} <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" /></span>
+          <span className="mt-4 inline-flex items-center gap-1.5 text-[15px] font-semibold text-accent-ink">Enter the {p.name.replace('Oliskey ', '')} world <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" /></span>
         </div>
       </div>
     </Link>

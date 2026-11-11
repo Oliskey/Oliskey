@@ -7,15 +7,23 @@ const World = lazy(() => import('./World'));
 /** WebGL available and the visitor hasn't asked for less motion. */
 export function canUse3d() {
   if (typeof window === 'undefined') return false;
-  if (new URLSearchParams(location.search).has('no3d')) return false;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
   try {
     const c = document.createElement('canvas');
     return !!(c.getContext('webgl2') || c.getContext('webgl'));
   } catch { return false; }
 }
 
-const isPhone = () => window.matchMedia('(max-width: 767px)').matches || (window.matchMedia('(pointer: coarse)').matches && window.innerWidth < 1024);
+/** Lite 3D for phones and tablets (touch screens, small screens or low memory): no heavy models or effects, lower resolution. */
+const isPhone = () => window.matchMedia('(max-width: 1023px)').matches || window.matchMedia('(pointer: coarse)').matches
+  || ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8) <= 4;
+
+/** If anything in the 3D layer throws, the page keeps working with the rendered stills. */
+class Guard extends React.Component<{ onFail: () => void; children: React.ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  componentDidCatch(e: unknown) { console.error('[3d] disabled after an error', e); this.props.onFail(); }
+  render() { return this.state.failed ? null : this.props.children; }
+}
 
 /**
  * A scroll journey: the 3D scene stays pinned behind the page while text blocks (marked data-stop) scroll over it.
@@ -33,6 +41,8 @@ const Journey: React.FC<{
   const box = useRef<HTMLDivElement>(null);
   const progress = useRef(0);
   const [use3d] = useState(canUse3d);
+  const [gen, setGen] = useState(0);   // bumped to rebuild the 3D scene if the browser drops it
+  const restart = () => { setReady(false); setGen((g) => (g < 3 ? g + 1 : g)); };
   const [phone, setPhone] = useState(isPhone);
   const [ready, setReady] = useState(false);
   const [active, setActive] = useState(true);
@@ -80,9 +90,11 @@ const Journey: React.FC<{
         ))}
         {use3d && (
           <div className={`absolute inset-0 transition-opacity duration-700 ${ready ? 'opacity-100' : 'opacity-0'}`}>
-            <Suspense fallback={null}>
-              <World zones={zones} stops={stops} progress={progress} mode={mode} phone={phone} active={active} onSelect={onSelect} onReady={() => setReady(true)} snap={snap} />
-            </Suspense>
+            <Guard key={gen} onFail={restart}>
+              <Suspense fallback={null}>
+                <World zones={zones} stops={stops} progress={progress} mode={mode} phone={phone} active={active} onSelect={onSelect} onReady={() => setReady(true)} snap={snap} onLost={restart} />
+              </Suspense>
+            </Guard>
           </div>
         )}
         {/* soft shade where text sits, so panels stay readable on any frame */}

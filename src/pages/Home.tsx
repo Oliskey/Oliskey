@@ -39,30 +39,30 @@ const Home: React.FC = () => {
     <>
       <Journey zones={zones} stops={stops} stills={['outside', 'entrance', 'lobby', ...(room ? [room, room, room] : [])]}
         onSelect={(id) => (id === room ? setSheet(id as ProductId) : choose(id as ProductId))}
-        label={`A walk through the Oliskey headquarters${room ? ` into the ${productById(room).name} room` : ''}`}>
+        label={`A walk through the Oliskey headquarters${room ? ` into the ${productById(room).name} world` : ''}`}>
         {/* 1 · the entrance */}
-        <StopBlock tall top>
+        <StopBlock tall>
           <div className="relative w-full max-w-[640px]">
-            <div aria-hidden className="absolute -inset-x-[40vw] -inset-y-24 -z-10 hidden bg-[radial-gradient(closest-side,rgb(var(--page)/0.82),rgb(var(--page)/0.55)_55%,transparent)] md:block" />
-            <div className="scene-panel p-6 md:border-0 md:bg-transparent md:p-0 md:shadow-none md:backdrop-blur-0">
+            <div aria-hidden className="pointer-events-none absolute -inset-y-[40vh] -left-[12vw] z-0 hidden w-[68vw] bg-gradient-to-r from-page/90 via-page/65 to-transparent md:block" />
+            <div className="scene-panel relative z-10 p-6 md:border-0 md:bg-transparent md:p-0 md:shadow-none md:backdrop-blur-0">
               <p className="eyebrow">Welcome to Oliskey</p>
-              <h1 className="mt-3 text-[34px] font-bold leading-[1.06] tracking-[-0.03em] text-ink md:mt-4 md:text-display">Technology for education, transport, finance and innovation.</h1>
-              <p className="mt-3 max-w-[520px] text-[16px] leading-relaxed text-muted md:mt-5 md:text-lead">Software that helps schools, transport operators and people learning to trade work with less paperwork and more clarity.</p>
+              <h1 className="mt-3 text-[30px] font-bold leading-[1.06] tracking-[-0.03em] text-ink md:mt-4 md:text-display">We turn manual work into digital business.</h1>
+              <p className="mt-3 max-w-[520px] text-[15px] leading-relaxed text-muted md:mt-5 md:text-lead">Oliskey moves schools, transport operators and traders from paper and local reach to online systems — so they work faster and reach more customers.</p>
               <div className="mt-5 flex flex-wrap gap-3 md:mt-8">
                 <Link to="/get-started" className="btn-primary">Create your account<ArrowRight size={16} /></Link>
                 <a href="#showroom" className="btn-secondary">Explore the products</a>
               </div>
             </div>
-            <p className="mt-10 hidden items-center gap-2 text-[14px] font-medium text-muted md:flex"><ChevronDown size={16} className="animate-bounce" />Scroll to walk inside</p>
+            <p className="relative z-10 mt-10 hidden items-center gap-2 text-[14px] font-medium text-muted md:flex"><ChevronDown size={16} className="animate-bounce" />Scroll to go inside</p>
           </div>
         </StopBlock>
 
         {/* 2 · stepping in */}
         <StopBlock align="center">
           <Panel className="md:w-[480px] md:text-center">
-            <p className="eyebrow">The headquarters</p>
-            <h2 className="mt-3 text-[28px] font-bold leading-tight tracking-tight text-ink sm:text-[32px]">One company. Four products under one roof.</h2>
-            <p className="mt-3 text-[16px] leading-relaxed text-muted sm:text-[17px]">Every Oliskey product has its own room. Walk through each one to see what it does.</p>
+            <p className="eyebrow">From manual to digital</p>
+            <h2 className="mt-3 text-[28px] font-bold leading-tight tracking-tight text-ink sm:text-[32px]">Paper, notebooks and phone calls become one clear system.</h2>
+            <p className="mt-3 text-[16px] leading-relaxed text-muted sm:text-[17px]">Records stay safe, money is tracked, and customers can find you online — not only when they walk in.</p>
           </Panel>
         </StopBlock>
 
@@ -70,9 +70,9 @@ const Home: React.FC = () => {
         <StopBlock id="showroom" align="right">
           <Panel>
             <p className="eyebrow">The showroom</p>
-            <h2 className="mt-3 text-[28px] font-bold leading-tight tracking-tight text-ink sm:text-[32px]">Choose a room to explore.</h2>
-            <p className="mt-3 text-[16px] leading-relaxed text-muted">Select a screen in the showroom or pick below, then keep scrolling to walk inside.</p>
-            <div className="mt-5 grid grid-cols-2 gap-2" role="group" aria-label="Rooms">
+            <h2 className="mt-3 text-[28px] font-bold leading-tight tracking-tight text-ink sm:text-[32px]">Choose a world to explore.</h2>
+            <p className="mt-3 text-[16px] leading-relaxed text-muted">Each Oliskey product is its own digital world. Pick one — tap a screen or a button — then keep scrolling to go inside.</p>
+            <div className="mt-5 grid grid-cols-2 gap-2" role="group" aria-label="Worlds">
               {PRODUCTS.map((p) => {
                 const Icon = p.icon;
                 const on = room === p.id;

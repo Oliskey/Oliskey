@@ -63,7 +63,7 @@ export const ROOM_STOPS: Record<'school' | 'fleet' | 'alpha' | 'labs', Stop[]> =
     { id: 'room', desk: s([-4.5, 45.4, 2.7], [5, 56, 0.9], 54), phone: s([-4.8, 45.0, 2.6], [4.5, 56, 1.8], 74) },
     { id: 'display', desk: s([-1.6, 50.6, 2.1], [-11, 54.0, 2.1], 52), phone: s([-1.2, 49.6, 2.1], [-11, 53.0, 2.6], 66) },
     // a driver paying the area staff from his phone, recorded on the staff tablet
-    { id: 'detail', desk: s([-0.3, 54.9, 1.85], [1.4, 53.4, 1.25], 50), phone: s([-0.5, 55.3, 1.9], [1.4, 53.4, 1.3], 64) },
+    { id: 'detail', drop: 0.25, desk: s([-0.3, 54.9, 1.85], [1.4, 53.4, 1.25], 50), phone: s([-1.5, 56.3, 1.95], [1.3, 53.4, 1.45], 62) },
     // a driver paying from his seat in the keke
     { id: 'drivers', desk: s([3.05, 56.3, 2.0], [3.75, 54.2, 1.55], 56), phone: s([3.0, 56.45, 2.05], [3.75, 54.2, 1.6], 66) },
     // the aisle between the kekes, to the bay where a keke is driving in

@@ -282,6 +282,8 @@ const Surroundings: React.FC<{ mode: Mode; lite: boolean; envVer: number }> = ({
   return <>{sky && <primitive object={sky} />}<District mode={mode} env={ENV[mode]} lite={lite} /></>;
 };
 const DEBUG = new URLSearchParams(location.search).has('debug');
+/** ?debug&cam=ex,ey,ez,tx,ty,tz (Blender coordinates): pin the camera, for checking details. */
+const DEBUG_CAM = DEBUG ? (new URLSearchParams(location.search).get('cam')?.split(',').map(Number) ?? null) : null;
 const SKY_ROT = Number(new URLSearchParams(location.search).get('skyrot') || 0) * (Math.PI / 180);
 
 /** Closed walls at the ends of a world (navy feature walls with the Oliskey mark), so a world never looks into another one. */
@@ -403,6 +405,20 @@ const TradingFloor: React.FC<{ mode: Mode; phone: boolean }> = ({ mode, phone })
     };
     const group = new THREE.Group();
     const S = KITS.stations.map(station);
+    // drop two pieces that read badly at a distance: the low fabric desk screen (looked like a second, blank monitor)
+    // and the desk phone (two dark blobs). Boxes are in workstation metres: x (towards the trader), y (along the desk), height.
+    const CUT: [number, number, number, number, number, number][] = [[-0.41, -0.36, -0.82, 0.82, 0.72, 1.04], [-0.12, 0.12, -0.8, -0.46, 0.74, 0.88]];
+    {
+      const g = geo.kit_desk, pos = g.getAttribute('position'), m = node.kit_desk, v = new THREE.Vector3();
+      const inside = (i: number) => { v.fromBufferAttribute(pos, i).applyMatrix4(m); const x = v.x, y = -v.z, z = v.y;
+        return CUT.some(([x0, x1, y0, y1, z0, z1]) => x >= x0 && x <= x1 && y >= y0 && y <= y1 && z >= z0 && z <= z1); };
+      const idx = g.getIndex();
+      if (idx) {
+        const keep: number[] = [];
+        for (let t = 0; t < idx.count; t += 3) { const a = idx.getX(t), b2 = idx.getX(t + 1), c = idx.getX(t + 2); if (!(inside(a) && inside(b2) && inside(c))) keep.push(a, b2, c); }
+        g.setIndex(keep);
+      }
+    }
     // screens are never mirrored (text would read backwards): a mirrored desk uses the unmirrored station and the
     // opposite side monitor, which sits exactly where the mirrored one would
     const U = KITS.stations.map((s) => station({ ...s, mirror: false }));
@@ -427,7 +443,7 @@ const TradingFloor: React.FC<{ mode: Mode; phone: boolean }> = ({ mode, phone })
       o.position.set(s.x + dx, fl, -(s.y + dy * (s.mirror ? -1 : 1))); o.rotation.set(0, yaw, 0); o.scale.set(1, 1, 1); o.updateMatrix(); return o.matrix.clone();
     });
     group.add(inst(geo.kit_chair, mats.kitchair, C));
-    crowd.traverse((x) => { const m = x as THREE.Mesh; if (m.isMesh) { m.material = mats.people; m.raycast = noRay; } });
+    crowd.traverse((x) => { const m = x as THREE.Mesh; if (m.isMesh) { m.material = mats.people; m.raycast = noRay; m.frustumCulled = false; } });   // quantised bounds can cull the whole crowd
     group.add(crowd);
     return { group, mats, centre: group.children[1] as THREE.InstancedMesh, n };
   }, [kit, crowd]);
@@ -549,6 +565,7 @@ const Rig: React.FC<{ stops: Stop[]; progress: React.MutableRefObject<number>; p
     tmp.d.applyAxisAngle(tmp.side, pitch);
     camera.position.copy(tmp.e);
     camera.lookAt(tmp.a.copy(tmp.e).add(tmp.d));
+    if (DEBUG_CAM) { camera.position.set(DEBUG_CAM[0], DEBUG_CAM[2], -DEBUG_CAM[1]); camera.lookAt(DEBUG_CAM[3], DEBUG_CAM[5], -DEBUG_CAM[4]); }
     const cam = camera as THREE.PerspectiveCamera;
     if (Math.abs(cam.fov - fov) > 0.01 || cam.aspect !== size.width / size.height) { cam.fov = fov; cam.aspect = size.width / size.height; cam.updateProjectionMatrix(); }
   });

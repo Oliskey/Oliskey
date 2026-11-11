@@ -75,7 +75,7 @@ const Journey: React.FC<{
         {/* stills: the poster before 3D is ready, and the whole experience without WebGL */}
         {stills.map((s, i) => (
           <picture key={`${s}-${i}`} className={`absolute inset-0 transition-opacity duration-700 ease-glide ${(use3d ? !ready && i === 0 : i === Math.min(still, stills.length - 1)) ? 'opacity-100' : 'opacity-0'}`}>
-            <img src={`/hq/stills/${s}-${mode}.webp`} alt="" className="h-full w-full object-cover" loading={i === 0 ? 'eager' : 'lazy'} decoding="async" fetchPriority={i === 0 ? 'high' : 'auto'} />
+            <img src={`/hq/stills/${s}-${mode}.webp`} alt="" className="h-full w-full object-cover" loading={i === 0 ? 'eager' : 'lazy'} decoding="async" {...{ fetchpriority: i === 0 ? 'high' : 'auto' }} />
           </picture>
         ))}
         {use3d && (
@@ -96,8 +96,8 @@ const Journey: React.FC<{
 export default Journey;
 
 /** A text block the camera stops at. Content inside is clickable; the empty area lets the scene receive drags and clicks. */
-export const StopBlock: React.FC<{ children: React.ReactNode; align?: 'left' | 'right' | 'center'; tall?: boolean; id?: string }> = ({ children, align = 'left', tall, id }) => (
-  <section id={id} data-stop className={`page-x flex ${tall ? 'min-h-[100svh]' : 'min-h-[130svh]'} items-end pb-[max(24px,6svh)] md:items-center md:pb-0 ${align === 'right' ? 'md:justify-end' : align === 'center' ? 'md:justify-center' : ''}`}>
+export const StopBlock: React.FC<{ children: React.ReactNode; align?: 'left' | 'right' | 'center'; tall?: boolean; id?: string; top?: boolean }> = ({ children, align = 'left', tall, id, top }) => (
+  <section id={id} data-stop className={`page-x flex ${tall ? 'min-h-[100svh]' : 'min-h-[130svh]'} ${top ? 'items-start pt-[88px]' : 'items-end pb-[max(24px,6svh)]'} md:items-center md:pb-0 md:pt-0 ${align === 'right' ? 'md:justify-end' : align === 'center' ? 'md:justify-center' : ''}`}>
     <div className="pointer-events-auto w-full md:w-auto">{children}</div>
   </section>
 );

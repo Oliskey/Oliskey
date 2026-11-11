@@ -30,11 +30,11 @@ export const RoomBlocks: React.FC<{ id: ProductId; onShow: () => void; heading?:
         <StopBlock align="right">
           <div className="scene-panel w-full p-6 sm:p-7 md:w-[460px]">
             <p className="eyebrow">What it does</p>
-            <ul className="mt-4 grid gap-4">
+            <ul className="mt-4 grid gap-3 sm:gap-4">
               {p.points.map((pt) => (
                 <li key={pt.title} className="flex gap-3">
                   <Check size={18} className="mt-0.5 shrink-0 text-accent" strokeWidth={2.4} />
-                  <div><p className="text-[16px] font-semibold text-ink">{pt.title}</p><p className="mt-0.5 text-[15px] leading-relaxed text-muted">{pt.text}</p></div>
+                  <div><p className="text-[16px] font-semibold text-ink">{pt.title}</p><p className="mt-0.5 hidden text-[15px] leading-relaxed text-muted sm:block">{pt.text}</p></div>
                 </li>
               ))}
             </ul>

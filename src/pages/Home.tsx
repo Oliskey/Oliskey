@@ -41,14 +41,14 @@ const Home: React.FC = () => {
         onSelect={(id) => (id === room ? setSheet(id as ProductId) : choose(id as ProductId))}
         label={`A walk through the Oliskey headquarters${room ? ` into the ${productById(room).name} room` : ''}`}>
         {/* 1 · the entrance */}
-        <StopBlock tall>
-          <div className="relative w-full max-w-[640px] pt-[88px] md:pt-0">
+        <StopBlock tall top>
+          <div className="relative w-full max-w-[640px]">
             <div aria-hidden className="absolute -inset-x-[40vw] -inset-y-24 -z-10 hidden bg-[radial-gradient(closest-side,rgb(var(--page)/0.82),rgb(var(--page)/0.55)_55%,transparent)] md:block" />
             <div className="scene-panel p-6 md:border-0 md:bg-transparent md:p-0 md:shadow-none md:backdrop-blur-0">
               <p className="eyebrow">Welcome to Oliskey</p>
-              <h1 className="mt-4 text-display text-ink">Technology for education, transport, finance and innovation.</h1>
-              <p className="mt-5 max-w-[520px] text-lead text-muted">Software that helps schools, transport operators and people learning to trade work with less paperwork and more clarity.</p>
-              <div className="mt-8 flex flex-wrap gap-3">
+              <h1 className="mt-3 text-[34px] font-bold leading-[1.06] tracking-[-0.03em] text-ink md:mt-4 md:text-display">Technology for education, transport, finance and innovation.</h1>
+              <p className="mt-3 max-w-[520px] text-[16px] leading-relaxed text-muted md:mt-5 md:text-lead">Software that helps schools, transport operators and people learning to trade work with less paperwork and more clarity.</p>
+              <div className="mt-5 flex flex-wrap gap-3 md:mt-8">
                 <Link to="/get-started" className="btn-primary">Create your account<ArrowRight size={16} /></Link>
                 <a href="#showroom" className="btn-secondary">Explore the products</a>
               </div>

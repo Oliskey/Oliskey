@@ -3,6 +3,9 @@ import * as THREE from 'three';
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { PerformanceMonitor, useGLTF } from '@react-three/drei';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { GroundedSkybox } from 'three/examples/jsm/objects/GroundedSkybox.js';
+import propsJson from './props.json';
 import scales from './lightmaps.json';
 import type { Stop, Zone } from './stops';
 
@@ -23,6 +26,10 @@ export interface WorldProps {
   snap?: boolean;
 }
 
+const EXPOSURE = { day: Number(new URLSearchParams(location.search).get('exp') || 0.8), night: Number(new URLSearchParams(location.search).get('expn') || 0.75) };
+/** Reflection maps per time of day (photographic HDRI by day; the room-light environment at night). */
+const ENV: Record<Mode, THREE.Texture | null> = { day: null, night: null };
+const Effects = React.lazy(() => import('./Effects'));
 const LM_SIZE: Record<Zone, number> = { hq: 2048, school: 1024, fleet: 1024, alpha: 1024, labs: 1024 };
 const SCALES = scales as Record<string, number>;
 const loader = new THREE.TextureLoader();
@@ -60,9 +67,43 @@ export function displayTarget(name: string): string | null {
   return m ? m[1] : null;
 }
 
+/** Lightmaps: no mipmaps — lower mip levels would mix neighbouring UV islands and show blotches at grazing angles. */
+function lightmap(url: string) {
+  const t = tex(url);
+  t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.magFilter = THREE.LinearFilter; t.anisotropy = 1;
+  return t;
+}
+/** Surface detail on the second UV set (world scale, 1 unit = 1 m). Real scans (wood, grass) carry their own colour, so the
+ *  material colour becomes a tint; the procedural ones (stone joints, paving, plaster) multiply the material colour. */
+const SURF: Record<string, { f: string; m: number; tint?: number; rough?: string }> = {
+  floor_wood: { f: 'wood_real', m: 2.4, tint: 1.0, rough: 'wood_rough' }, floor_dark: { f: 'wood_real', m: 2.4, tint: 0.55, rough: 'wood_rough' },
+  wood: { f: 'wood_real', m: 1.6, tint: 0.85 }, wood_light: { f: 'wood_real', m: 1.6, tint: 1.25 },
+  floor_stone: { f: 'stone', m: 2.4 }, stair: { f: 'stone', m: 2.4 }, plaza: { f: 'pavers', m: 4.8 }, plaza_light: { f: 'pavers', m: 4.8 },
+  plaster: { f: 'plaster', m: 3 }, plaster_warm: { f: 'plaster', m: 3 }, ceiling: { f: 'plaster', m: 3 }, floor_epoxy: { f: 'epoxy', m: 2 },
+  grass: { f: 'grass_real', m: 4, tint: 1.0 }, hedge: { f: 'grass_real', m: 1.5, tint: 0.7 },
+};
+const surfCache = new Map<string, THREE.Texture>();
+function tiled(file: string, metres: number, srgb = true) {
+  const key = `${file}@${metres}`;
+  let t = surfCache.get(key);
+  if (!t) {
+    t = loader.load(`/hq/surf/${file}.webp`);
+    t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(1 / metres, 1 / metres); t.channel = 1; t.anisotropy = 8;
+    surfCache.set(key, t);
+  }
+  return t;
+}
+function applySurface(m: THREE.MeshStandardMaterial) {
+  const s = SURF[m.name]; if (!s) return;
+  m.map = tiled(s.f, s.m);
+  if (s.tint !== undefined) m.color.setScalar(s.tint);
+  if (s.rough) { m.roughnessMap = tiled(s.rough, s.m, false); m.roughness = 1; }
+  m.needsUpdate = true;
+}
 const lmUrl = (z: Zone, mode: Mode, phone: boolean) => `/hq/lm/${z}-${mode}${phone && LM_SIZE[z] > 1024 ? '-1k' : ''}.webp`;
 
-const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: string | null }> = ({ zone, mode, phone, hover }) => {
+const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: string | null; envVer: number }> = ({ zone, mode, phone, hover, envVer }) => {
   const { scene } = useGLTF(`/hq/glb/${zone}.glb`);
   const { scene: root } = useThree();
 
@@ -84,7 +125,10 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
       if (name === 'far' || parentName === 'far') { mesh.visible = false; return; }
       if (name.startsWith(`${zone}_static`) || parentName.startsWith(`${zone}_static`)) {
         const m = mesh.material as THREE.MeshStandardMaterial;
-        if (!statics.includes(m)) statics.push(m);
+        if (!statics.includes(m)) {
+          statics.push(m);
+          if (mesh.geometry.getAttribute('uv1')) applySurface(m);
+        }
         return;
       }
       if (name.endsWith('_lamps')) { const m = new THREE.MeshBasicMaterial({ color: 0xffffff }); mesh.material = m; lamps.push(m); return; }
@@ -108,11 +152,13 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
 
   // light, screens and glass follow the time of day
   useEffect(() => {
-    const lm = tex(lmUrl(zone, mode, phone));
-    const k = (SCALES[`${zone}-${mode}`] ?? 1) * Math.PI;
+    const lm = lightmap(lmUrl(zone, mode, phone));
+    const k = (SCALES[`${zone}-${mode}`] ?? 1) * Number(new URLSearchParams(location.search).get('lmk') || Math.PI) * EXPOSURE[mode];   // exposure lives in the light, so it holds with or without the effects pass
     for (const m of parts.statics) {
       m.lightMap = lm; m.lightMapIntensity = k;
-      m.envMapIntensity = m.roughness < 0.5 ? (mode === 'day' ? 0.35 : 0.18) : 0.04;
+      const glossy = m.roughness < 0.5 || !!m.roughnessMap || m.metalness > 0.5;
+      m.envMap = glossy ? ENV[mode] : null;
+      m.envMapIntensity = m.metalness > 0.5 ? (mode === 'day' ? 0.7 : 0.35) : mode === 'day' ? 0.12 : 0.05;
       m.needsUpdate = true;
     }
     for (const { mesh, mat } of parts.screens) {
@@ -122,12 +168,13 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
     }
     for (const m of parts.lamps) m.color.setScalar(mode === 'day' ? 1.6 : 3.2);
     for (const m of parts.leds) m.color.set(0x3d86ff).multiplyScalar(mode === 'day' ? 1.0 : 2.6);
+    for (const m of [...parts.glass, ...parts.water]) { m.envMap = ENV[mode]; m.needsUpdate = true; }
     for (const m of parts.glass) { m.opacity = mode === 'day' ? 0.16 : 0.08; m.color.set(mode === 'day' ? 0xdbe8ff : 0x9fb6e0); }
     // prefetch the other time of day so a theme switch is instant
     const other: Mode = mode === 'day' ? 'night' : 'day';
-    const idle = window.setTimeout(() => tex(lmUrl(zone, other, phone)), 2500);
+    const idle = window.setTimeout(() => lightmap(lmUrl(zone, other, phone)), 2500);
     return () => window.clearTimeout(idle);
-  }, [mode, parts, zone, phone, root]);
+  }, [mode, parts, zone, phone, root, envVer]);
 
   useEffect(() => {
     for (const { mesh, mat } of parts.screens) {
@@ -139,38 +186,61 @@ const ZoneModel: React.FC<{ zone: Zone; mode: Mode; phone: boolean; hover: strin
   return <primitive object={scene} />;
 };
 
-/** Sky, ground and distant hills, drawn in code so every page has the same surroundings without loading the plaza. */
+/** Surroundings: the same photographic HDRI used for lighting in Blender, projected onto a ground dome so the horizon,
+ *  trees and sky sit at a believable distance (a park by day, a starlit sky with town glow at night). */
 const Surroundings: React.FC<{ mode: Mode }> = ({ mode }) => {
   const { scene, gl } = useThree();
-  const sky = useMemo(() => {
-    const c = document.createElement('canvas'); c.width = 4; c.height = 256;
-    return { c, t: new THREE.CanvasTexture(c) };
-  }, []);
-  const hills = useMemo(() => {
-    const g = new THREE.SphereGeometry(1, 32, 12);
-    return [[-140, 160, 70, 18], [60, 210, 90, 24], [190, 90, 60, 14], [-200, 20, 55, 12], [150, -120, 50, 10], [-120, -150, 60, 12]].map(([x, y, r, h]) => ({ g, p: [x, -1, -y] as V, s: [r, h, r] as V }));
-  }, []);
+  const [bg, setBg] = useState<THREE.Texture | null>(null);
   useEffect(() => {
-    const ctx = sky.c.getContext('2d')!;
-    const gr = ctx.createLinearGradient(0, 0, 0, 256);
-    if (mode === 'day') { gr.addColorStop(0, '#2f6fd8'); gr.addColorStop(0.55, '#86b3ec'); gr.addColorStop(1, '#dce9f7'); }
-    else { gr.addColorStop(0, '#02050f'); gr.addColorStop(0.6, '#0a1a3a'); gr.addColorStop(1, '#1a2f5a'); }
-    ctx.fillStyle = gr; ctx.fillRect(0, 0, 4, 256);
-    sky.t.colorSpace = THREE.SRGBColorSpace; sky.t.needsUpdate = true;
-    scene.background = sky.t;
-    scene.fog = new THREE.Fog(mode === 'day' ? 0xd6e4f4 : 0x0b1730, 90, 420);
-    gl.toneMappingExposure = mode === 'day' ? 1.55 : 1.0;
-  }, [mode, scene, gl, sky]);
-  const grass = mode === 'day' ? 0x5e8a3c : 0x0f1d17;
-  const hill = mode === 'day' ? 0x6f8f58 : 0x0d1a1a;
-  return (
-    <group>
-      <mesh rotation-x={-Math.PI / 2} position={[0, -0.08, -40]}><planeGeometry args={[900, 900]} /><meshBasicMaterial color={grass} /></mesh>
-      {hills.map((h, i) => <mesh key={i} geometry={h.g} position={h.p} scale={h.s}><meshBasicMaterial color={hill} /></mesh>)}
-    </group>
-  );
+    let live = true;
+    new THREE.TextureLoader().load(`/hq/env/${mode}-bg.jpg`, (t) => {
+      if (!live) return;
+      t.colorSpace = THREE.SRGBColorSpace; t.mapping = THREE.EquirectangularReflectionMapping;
+      setBg(t);
+    });
+    gl.toneMappingExposure = 1;
+    scene.background = new THREE.Color(mode === 'day' ? 0xa9c4e6 : 0x05080f);
+    scene.fog = null;
+    return () => { live = false; };
+  }, [mode, scene, gl]);
+  const sky = useMemo(() => {
+    if (!bg) return null;
+    const m = new GroundedSkybox(bg, 18, 420);
+    m.position.y = 18 - 0.25; m.rotation.y = SKY_ROT;
+    (m.material as THREE.MeshBasicMaterial).toneMapped = false;
+    return m;
+  }, [bg]);
+  useEffect(() => () => { sky?.geometry.dispose(); (sky?.material as THREE.Material | undefined)?.dispose(); bg?.dispose(); }, [sky, bg]);
+  return sky ? <primitive object={sky} /> : null;
 };
-type V = [number, number, number];
+const SKY_ROT = Number(new URLSearchParams(location.search).get('skyrot') || 0) * (Math.PI / 180);
+
+/** Real furniture and plants (Khronos glTF sample models, CC BY 4.0), lit by the environment map. */
+const PROP_FILES = (propsJson as { models: Record<string, string> }).models;
+type PropItem = { m: string; zone: Zone; p: [number, number, number]; yaw: number; s: number };
+const Prop: React.FC<{ item: PropItem; mode: Mode }> = ({ item, mode }) => {
+  const { scene } = useGLTF(`/hq/props/${PROP_FILES[item.m]}.glb`);
+  const obj = useMemo(() => {
+    const c = scene.clone(true);
+    c.traverse((o) => { const mesh = o as THREE.Mesh; if (mesh.isMesh) { mesh.material = (mesh.material as THREE.Material).clone(); } });
+    return c;
+  }, [scene]);
+  useEffect(() => {
+    obj.traverse((o) => {
+      const mesh = o as THREE.Mesh; if (!mesh.isMesh) return;
+      const m = mesh.material as THREE.MeshStandardMaterial;
+      m.envMap = ENV[mode]; m.envMapIntensity = mode === 'day' ? 1.1 : 0.9; m.needsUpdate = true;
+    });
+  }, [obj, mode]);
+  const [x, y, z] = item.p;
+  return <primitive object={obj} position={[x, z, -y]} rotation={[0, (item.yaw * Math.PI) / 180, 0]} scale={item.s} />;
+};
+const Props: React.FC<{ zones: readonly Zone[]; mode: Mode }> = ({ zones, mode }) => {
+  const items = (propsJson as unknown as { items: PropItem[] }).items.filter((i) => zones.includes(i.zone));
+  return <>{items.map((it, k) => <Suspense key={k} fallback={null}><Prop item={it} mode={mode} /></Suspense>)}</>;
+};
+
+
 
 /** Camera that glides along the stops as the page scrolls; drag or move the pointer to look around a little. */
 const Rig: React.FC<{ stops: Stop[]; progress: React.MutableRefObject<number>; phone: boolean; snap?: boolean; look: React.MutableRefObject<{ x: number; y: number }> }> = ({ stops, progress, phone, snap, look }) => {
@@ -216,14 +286,24 @@ const Rig: React.FC<{ stops: Stop[]; progress: React.MutableRefObject<number>; p
   return null;
 };
 
-const Env: React.FC = () => {
+const Env: React.FC<{ mode: Mode; onEnv: () => void }> = ({ mode, onEnv }) => {
   const { gl, scene } = useThree();
+  if (new URLSearchParams(location.search).has('debug')) (window as unknown as { __scene: THREE.Scene }).__scene = scene;
   useEffect(() => {
+    if (ENV[mode]) { onEnv(); return; }
     const pm = new THREE.PMREMGenerator(gl);
-    const env = pm.fromScene(new RoomEnvironment(), 0.04).texture;
-    scene.environment = env;
-    return () => { env.dispose(); pm.dispose(); };
-  }, [gl, scene]);
+    if (mode === 'night') {
+      ENV.night = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); onEnv();
+      return;
+    }
+    let live = true;
+    new RGBELoader().load('/hq/env/day.hdr', (t) => {
+      t.mapping = THREE.EquirectangularReflectionMapping;
+      ENV.day = pm.fromEquirectangular(t).texture; t.dispose(); pm.dispose();
+      if (live) onEnv();
+    });
+    return () => { live = false; };
+  }, [gl, mode, onEnv]);
   return null;
 };
 
@@ -236,6 +316,8 @@ const Ready: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
 const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, active, onSelect, onReady, snap }) => {
   const [dpr, setDpr] = useState(phone ? 1.5 : Math.min(1.75, window.devicePixelRatio || 1));
   const [hover, setHover] = useState<string | null>(null);
+  const [envVer, setEnvVer] = useState(0);
+  const onEnv = React.useCallback(() => setEnvVer((v) => v + 1), []);
   const look = useRef({ x: 0, y: 0 });
   const drag = useRef<{ x: number; y: number; lx: number; ly: number } | null>(null);
   const target = useRef({ x: 0, y: 0 });
@@ -275,24 +357,26 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
       style={{ touchAction: 'pan-y' }}
       frameloop={active ? 'always' : 'never'}
       dpr={dpr}
-      gl={{ antialias: !phone, powerPreference: 'high-performance', toneMapping: THREE.AgXToneMapping, outputColorSpace: THREE.SRGBColorSpace }}
+      gl={{ antialias: !phone, powerPreference: 'high-performance', toneMapping: (({ aces: THREE.ACESFilmicToneMapping, neutral: THREE.NeutralToneMapping } as Record<string, THREE.ToneMapping>)[new URLSearchParams(location.search).get('tm') || ''] ?? THREE.AgXToneMapping), outputColorSpace: THREE.SRGBColorSpace }}
       camera={{ fov: 50, near: 0.1, far: 900, position: [0, 3, 40] }}
       onPointerDown={(e) => { drag.current = { x: e.clientX, y: e.clientY, lx: target.current.x, ly: target.current.y }; }}
       onPointerMissed={() => setHover(null)}
       aria-hidden
     >
       <PerformanceMonitor onDecline={() => setDpr((d) => Math.max(1, d - 0.25))} />
-      <Env />
+      <Env mode={mode} onEnv={onEnv} />
       <Surroundings mode={mode} />
+      <Props zones={zones} mode={mode} key={`props-${envVer}`} />
       <group
         onPointerMove={(e) => { const d = pick(e); setHover(d?.screen ?? null); document.body.style.cursor = d ? 'pointer' : ''; }}
         onPointerOut={() => { setHover(null); document.body.style.cursor = ''; }}
         onClick={(e) => { const d = pick(e); if (d && onSelect && (!drag.current || Math.abs(e.nativeEvent.clientX - drag.current.x) < 6)) { e.stopPropagation(); onSelect(d.display); } }}
       >
         {zones.map((z) => (
-          <Suspense key={z} fallback={null}><ZoneModel zone={z} mode={mode} phone={phone} hover={hover} /></Suspense>
+          <Suspense key={z} fallback={null}><ZoneModel zone={z} mode={mode} phone={phone} hover={hover} envVer={envVer} /></Suspense>
         ))}
       </group>
+      {!phone && !new URLSearchParams(location.search).has('nofx') && <Suspense fallback={null}><Effects night={mode === 'night'} /></Suspense>}
       <Rig stops={stops} progress={progress} phone={phone} snap={snap} look={look} />
       <Suspense fallback={null}><ZoneGate zone={zones[0]} onReady={onReady} /></Suspense>
     </Canvas>

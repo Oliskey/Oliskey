@@ -79,7 +79,7 @@ let clockTex: THREE.CanvasTexture | null = null;
 function clocks() {
   if (clockTex) return clockTex;
   const c = document.createElement('canvas'); c.width = 2048; c.height = 154;
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; t.flipY = false;   // same UV convention as the GLB screens
   const cities: [string, string][] = [['LAGOS', 'Africa/Lagos'], ['LONDON', 'Europe/London'], ['NEW YORK', 'America/New_York'], ['TOKYO', 'Asia/Tokyo']];
   const draw = () => {
     const g = c.getContext('2d')!; g.fillStyle = '#06070a'; g.fillRect(0, 0, c.width, c.height);
@@ -381,29 +381,47 @@ const TradingFloor: React.FC<{ mode: Mode; phone: boolean }> = ({ mode, phone })
   const kit = useGLTF('/hq/glb/alpha_kit.glb').scene;
   const crowd = useGLTF('/hq/glb/alpha_people.glb').scene;
   const built = useMemo(() => {
-    const geo: Record<string, THREE.BufferGeometry> = {};
-    kit.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) geo[(m.name.startsWith('Mesh') || !m.name ? m.parent?.name : m.name)!.replace(/_\d+$/, '')] = m.geometry; });
+    // each part's geometry plus its node matrix (meshopt quantisation stores the real scale and offset on the node)
+    const geo: Record<string, THREE.BufferGeometry> = {}, node: Record<string, THREE.Matrix4> = {};
+    kit.updateMatrixWorld(true);
+    kit.traverse((o) => {
+      const m = o as THREE.Mesh; if (!m.isMesh) return;
+      const k = (m.name.startsWith('Mesh') || !m.name ? m.parent?.name : m.name)!.replace(/_\d+$/, '');
+      geo[k] = m.geometry; node[k] = m.matrixWorld.clone();
+    });
     const baked = (key: string) => new THREE.MeshBasicMaterial({ name: key, side: THREE.DoubleSide });
     const mats = { kitdesk: baked('kitdesk'), kitchair: baked('kitchair'), people: baked('people') };
     const screenMat = (file: string) => { const m = new THREE.MeshBasicMaterial({ map: tex(`/hq/tex/${file}.webp`), toneMapped: false, side: THREE.DoubleSide }); return m; };
     const n = KITS.stations.length, fl = KITS.fl;
     const o = new THREE.Object3D();
     const station = (s: Station) => { o.position.set(s.x, fl, -s.y); o.rotation.set(0, 0, 0); o.scale.set(1, 1, s.mirror ? -1 : 1); o.updateMatrix(); return o.matrix.clone(); };
+    const tmpM = new THREE.Matrix4();
     const inst = (g: THREE.BufferGeometry, m: THREE.Material, mats4: THREE.Matrix4[]) => {
-      const im = new THREE.InstancedMesh(g, m, mats4.length); mats4.forEach((x, i) => im.setMatrixAt(i, x));
+      const k = Object.keys(geo).find((x) => geo[x] === g)!;
+      const im = new THREE.InstancedMesh(g, m, mats4.length); mats4.forEach((x, i) => im.setMatrixAt(i, tmpM.multiplyMatrices(x, node[k])));
       im.instanceMatrix.needsUpdate = true; im.raycast = noRay; im.frustumCulled = false; return im;
     };
     const group = new THREE.Group();
     const S = KITS.stations.map(station);
+    // screens are never mirrored (text would read backwards): a mirrored desk uses the unmirrored station and the
+    // opposite side monitor, which sits exactly where the mirrored one would
+    const U = KITS.stations.map((s) => station({ ...s, mirror: false }));
     group.add(inst(geo.kit_desk, mats.kitdesk, S));
-    group.add(inst(geo.kitscr_c, new THREE.MeshBasicMaterial({ toneMapped: false, side: THREE.DoubleSide }), S));
-    const byTex = new Map<string, THREE.Matrix4[]>(), left = new Map<string, THREE.Matrix4[]>();
+    group.add(inst(geo.kitscr_c, new THREE.MeshBasicMaterial({ toneMapped: false, side: THREE.DoubleSide }), U));
+    const add = (map: Map<string, THREE.Matrix4[]>, f: string, m: THREE.Matrix4) => map.set(f, [...(map.get(f) ?? []), m]);
+    const trade = { n: new Map<string, THREE.Matrix4[]>(), p: new Map<string, THREE.Matrix4[]>() };
+    const chart = { n: new Map<string, THREE.Matrix4[]>(), p: new Map<string, THREE.Matrix4[]>() };
     KITS.stations.forEach((s, i) => {
-      const f = STATE_TEX[s.state] ?? 'alpha_mon'; byTex.set(f, [...(byTex.get(f) ?? []), S[i]]);
-      const l = i % 2 ? 'alpha_mon' : 'alpha_mon2'; left.set(l, [...(left.get(l) ?? []), S[i]]);
+      // the trade (won / waiting) is on the trader's left-hand monitor, a chart on the right
+      const left = s.mirror ? 'p' : 'n', right = s.mirror ? 'n' : 'p';
+      add(trade[left], STATE_TEX[s.state] ?? 'alpha_mon', U[i]);
+      add(chart[right], i % 2 ? 'alpha_mon' : 'alpha_mon2', U[i]);
     });
-    byTex.forEach((m4, f) => group.add(inst(geo.kitscr_p, screenMat(f), m4)));
-    left.forEach((m4, f) => group.add(inst(geo.kitscr_n, screenMat(f), m4)));
+    for (const side of ['n', 'p'] as const) {
+      const g = side === 'n' ? geo.kitscr_n : geo.kitscr_p;
+      trade[side].forEach((m4, f) => group.add(inst(g, screenMat(f), m4)));
+      chart[side].forEach((m4, f) => group.add(inst(g, screenMat(f), m4)));
+    }
     const C = KITS.stations.map((s) => {
       const [dx, dy, yaw] = s.chair;
       o.position.set(s.x + dx, fl, -(s.y + dy * (s.mirror ? -1 : 1))); o.rotation.set(0, yaw, 0); o.scale.set(1, 1, 1); o.updateMatrix(); return o.matrix.clone();

@@ -3,7 +3,7 @@
 // `via` points are passed through between stops (doorways, around furniture) but never rest.
 export type V3 = [number, number, number];
 export interface Shot { eye: V3; at: V3; fov: number }
-export interface Stop { id: string; desk: Shot; phone?: Shot; via?: boolean; /** the move from this stop to the next is a cinematic cut */ cut?: boolean }
+export interface Stop { id: string; desk: Shot; phone?: Shot; via?: boolean; /** the move from this stop to the next is a cinematic cut */ cut?: boolean; /** phone: how far (m) to tilt the view down so the subject sits above the text card */ drop?: number }
 
 const b = (x: number, y: number, z: number): V3 => [x, z, -y];
 const s = (eye: V3, at: V3, fov: number): Shot => ({ eye: b(...eye), at: b(...at), fov });
@@ -53,10 +53,10 @@ export const ROOM_STOPS: Record<'school' | 'fleet' | 'alpha' | 'labs', Stop[]> =
     { id: 'detail', desk: s([0.0, 49.5, 1.5], [4.5, 55.5, 0.9], 50), phone: s([-0.5, 48.0, 1.7], [4.5, 55.5, 1.5], 70) },
   ],
   alpha: [
-    { id: 'room', desk: s([7.5, 68.6, 2.6], [-8, 77, 1.6], 54), phone: s([7.6, 68.4, 2.6], [-8, 77, 2.4], 74) },
+    { id: 'room', drop: 3.4, desk: s([7.5, 68.6, 2.6], [-8, 77, 1.6], 54), phone: s([7.6, 68.4, 2.6], [-8, 77, 2.4], 74) },
     { id: 'display', desk: s([0.2, 75.4, 2.25], [-11, 75.4, 2.7], 50), phone: s([3.4, 72.4, 2.2], [-11, 72.4, 3.1], 66) },
     // over a trader's shoulder: the Alpha app, his chart and the trade he just won
-    { id: 'detail', desk: s([3.2, 75.15, 2.05], [1.4, 74.5, 1.68], 50), phone: s([3.5, 75.35, 2.15], [1.3, 74.5, 1.75], 64) },
+    { id: 'detail', desk: s([3.25, 75.05, 2.42], [1.3, 73.9, 1.55], 50), phone: s([3.4, 75.2, 2.25], [1.3, 73.9, 1.75], 64) },
   ],
   labs: [
     { id: 'room', desk: s([7, 89.6, 2.5], [-6, 100, 1.5], 54), phone: s([7, 89.2, 2.5], [-6, 100, 2.3], 74) },
@@ -76,7 +76,7 @@ function framePhone(list: Stop[]) {
     // the drop scales with distance, so close shots (over a trader's shoulder) keep their subject instead of looking at the floor
     const d = Math.hypot(st.phone.at[0] - st.phone.eye[0], st.phone.at[2] - st.phone.eye[2]);
     const k = d < 3 ? d / 8 : 1;
-    st.phone = { ...st.phone, eye: [st.phone.eye[0], st.phone.eye[1] + 0.55 * k, st.phone.eye[2]], at: [st.phone.at[0], st.desk.at[1] - 1.3 * k, st.phone.at[2]] };
+    st.phone = { ...st.phone, eye: [st.phone.eye[0], st.phone.eye[1] + 0.55 * k, st.phone.eye[2]], at: [st.phone.at[0], st.desk.at[1] - (st.drop ?? 1.3) * k, st.phone.at[2]] };
   }
 }
 framePhone(ARRIVAL); framePhone(WALK_IN); Object.values(ROOM_STOPS).forEach(framePhone); Object.values(FINALE).forEach((f) => framePhone([f]));

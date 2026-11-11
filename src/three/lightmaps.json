@@ -2,11 +2,17 @@
  "hq-day": 3.437000274658203,
  "school-day": 10.154906272888184,
  "fleet-day": 10.055392265319824,
- "alpha-day": 10.153434753417969,
+ "alpha-day": 10.084001541137695,
  "labs-day": 10.1819486618042,
  "hq-night": 5.680037975311279,
  "school-night": 18.280847549438477,
  "fleet-night": 18.10584831237793,
- "alpha-night": 18.27897834777832,
- "labs-night": 18.355571746826172
+ "alpha-night": 18.148530960083008,
+ "labs-night": 18.355571746826172,
+ "alpha_kitdesk-day": 0.6761728525161743,
+ "alpha_kitchair-day": 0.8584544062614441,
+ "alpha_people-day": 0.499188095331192,
+ "alpha_kitdesk-night": 1.1929908990859985,
+ "alpha_kitchair-night": 1.5210464000701904,
+ "alpha_people-night": 0.8152205348014832
 }

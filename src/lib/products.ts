@@ -23,6 +23,8 @@ export interface Product {
   points: { title: string; text: string }[];
   /** What the visitor sees in the product's room at headquarters. */
   room: string;
+  /** Extra stops of the room's camera tour (one text block each), after the three standard ones. */
+  tour?: { eyebrow: string; title: string; text: string }[];
   keywords: string[];
 }
 
@@ -44,7 +46,11 @@ export const PRODUCTS: Product[] = [
       { title: 'Fees and messages', text: 'Track fees and arrears, and keep teachers and parents in one conversation.' },
       { title: 'Learning tools', text: 'Lesson notes, assignments and computer-based tests sit next to the records they belong to.' },
     ],
-    room: 'A modern classroom where registers, results and fees live on screens instead of paper — students on tablets, the school dashboard on the wall.',
+    room: 'Two classrooms where every student works on their own dashboard and asks questions there, while teachers teach, mark attendance and answer from theirs.',
+    tour: [
+      { eyebrow: 'The school office', title: 'The admin dashboard runs the school', text: 'Students, staff, timetable, exams, results and fees in one place, with today’s attendance and anything that needs action.' },
+      { eyebrow: 'Parents, away from school', title: 'Parents see their child’s day from anywhere', text: 'Attendance, results, report cards, fees and messages from teachers on the parent dashboard, even from work.' },
+    ],
     keywords: ['school', 'school management', 'school app', 'education', 'attendance', 'report cards', 'fees', 'cbt', 'nigeria'],
   },
   {

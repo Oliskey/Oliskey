@@ -76,6 +76,27 @@ Why it looked like a toy before, and what fixed it:
 - **Live clocks.** World clocks show the real time in Lagos, London, New York and Tokyo.
 - **Phones.** Phones now render with hardware anti-aliasing at 1.5× pixel density, so there are no stair-stepped edges.
 
+
+### School world (2026-11-11)
+- **Four spaces:**
+  - JSS 1A and JSS 2B classrooms at the front, each with a smartboard lesson, a whiteboard and cork boards.
+  - The school office at the back right, with the admin dashboard on two monitors and a wall display.
+  - A parent's home office at the back left. It is reached by a cut because it is not in the school.
+- **Camera path:** the room tour walks through real doorways between the classrooms and into the office.
+- **Cast:** Microsoft Rocketbox characters (MIT licence), recoloured into a Nigerian school.
+  - Students wear white shirts with navy bottoms; two girls wear a hijab with a green dress.
+  - Skin tones are deep, brown and warm, and the children have black hair.
+  - The full cast is shown on the character sheet (16 students, 2 teachers, the admin and a parent).
+- **Every role is on its own dashboard:**
+  - Students: student dashboard on laptops. Three of them raise a hand to ask a question.
+  - Teachers: teacher dashboard and smartboard lessons.
+  - Admin: the real Admin Dashboard.
+  - Parent: parent dashboard (attendance, result, fees, a message from the teacher, report card).
+  - The student, teacher and parent dashboards are drawn in the app's style with demo data.
+- **Build:**
+  - The room uses a 2k lightmap with padded islands (mipmapped, like the trading floor).
+  - People keep their own textures and are lit at runtime by an indoor environment.
+
 ## Motion
 - Page entrance 260 ms rise 10 px (`route-enter`); scroll reveals 0.7 s rise 24 px (GSAP ScrollTrigger, once).
 - Easing tokens: respond (0.2,0.8,0.2,1), glide (0.32,0.72,0,1), exit (0.3,0,0.8,0.15).

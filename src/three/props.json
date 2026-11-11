@@ -1,28 +1,263 @@
 {
-  "_note": "Realistic models placed in the HQ (Blender coords: x right, y into the building, z up). Shared by build.py (shadows in the bake) and the site (src/three/props.ts). Models: Khronos glTF sample assets, CC BY 4.0 (Wayfair / Darmstadt Graphics Group).",
-  "models": { "sofa": "GlamVelvetSofa", "chair": "SheenChair", "plant": "DiffuseTransmissionPlant" },
-  "items": [
-    { "m": "sofa",  "zone": "hq", "p": [8.4, 5.0, 0.6],  "yaw": 180, "s": 1.0 },
-    { "m": "sofa",  "zone": "hq", "p": [8.4, 10.2, 0.6], "yaw": 0,   "s": 1.0 },
-    { "m": "chair", "zone": "hq", "p": [11.0, 6.7, 0.6], "yaw": 90,  "s": 1.05 },
-    { "m": "chair", "zone": "hq", "p": [11.0, 8.5, 0.6], "yaw": 90,  "s": 1.05 },
-    { "m": "plant", "zone": "hq", "p": [-13.6, 1.6, 0.6], "yaw": 20, "s": 2.0 },
-    { "m": "plant", "zone": "hq", "p": [13.6, 1.6, 0.6],  "yaw": 140, "s": 2.0 },
-    { "m": "plant", "zone": "hq", "p": [-13.4, 20.4, 0.6], "yaw": 70, "s": 2.0 },
-    { "m": "plant", "zone": "hq", "p": [13.4, 20.4, 0.6], "yaw": 200, "s": 2.0 },
-    { "m": "plant", "zone": "hq", "p": [-4.6, 20.8, 0.6], "yaw": 10, "s": 1.7 },
-    { "m": "plant", "zone": "hq", "p": [4.6, 20.8, 0.6],  "yaw": 300, "s": 1.7 },
-    { "m": "plant", "zone": "hq", "p": [-6.2, 7.0, 0.6], "yaw": 50, "s": 1.5 },
-    { "m": "plant", "zone": "school", "p": [9.6, 24.0, 0.6], "yaw": 0, "s": 1.6 },
-    { "m": "plant", "zone": "school", "p": [-9.6, 24.2, 0.6], "yaw": 120, "s": 1.6 },
-    { "m": "plant", "zone": "school", "p": [9.6, 42.0, 0.6], "yaw": 240, "s": 1.6 },
-    { "m": "plant", "zone": "fleet", "p": [-9.8, 45.2, 0.6], "yaw": 30, "s": 1.6 },
-    { "m": "plant", "zone": "alpha", "p": [9.6, 68.0, 0.6], "yaw": 90, "s": 1.6 },
-    { "m": "plant", "zone": "alpha", "p": [9.6, 86.0, 0.6], "yaw": 180, "s": 1.6 },
-    { "m": "chair", "zone": "alpha", "p": [8.6, 80.0, 0.6], "yaw": -90, "s": 1.0 },
-    { "m": "plant", "zone": "labs", "p": [-9.6, 90.0, 0.6], "yaw": 10, "s": 1.6 },
-    { "m": "plant", "zone": "labs", "p": [-9.6, 108.4, 0.6], "yaw": 250, "s": 1.6 },
-    { "m": "chair", "zone": "labs", "p": [4.9, 106.5, 0.6], "yaw": -90, "s": 1.0 },
-    { "m": "chair", "zone": "labs", "p": [6.7, 106.5, 0.6], "yaw": 90, "s": 1.0 }
-  ]
+ "_note": "Realistic models placed in the HQ (Blender coords: x right, y into the building, z up). Shared by build.py (shadows in the bake) and the site (src/three/props.ts). Models: Khronos glTF sample assets, CC BY 4.0 (Wayfair / Darmstadt Graphics Group).",
+ "models": {
+  "sofa": "GlamVelvetSofa",
+  "chair": "SheenChair",
+  "plant": "DiffuseTransmissionPlant"
+ },
+ "items": [
+  {
+   "m": "sofa",
+   "zone": "hq",
+   "p": [
+    8.4,
+    5.0,
+    0.6
+   ],
+   "yaw": 180,
+   "s": 1.0
+  },
+  {
+   "m": "sofa",
+   "zone": "hq",
+   "p": [
+    8.4,
+    10.2,
+    0.6
+   ],
+   "yaw": 0,
+   "s": 1.0
+  },
+  {
+   "m": "chair",
+   "zone": "hq",
+   "p": [
+    11.0,
+    6.7,
+    0.6
+   ],
+   "yaw": 90,
+   "s": 1.05
+  },
+  {
+   "m": "chair",
+   "zone": "hq",
+   "p": [
+    11.0,
+    8.5,
+    0.6
+   ],
+   "yaw": 90,
+   "s": 1.05
+  },
+  {
+   "m": "plant",
+   "zone": "hq",
+   "p": [
+    -13.6,
+    1.6,
+    0.6
+   ],
+   "yaw": 20,
+   "s": 2.0
+  },
+  {
+   "m": "plant",
+   "zone": "hq",
+   "p": [
+    13.6,
+    1.6,
+    0.6
+   ],
+   "yaw": 140,
+   "s": 2.0
+  },
+  {
+   "m": "plant",
+   "zone": "hq",
+   "p": [
+    -13.4,
+    20.4,
+    0.6
+   ],
+   "yaw": 70,
+   "s": 2.0
+  },
+  {
+   "m": "plant",
+   "zone": "hq",
+   "p": [
+    13.4,
+    20.4,
+    0.6
+   ],
+   "yaw": 200,
+   "s": 2.0
+  },
+  {
+   "m": "plant",
+   "zone": "hq",
+   "p": [
+    -4.6,
+    20.8,
+    0.6
+   ],
+   "yaw": 10,
+   "s": 1.7
+  },
+  {
+   "m": "plant",
+   "zone": "hq",
+   "p": [
+    4.6,
+    20.8,
+    0.6
+   ],
+   "yaw": 300,
+   "s": 1.7
+  },
+  {
+   "m": "plant",
+   "zone": "hq",
+   "p": [
+    -6.2,
+    7.0,
+    0.6
+   ],
+   "yaw": 50,
+   "s": 1.5
+  },
+  {
+   "m": "plant",
+   "zone": "school",
+   "p": [
+    10.45,
+    32.2,
+    0.6
+   ],
+   "yaw": 0,
+   "s": 1.6
+  },
+  {
+   "m": "plant",
+   "zone": "school",
+   "p": [
+    -10.4,
+    32.2,
+    0.6
+   ],
+   "yaw": 120,
+   "s": 1.6
+  },
+  {
+   "m": "plant",
+   "zone": "school",
+   "p": [
+    9.6,
+    42.0,
+    0.6
+   ],
+   "yaw": 240,
+   "s": 1.6
+  },
+  {
+   "m": "plant",
+   "zone": "fleet",
+   "p": [
+    -9.8,
+    45.2,
+    0.6
+   ],
+   "yaw": 30,
+   "s": 1.6
+  },
+  {
+   "m": "plant",
+   "zone": "alpha",
+   "p": [
+    9.6,
+    68.0,
+    0.6
+   ],
+   "yaw": 90,
+   "s": 1.6
+  },
+  {
+   "m": "plant",
+   "zone": "alpha",
+   "p": [
+    9.6,
+    86.0,
+    0.6
+   ],
+   "yaw": 180,
+   "s": 1.6
+  },
+  {
+   "m": "chair",
+   "zone": "alpha",
+   "p": [
+    8.6,
+    80.0,
+    0.6
+   ],
+   "yaw": -90,
+   "s": 1.0
+  },
+  {
+   "m": "plant",
+   "zone": "labs",
+   "p": [
+    -9.6,
+    90.0,
+    0.6
+   ],
+   "yaw": 10,
+   "s": 1.6
+  },
+  {
+   "m": "plant",
+   "zone": "labs",
+   "p": [
+    -9.6,
+    108.4,
+    0.6
+   ],
+   "yaw": 250,
+   "s": 1.6
+  },
+  {
+   "m": "chair",
+   "zone": "labs",
+   "p": [
+    4.9,
+    106.5,
+    0.6
+   ],
+   "yaw": -90,
+   "s": 1.0
+  },
+  {
+   "m": "chair",
+   "zone": "labs",
+   "p": [
+    6.7,
+    106.5,
+    0.6
+   ],
+   "yaw": 90,
+   "s": 1.0
+  },
+  {
+   "m": "plant",
+   "zone": "school",
+   "p": [
+    -10.3,
+    43.3,
+    0.6
+   ],
+   "yaw": 40,
+   "s": 1.0
+  }
+ ]
 }

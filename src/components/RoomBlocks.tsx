@@ -4,7 +4,7 @@ import { ArrowRight, ArrowUpRight, Check } from 'lucide-react';
 import { StopBlock } from '../three/Journey';
 import { productById, type ProductId } from '../lib/products';
 
-/** The three text blocks for a product room: introduction, what it does, inside the room. Used on Home and product pages. */
+/** The text blocks for a product room: introduction, what it does, inside the room, then any extra tour stops. Used on Home and product pages. */
 export const RoomBlocks: React.FC<{ id: ProductId; onShow: () => void; heading?: 'h1' | 'h2' }> = ({ id, onShow, heading = 'h1' }) => {
   const p = productById(id);
   const Icon = p.icon;
@@ -47,6 +47,15 @@ export const RoomBlocks: React.FC<{ id: ProductId; onShow: () => void; heading?:
             <button type="button" onClick={onShow} className="btn-secondary mt-5">See the app on the display</button>
           </div>
         </StopBlock>
+        {p.tour?.map((t, i) => (
+          <StopBlock key={t.title} align={i % 2 ? 'right' : 'left'}>
+            <div className="scene-panel w-full p-6 sm:p-7 md:w-[440px]">
+              <p className="eyebrow">{t.eyebrow}</p>
+              <p className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-ink">{t.title}</p>
+              <p className="mt-2 text-[16px] leading-relaxed text-muted">{t.text}</p>
+            </div>
+          </StopBlock>
+        ))}
     </>
   );
 };

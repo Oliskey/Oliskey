@@ -28,7 +28,7 @@ const preview = (w: 'school' | 'fleet' | 'alpha' | 'labs'): Stop => {
 };
 // The closing view of each world: a wide, calm shot to end on.
 const FINALE: Record<'school' | 'fleet' | 'alpha' | 'labs', Stop> = {
-  school: { id: 'school-end', desk: s([-9.0, 42.4, 3.4], [3, 27, 0.8], 58), phone: s([-9.4, 42.8, 3.6], [2, 28, 0.6], 76) },
+  school: { id: 'school-end', desk: s([-0.8, 32.4, 2.9], [-8, 23.5, 0.9], 60), phone: s([-1.0, 32.6, 2.9], [-7, 23.5, 0.8], 76) },
   fleet: { id: 'fleet-end', desk: s([9.4, 64.6, 3.4], [-1, 47, 0.8], 58), phone: s([9.6, 64.8, 3.6], [0, 48, 0.6], 76) },
   alpha: { id: 'alpha-end', desk: s([-9.0, 86.4, 3.4], [2, 68.5, 0.9], 58), phone: s([-9.4, 86.8, 3.6], [1, 69, 0.6], 76) },
   labs: { id: 'labs-end', desk: s([-9.0, 108.4, 3.3], [4, 92, 1.0], 58), phone: s([-9.4, 108.8, 3.5], [3, 93, 0.7], 76) },
@@ -47,10 +47,17 @@ export function homeStops(world: 'school' | 'fleet' | 'alpha' | 'labs' | null): 
 
 // Each product page walks its own room in three steps: the room, the main display, a closer detail.
 export const ROOM_STOPS: Record<'school' | 'fleet' | 'alpha' | 'labs', Stop[]> = {
+  // School: class JSS 1A → hands up → through the door to JSS 2B → the school office → (cut) a parent at work, away from school
   school: [
-    { id: 'room', desk: s([8.5, 24.6, 2.6], [-6, 34, 1.6], 54), phone: s([8.6, 24.2, 2.6], [-6, 34, 2.6], 74) },
-    { id: 'display', desk: s([-1.8, 33.2, 1.9], [-11, 33.0, 2.5], 48), phone: s([1.5, 33.0, 2.0], [-11, 33.0, 2.9], 66) },
-    { id: 'detail', desk: s([0.8, 39.8, 1.6], [-4, 29.5, 0.6], 50), phone: s([2.0, 41.0, 1.9], [-4, 29.5, 1.2], 70) },
+    { id: 'room', drop: 2.6, desk: s([-0.9, 32.2, 2.35], [-6.2, 23.5, 1.3], 56), phone: s([-1.2, 32.4, 2.3], [-6.0, 23.2, 1.6], 74) },
+    { id: 'display', desk: s([-2.2, 30.6, 1.95], [-6.5, 25.4, 1.25], 50), phone: s([-2.4, 31.2, 2.0], [-6.4, 25.4, 1.3], 66) },
+    via('school-door', [0, 31.8, 2.15]),
+    via('school-classb', [4.6, 32.0, 2.25]),
+    { id: 'detail', desk: s([10.3, 31.4, 2.3], [4.5, 23.3, 1.2], 54), phone: s([10.3, 31.6, 2.3], [5.0, 23.5, 1.4], 72) },
+    via('school-door2', [9.2, 32.6, 2.15]),
+    via('school-office', [9.2, 34.0, 2.15]),
+    { id: 'admin', cut: true, desk: s([7.0, 36.0, 2.0], [1.8, 38.7, 1.3], 52), phone: s([7.4, 35.6, 2.0], [2.0, 38.7, 1.4], 68) },
+    { id: 'parent', cut: true, desk: s([-5.4, 35.2, 1.9], [-9.6, 38.9, 1.2], 50), phone: s([-5.2, 34.9, 1.95], [-9.5, 38.9, 1.3], 66) },
   ],
   fleet: [
     { id: 'room', desk: s([-4.5, 45.4, 2.7], [5, 56, 0.9], 54), phone: s([-4.8, 45.0, 2.6], [4.5, 56, 1.8], 74) },

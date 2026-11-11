@@ -34,9 +34,9 @@ const EXPOSURE = { day: Number(new URLSearchParams(location.search).get('exp') |
 /** Reflection maps per time of day (photographic HDRI by day; the room-light environment at night). */
 const ENV: Record<Mode, THREE.Texture | null> = { day: null, night: null };
 const Effects = React.lazy(() => import('./Effects'));
-const LM_SIZE: Record<Zone, number> = { hq: 2048, school: 1024, fleet: 1024, alpha: 2048, labs: 1024 };
+const LM_SIZE: Record<Zone, number> = { hq: 2048, school: 2048, fleet: 1024, alpha: 2048, labs: 1024 };
 /** Zones whose lightmap islands are padded enough (8 px) for a few mip levels: smooth, shimmer-free far ceilings and floors. */
-const MIPPED: Partial<Record<Zone, boolean>> = { alpha: true };
+const MIPPED: Partial<Record<Zone, boolean>> = { alpha: true, school: true };
 let GL: THREE.WebGLRenderer | null = null;
 const SCALES = scales as Record<string, number>;
 const loader = new THREE.TextureLoader();
@@ -59,9 +59,15 @@ function tex(url: string, srgb = true, flip = false) {
 export function screenImage(name: string, mode: Mode): string | null {
   const v = mode === 'day' ? 'light' : 'dark';
   if (name.startsWith('logo_')) return '/hq/tex/logo_sign.webp';
+  // the School world: each role on its own dashboard (the admin screens show the real app)
+  if (name.startsWith('screen_school_tab')) return '/hq/tex/school_student.webp';
+  if (name.startsWith('screen_school_teacher')) return '/hq/tex/school_teacher.webp';
+  if (name.startsWith('screen_school_parent')) return '/hq/tex/school_parent.webp';
+  if (name === 'screen_school_board_a') return '/hq/tex/school_board_a.webp';
+  if (name === 'screen_school_board_b') return '/hq/tex/school_board_b.webp';
+  if (name.startsWith('screen_school_admin')) return `/products/school-${v}.webp`;
   for (const pid of ['school', 'fleet', 'alpha']) {
-    if (name === `screen_lobby_${pid}` || name === `screen_${pid}_main` || (pid === 'school' && name.startsWith('screen_school_tab')))
-      return `/products/${pid}-${v}.webp`;
+    if (name === `screen_lobby_${pid}` || name === `screen_${pid}_main`) return `/products/${pid}-${v}.webp`;
   }
   if (name === 'screen_lobby_labs' || name === 'screen_labs_main') return '/hq/tex/labs_main.webp';
   if (name.startsWith('screen_labs_dev')) return '/hq/tex/labs_dev.webp';
@@ -126,6 +132,7 @@ const SURF: Record<string, { f: string; m: number; tint?: number; rough?: string
   floor_stone: { f: 'stone', m: 2.4 }, stair: { f: 'stone', m: 2.4 }, plaza: { f: 'pavers', m: 4.8 }, plaza_light: { f: 'pavers', m: 4.8 },
   plaster: { f: 'plaster', m: 3 }, plaster_warm: { f: 'plaster', m: 3 }, ceiling: { f: 'plaster', m: 3 }, floor_epoxy: { f: 'epoxy', m: 2 },
   carpet: { f: 'carpet', m: 2 }, ceil_tile: { f: 'ceiltile', m: 1.2 }, slats: { f: 'slats', m: 1, tint: 0.62 },
+  desk_top: { f: 'wood_real', m: 1.2, tint: 1.15 }, rug: { f: 'carpet', m: 1.2 }, sofa: { f: 'carpet', m: 0.8 }, paint_warm: { f: 'plaster', m: 3 },
   grass: { f: 'grass_real', m: 4, tint: 1.0 }, hedge: { f: 'grass_real', m: 1.5, tint: 0.7 },
 };
 const surfCache = new Map<string, THREE.Texture>();
@@ -470,6 +477,25 @@ const TradingFloor: React.FC<{ mode: Mode; phone: boolean }> = ({ mode, phone })
   return <primitive object={built.group} />;
 };
 
+/** People of a world (their own textures: sharp faces and hands), lit by an indoor environment like the room's lights. */
+const Crowd: React.FC<{ zone: Zone; mode: Mode }> = ({ zone, mode }) => {
+  const { scene } = useGLTF(`/hq/glb/${zone}_people.glb`);
+  const { gl } = useThree();
+  const indoor = useMemo(() => { const pm = new THREE.PMREMGenerator(gl); const t = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); return t; }, [gl]);
+  const mats = useMemo(() => {
+    const list: THREE.MeshStandardMaterial[] = [];
+    scene.traverse((x) => {
+      const m = x as THREE.Mesh; if (!m.isMesh) return;
+      m.raycast = noRay; m.frustumCulled = false;
+      const src = m.material as THREE.MeshStandardMaterial;
+      if (!list.includes(src)) { src.metalness = 0; src.roughness = Math.max(src.roughness, 0.55); list.push(src); }
+    });
+    return list;
+  }, [scene]);
+  useEffect(() => { for (const m of mats) { m.envMap = indoor; m.envMapIntensity = mode === 'day' ? 1.0 : 0.8; m.needsUpdate = true; } }, [mats, indoor, mode]);
+  return <primitive object={scene} />;
+};
+
 const Props: React.FC<{ zones: readonly Zone[]; mode: Mode }> = ({ zones, mode }) => {
   const items = (propsJson as unknown as { items: PropItem[] }).items.filter((i) => zones.includes(i.zone));
   return <>{items.map((it, k) => <Suspense key={k} fallback={null}><Prop item={it} mode={mode} /></Suspense>)}</>;
@@ -667,6 +693,7 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
       {zones.includes('hq') && <Doors mode={mode} key={`doors-${envVer}`} />}
       <Seals zones={zones} mode={mode} key={`seals-${envVer}`} />
       {zones.includes('alpha') && <Suspense fallback={null}><TradingFloor mode={mode} phone={phone} /></Suspense>}
+      {zones.includes('school') && <Suspense fallback={null}><Crowd zone="school" mode={mode} /></Suspense>}
       <group
         onPointerMove={(e) => { const d = pick(e); setHover(d?.screen ?? null); document.body.style.cursor = d ? 'pointer' : ''; }}
         onPointerOut={() => { setHover(null); document.body.style.cursor = ''; }}

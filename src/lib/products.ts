@@ -3,8 +3,8 @@ import { CandlestickChart, FlaskConical, GraduationCap, Truck, type LucideIcon }
 
 export type ProductId = 'school' | 'fleet' | 'alpha' | 'labs';
 
-/** One real app screen for one role, shown in the device that role uses. */
-export interface Screen { role: string; title: string; text: string; kind: 'phone' | 'tablet' | 'desktop'; light: string; dark: string }
+/** One role of a product and three of its real screens, shown on a phone. */
+export interface RoleScreens { role: string; eyebrow: string; summary: string; screens: { title: string; text: string; light: string; dark: string }[] }
 
 export interface Product {
   id: ProductId;
@@ -28,8 +28,8 @@ export interface Product {
   room: string;
   /** Extra stops of the room's camera tour (one text block each), after the three standard ones. */
   tour?: { eyebrow: string; title: string; text: string }[];
-  /** Real screens, one per role. */
-  screens?: Screen[];
+  /** Every role, with three of its real screens. */
+  roles?: RoleScreens[];
   keywords: string[];
 }
 
@@ -56,12 +56,27 @@ export const PRODUCTS: Product[] = [
       { eyebrow: 'The school office', title: 'The admin dashboard runs the school', text: 'Students, staff, timetable, exams, results and fees in one place, with today’s attendance and anything that needs action.' },
       { eyebrow: 'Parents, away from school', title: 'Parents see their child’s day from anywhere', text: 'Attendance, results, report cards, fees and messages from teachers on the parent dashboard, even from work.' },
     ],
-    screens: [
-      { role: 'Teacher, on the phone', title: 'The teacher dashboard', text: 'Classes, students, recent assignments and quick actions for attendance, gradebook and exams.', kind: 'phone', light: '/products/screens/school-teacher.webp', dark: '/products/screens/school-teacher.webp' },
-      { role: 'Teacher, on the class screen', title: 'The AI assistant', text: 'Teachers ask about their own classes, marking and attendance, or for a quick starter activity. It only sees their own information.', kind: 'desktop', light: '/products/screens/school-ai.webp', dark: '/products/screens/school-ai.webp' },
-      { role: 'Student, on the phone', title: 'What to do next', text: 'The next quiz or assignment with its due date, today’s timetable and AI study tools.', kind: 'phone', light: '/products/screens/school-student.webp', dark: '/products/screens/school-student.webp' },
-      { role: 'Parent, on the phone', title: 'A child’s day, from anywhere', text: 'Attendance, assignments and results, plus the bus, calendar, notices and meetings.', kind: 'phone', light: '/products/screens/school-parent.webp', dark: '/products/screens/school-parent.webp' },
-      { role: 'Administrator, on the computer', title: 'The school at a glance', text: 'Students, staff, parents, attendance and what needs action today, with one-tap approvals, timetable and emergencies.', kind: 'desktop', light: '/products/screens/school-admin.webp', dark: '/products/screens/school-admin.webp' },
+    roles: [
+      { role: 'Administrator', eyebrow: 'Runs the school', summary: 'The school at a glance, with fees and results in reach.', screens: [
+        { title: 'Today at a glance', text: 'Students, staff, parents and quick actions.', light: '/products/roles/school-admin-1.webp', dark: '/products/roles/school-admin-1.webp' },
+        { title: 'Fees and arrears', text: 'What is expected, collected and outstanding.', light: '/products/roles/school-admin-2.webp', dark: '/products/roles/school-admin-2.webp' },
+        { title: 'Results by subject', text: 'How every subject is performing.', light: '/products/roles/school-admin-3.webp', dark: '/products/roles/school-admin-3.webp' },
+      ] },
+      { role: 'Teacher', eyebrow: 'Teaches the class', summary: 'Classes, attendance and an AI assistant that knows their own classes.', screens: [
+        { title: 'Classes and assignments', text: 'Assigned classes, students and recent work.', light: '/products/roles/school-teacher-1.webp', dark: '/products/roles/school-teacher-1.webp' },
+        { title: 'Mark attendance', text: 'Present, absent or late for each student.', light: '/products/roles/school-teacher-2.webp', dark: '/products/roles/school-teacher-2.webp' },
+        { title: 'AI assistant', text: 'Marking, attendance or a quick lesson starter.', light: '/products/roles/school-teacher-3.webp', dark: '/products/roles/school-teacher-3.webp' },
+      ] },
+      { role: 'Student', eyebrow: 'Learns', summary: 'What is due next, help when stuck and learning games.', screens: [
+        { title: 'What is due next', text: 'The next quiz and today’s timetable.', light: '/products/roles/school-student-1.webp', dark: '/products/roles/school-student-1.webp' },
+        { title: 'AI study help', text: 'Ask about schoolwork and the timetable.', light: '/products/roles/school-student-2.webp', dark: '/products/roles/school-student-2.webp' },
+        { title: 'Learning games', text: 'Maths, geography and more, at their level.', light: '/products/roles/school-student-3.webp', dark: '/products/roles/school-student-3.webp' },
+      ] },
+      { role: 'Parent', eyebrow: 'Follows from anywhere', summary: 'A child’s day, fees and report cards from the phone.', screens: [
+        { title: 'A child’s day', text: 'Attendance, assignments and school utilities.', light: '/products/roles/school-parent-1.webp', dark: '/products/roles/school-parent-1.webp' },
+        { title: 'Fees and payments', text: 'Expected, settled and still due.', light: '/products/roles/school-parent-2.webp', dark: '/products/roles/school-parent-2.webp' },
+        { title: 'Report cards', text: 'Pick the session and term to view.', light: '/products/roles/school-parent-3.webp', dark: '/products/roles/school-parent-3.webp' },
+      ] },
     ],
     keywords: ['school', 'school management', 'school app', 'education', 'attendance', 'report cards', 'fees', 'cbt', 'nigeria'],
   },
@@ -88,11 +103,22 @@ export const PRODUCTS: Product[] = [
       { eyebrow: 'Even from the keke', title: 'Payments without leaving the seat', text: 'A driver can pay and check his payment history between trips; the staff and the office see it at once.' },
       { eyebrow: 'Arriving at the bay', title: 'Every keke and driver on record', text: 'Vehicles, drivers, collections, remittances and maintenance live in one place, so the operator knows what each keke really earns.' },
     ],
-    screens: [
-      { role: 'Driver, on the phone', title: 'Make a payment', text: 'The amount is set by the company. The driver picks transfer or POS, adds the reference and a photo of the slip.', kind: 'phone', light: '/products/screens/fleet-pay-light.webp', dark: '/products/screens/fleet-pay-dark.webp' },
-      { role: 'Driver, on the phone', title: 'Payment history', text: 'What is paid, what remains and every payment by week, month or year, with a way to report a missing one.', kind: 'phone', light: '/products/screens/fleet-history-light.webp', dark: '/products/screens/fleet-history-dark.webp' },
-      { role: 'Area staff, on the tablet', title: 'Record a cash payment', text: 'Staff record cash, transfer or POS for any driver, with a receipt number generated when left empty.', kind: 'tablet', light: '/products/screens/fleet-staff-light.webp', dark: '/products/screens/fleet-staff-dark.webp' },
-      { role: 'Company admin, on the computer', title: 'Collections to verify', text: 'Transfers wait for a check, and every recent payment is listed with its method and receipt.', kind: 'desktop', light: '/products/screens/fleet-admin-light.webp', dark: '/products/screens/fleet-admin-dark.webp' },
+    roles: [
+      { role: 'Company admin', eyebrow: 'Runs the company', summary: 'Money owed, collected and paid to the bank, and every tricycle.', screens: [
+        { title: 'Admin dashboard', text: 'Bank obligation, collections and what drivers owe.', light: '/products/roles/fleet-admin-1-light.webp', dark: '/products/roles/fleet-admin-1-dark.webp' },
+        { title: 'Finance', text: 'Bank loans, payments and driver receivables.', light: '/products/roles/fleet-admin-2-light.webp', dark: '/products/roles/fleet-admin-2-dark.webp' },
+        { title: 'Tricycles', text: 'Every tricycle with its plate, driver and status.', light: '/products/roles/fleet-admin-3-light.webp', dark: '/products/roles/fleet-admin-3-dark.webp' },
+      ] },
+      { role: 'Area staff', eyebrow: 'Collects in the area', summary: 'Who is due today, who is behind, and the cash to remit.', screens: [
+        { title: 'Staff dashboard', text: 'Drivers, tricycles and what was collected.', light: '/products/roles/fleet-staff-1-light.webp', dark: '/products/roles/fleet-staff-1-dark.webp' },
+        { title: 'Collections', text: 'Due today, with one tap to collect.', light: '/products/roles/fleet-staff-2-light.webp', dark: '/products/roles/fleet-staff-2-dark.webp' },
+        { title: 'My drivers', text: 'Who is on track and who is overdue.', light: '/products/roles/fleet-staff-3-light.webp', dark: '/products/roles/fleet-staff-3-dark.webp' },
+      ] },
+      { role: 'Driver', eyebrow: 'Drives the keke', summary: 'What is left to pay, the next payment and its history.', screens: [
+        { title: 'Driver dashboard', text: 'Left to pay, progress and the next payment.', light: '/products/roles/fleet-driver-1-light.webp', dark: '/products/roles/fleet-driver-1-dark.webp' },
+        { title: 'Make a payment', text: 'Transfer or POS, with the reference and slip.', light: '/products/roles/fleet-driver-2-light.webp', dark: '/products/roles/fleet-driver-2-dark.webp' },
+        { title: 'Payment history', text: 'Every payment, by week, month or year.', light: '/products/roles/fleet-driver-3-light.webp', dark: '/products/roles/fleet-driver-3-dark.webp' },
+      ] },
     ],
     keywords: ['fleet', 'tricycle', 'keke', 'transport', 'drivers', 'remittance', 'vehicles', 'maintenance', 'logistics'],
   },
@@ -114,11 +140,17 @@ export const PRODUCTS: Product[] = [
       { title: 'Charts that stay readable', text: 'Clear charts and one main action per screen, in light and dark mode.' },
     ],
     room: 'A trading floor with live market charts, where people practise and learn before they risk real money.',
-    screens: [
-      { role: 'Trader, on the phone', title: 'The trading screen', text: 'Pick a market, a time and an amount, then Up or Down. The chart marks your entry and counts down to the end.', kind: 'phone', light: '/products/screens/alpha-terminal-light.webp', dark: '/products/screens/alpha-terminal-dark.webp' },
-      { role: 'Trader, on the phone', title: 'Every market in one list', text: 'Currencies, crypto and more, with the payout for each and favourites one tap away.', kind: 'phone', light: '/products/screens/alpha-market-light.webp', dark: '/products/screens/alpha-market-dark.webp' },
-      { role: 'Learner, on the phone', title: 'Free lessons first', text: 'Short lessons on how a forecast works, managing risk and reading signals, before any trade.', kind: 'phone', light: '/products/screens/alpha-lessons-light.webp', dark: '/products/screens/alpha-lessons-dark.webp' },
-      { role: 'Trader, on the phone', title: 'Your real record', text: 'Best trade, profit, total trades and success rate, losses included. Nothing is hidden.', kind: 'phone', light: '/products/screens/alpha-record-light.webp', dark: '/products/screens/alpha-record-dark.webp' },
+    roles: [
+      { role: 'Trader', eyebrow: 'Practises trading', summary: 'Demo credits, every market and a clear trading screen.', screens: [
+        { title: 'Home', text: 'Demo balance, lessons, rewards and the AI trader.', light: '/products/roles/alpha-trader-1-light.webp', dark: '/products/roles/alpha-trader-1-dark.webp' },
+        { title: 'The trading screen', text: 'Market, time, amount, then Up or Down.', light: '/products/roles/alpha-trader-2-light.webp', dark: '/products/roles/alpha-trader-2-dark.webp' },
+        { title: 'Every market', text: 'Currencies and more, with each payout.', light: '/products/roles/alpha-trader-3-light.webp', dark: '/products/roles/alpha-trader-3-dark.webp' },
+      ] },
+      { role: 'Learner', eyebrow: 'Learns first', summary: 'Free lessons before any trade, and an honest record after.', screens: [
+        { title: 'Skill Hub', text: 'Short lessons, from first steps to signals.', light: '/products/roles/alpha-learner-1-light.webp', dark: '/products/roles/alpha-learner-1-dark.webp' },
+        { title: 'A lesson', text: 'One idea per page, in plain words.', light: '/products/roles/alpha-learner-2-light.webp', dark: '/products/roles/alpha-learner-2-dark.webp' },
+        { title: 'Your record', text: 'Best trade, profit and success rate, losses included.', light: '/products/roles/alpha-learner-3-light.webp', dark: '/products/roles/alpha-learner-3-dark.webp' },
+      ] },
     ],
     keywords: ['alpha', 'oliskey alpha', 'trading', 'trading app', 'demo trading', 'practice trading', 'forex', 'crypto', 'ai trading'],
   },

@@ -40,11 +40,11 @@ const ProductPage: React.FC<{ id: ProductId }> = ({ id }) => {
         </div>
       </section>
 
-      {p.screens && (
+      {p.roles && (
         <section className="border-t border-line py-20 md:py-28">
           <div className="page-x">
-            <div data-reveal><SectionHead eyebrow="Every role, its own screen" title={`Who uses ${p.name}, and how`} lead="Real screens from the app, with sample data." /></div>
-            <div data-reveal><ScreenGallery name={p.name} screens={p.screens} /></div>
+            <div data-reveal><SectionHead eyebrow="Every role, its own screen" title={`Who uses ${p.name}, and how`} lead="Every role has its own app. Three real screens from each, with sample data." /></div>
+            <div data-reveal><ScreenGallery name={p.name} roles={p.roles} /></div>
           </div>
         </section>
       )}

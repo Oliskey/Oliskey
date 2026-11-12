@@ -54,6 +54,8 @@ img { -webkit-user-drag: none; }
 /* Page entrance: content rises 10px and fades in */
 @keyframes enter { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .route-enter { animation: enter 260ms cubic-bezier(0.32,0.72,0,1) both; }
+/* Product role screens glide sideways; soft edges so each phone slides in and out instead of being cut */
+.role-glide { -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent); }
 @media (prefers-reduced-motion: reduce) {
   .route-enter { animation: none; }
   *, *::before, *::after { transition-duration: 1ms !important; }

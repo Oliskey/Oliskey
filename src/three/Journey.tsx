@@ -108,7 +108,7 @@ export default Journey;
 /** A text block the camera stops at. Content inside is clickable; the empty area lets the scene receive drags and clicks. */
 export const StopBlock: React.FC<{ children: React.ReactNode; align?: 'left' | 'right' | 'center'; tall?: boolean; id?: string; top?: boolean; shade?: boolean }> = ({ children, align = 'left', tall, id, top, shade }) => (
   <section id={id} data-stop className={`relative page-x flex ${tall ? 'min-h-[100svh]' : 'min-h-[130svh]'} ${top ? 'items-start pt-[88px]' : tall ? 'items-end pb-[max(24px,6svh)]' : 'items-end pb-[21svh]'} md:items-center md:pb-0 md:pt-0 ${align === 'right' ? 'md:justify-end' : align === 'center' ? 'md:justify-center' : ''}`}>
-    {shade && <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-screen -translate-x-1/2 bg-gradient-to-r from-page/90 via-page/45 via-45% to-transparent to-75% [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_78%,transparent)] md:block" />}
+    {shade && <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-screen -translate-x-1/2 bg-gradient-to-r from-page/75 via-page/25 via-35% to-transparent to-55% [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_78%,transparent)] md:block" />}
     <div className="pointer-events-auto relative w-full md:w-auto">{children}</div>
   </section>
 );

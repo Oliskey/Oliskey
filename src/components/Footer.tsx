@@ -15,7 +15,7 @@ const Footer: React.FC = () => (
     <div className="page-x grid gap-10 py-14 md:grid-cols-[1.3fr_repeat(3,1fr)]">
       <div className="max-w-[300px]">
         <Logo className="h-7 text-ink" />
-        <p className="mt-4 text-[14px] leading-relaxed text-muted">Software for schools, transport operators and people learning to trade — built in {CONTACT.city}.</p>
+        <p className="mt-4 text-[14px] leading-relaxed text-muted">Bring your business to the world and reach more customers. Software for schools, transport operators and traders, built in {CONTACT.city}.</p>
       </div>
       <Col title="Products">{PRODUCTS.map((p) => <A key={p.id} to={p.path}>{p.name}</A>)}</Col>
       <Col title="Company"><A to="/about">About</A><A to="/solutions">Solutions</A><A to="/industries">Industries</A><A to="/pricing">Pricing</A></Col>

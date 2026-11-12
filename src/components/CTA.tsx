@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 // The account call to action that closes most pages.
-const CTA: React.FC<{ title?: string; text?: string }> = ({ title = 'Create your Oliskey account', text = 'One account to get started with Oliskey. It takes a minute.' }) => (
+const CTA: React.FC<{ title?: string; text?: string }> = ({ title = 'Create your Oliskey account', text = 'Reach more customers, work smarter and grow your business. One account, ready in a minute.' }) => (
   <section className="page-x py-20 md:py-28">
     <div className="relative overflow-hidden rounded-[28px] bg-navy px-6 py-14 text-center text-white sm:px-12 md:py-20">
       <div aria-hidden className="absolute inset-0 opacity-60" style={{ background: 'radial-gradient(60% 80% at 50% 0%, rgba(31,107,255,0.55), transparent 70%)' }} />

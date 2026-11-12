@@ -31,7 +31,7 @@ export interface WorldProps {
   fade?: React.RefObject<HTMLDivElement>;
 }
 
-const EXPOSURE = { day: Number(new URLSearchParams(location.search).get('exp') || 0.8), night: Number(new URLSearchParams(location.search).get('expn') || 0.75) };
+const EXPOSURE = { day: Number(new URLSearchParams(location.search).get('exp') || 0.7), night: Number(new URLSearchParams(location.search).get('expn') || 0.75) };
 /** Reflection maps per time of day (photographic HDRI by day; the room-light environment at night). */
 const ENV: Record<Mode, THREE.Texture | null> = { day: null, night: null };
 const Effects = React.lazy(() => import('./Effects'));
@@ -693,12 +693,20 @@ const Ready: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
 };
 
 const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, active, onSelect, onReady, snap, onLost, fade }) => {
-  // phones: sharper picture (1.5x) with hardware anti-aliasing; the performance monitor steps down if a device struggles
-  const [dpr, setDpr] = useState(phone ? Math.min(1.5, window.devicePixelRatio || 1) : Math.min(1.5, window.devicePixelRatio || 1));
+  // phones: sharper picture (1.5x) with hardware anti-aliasing. Computers: a pixel budget instead, because a large monitor at
+  // 1.5x is several million pixels per frame and made the walk slow; about 2.4 million pixels stays sharp and smooth.
+  // The performance monitor steps down further if a device still struggles.
+  const [dpr, setDpr] = useState(() => {
+    const dev = window.devicePixelRatio || 1;
+    if (phone) return Math.min(1.5, dev);
+    return Math.max(0.75, Math.min(1.5, dev, Math.sqrt(2.4e6 / (window.innerWidth * window.innerHeight))));
+  });
   const [hover, setHover] = useState<string | null>(null);
   const [envVer, setEnvVer] = useState(0);
   const [litOnce, setLitOnce] = useState(false);
   const lit = React.useCallback(() => setLitOnce(true), []);
+  const [propsOn, setPropsOn] = useState(false);
+  useEffect(() => { if (!litOnce || phone) return; const t = window.setTimeout(() => setPropsOn(true), 3000); return () => window.clearTimeout(t); }, [litOnce, phone]);
   const onEnv = React.useCallback(() => setEnvVer((v) => v + 1), []);
   const look = useRef({ x: 0, y: 0 });
   const drag = useRef<{ x: number; y: number; lx: number; ly: number } | null>(null);
@@ -736,7 +744,7 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
       style={{ touchAction: 'pan-y' }}
       frameloop={active ? 'always' : 'never'}
       dpr={dpr}
-      gl={{ antialias: true, powerPreference: 'high-performance', toneMapping: (({ aces: THREE.ACESFilmicToneMapping, neutral: THREE.NeutralToneMapping } as Record<string, THREE.ToneMapping>)[new URLSearchParams(location.search).get('tm') || ''] ?? THREE.AgXToneMapping), outputColorSpace: THREE.SRGBColorSpace }}
+      gl={{ antialias: true, powerPreference: 'high-performance', toneMapping: (({ aces: THREE.ACESFilmicToneMapping, agx: THREE.AgXToneMapping } as Record<string, THREE.ToneMapping>)[new URLSearchParams(location.search).get('tm') || ''] ?? THREE.NeutralToneMapping), outputColorSpace: THREE.SRGBColorSpace }}
       camera={{ fov: 50, near: 0.1, far: 900, position: [0, 3, 40] }}
       onPointerDown={(e) => { drag.current = { x: e.clientX, y: e.clientY, lx: target.current.x, ly: target.current.y }; document.body.style.cursor = 'grabbing'; }}
       onPointerMissed={() => setHover(null)}
@@ -746,7 +754,8 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
       <PerformanceMonitor onDecline={() => setDpr((d) => Math.max(1, d - 0.25))} />
       <Env mode={mode} onEnv={onEnv} />
       <Surroundings mode={mode} lite={phone} envVer={envVer} />
-      {!phone && <Props zones={zones} mode={mode} key={`props-${envVer}`} />}
+      {/* the furniture and plants arrive after the room is on screen, so they never hold up the first picture */}
+      {!phone && propsOn && <Props zones={zones} mode={mode} key={`props-${envVer}`} />}
       {zones.includes('hq') && <Doors mode={mode} key={`doors-${envVer}`} />}
       {zones.includes('hq') && <LogoSculpture mode={mode} key={`logo-${envVer}`} />}
       <Seals zones={zones} mode={mode} key={`seals-${envVer}`} />
@@ -762,7 +771,9 @@ const World: React.FC<WorldProps> = ({ zones, stops, progress, mode, phone, acti
           <Suspense key={z} fallback={null}><ZoneModel zone={z} mode={mode} phone={phone} hover={hover} envVer={envVer} onLit={z === zones[0] ? lit : undefined} /></Suspense>
         ))}
       </group>
-      {!phone && !new URLSearchParams(location.search).has('nofx') && <Suspense fallback={null}><Effects night={mode === 'night'} /></Suspense>}
+      {/* the finishing pass (glow on lamps and screens) only at night, where it shows; by day the renderer tone-maps directly,
+          which saves several full-screen passes per frame on computers */}
+      {!phone && mode === 'night' && !new URLSearchParams(location.search).has('nofx') && <Suspense fallback={null}><Effects night /></Suspense>}
       <Rig stops={stops} progress={progress} phone={phone} snap={snap} look={look} aim={target} fade={fade} />
       {litOnce && <Ready onReady={onReady} />}
     </Canvas>

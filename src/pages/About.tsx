@@ -10,7 +10,7 @@ const About: React.FC = () => {
   return (
     <>
       <PageTop>
-        <SectionHead as="h1" eyebrow="About" title="We build clear software for real work" lead={`${CONTACT.company} is a software company in ${CONTACT.city}. We design and build every Oliskey product ourselves — the screens people use and the systems behind them.`} />
+        <SectionHead as="h1" eyebrow="About" title="Bring your business to the world" lead={`Our goal is to help every business reach more customers, work smarter and grow. ${CONTACT.company} is a software company in ${CONTACT.city}. We design and build every Oliskey product ourselves — the screens people use and the systems behind them.`} />
         <div className="mt-16 grid gap-10 md:grid-cols-3">
           {[
             ['What we believe', 'Good software removes steps. If a screen needs explaining, we simplify it.'],

@@ -64,10 +64,23 @@ const District: React.FC<{ mode: Mode; env: THREE.Texture | null; lite: boolean 
       bulb: new THREE.MeshBasicMaterial({ color: night ? new THREE.Color(3, 2.6, 2) : new THREE.Color(0.9, 0.9, 0.85), toneMapped: !night }),
     };
   }, [night]);
+  // one material per office block (its own facade repeat), made once — not on every render — so the sky's reflections reach every block
+  const blockMats = useMemo(() => data.blocks.map((b) => {
+    const t = mats.facade.clone(); t.repeat.set(Math.round(b.w / 3.2), Math.round(b.h / 3.6)); t.needsUpdate = true;
+    const m = mats.building.clone(); m.map = t; if (night) m.emissiveMap = t;
+    return m;
+  }), [data, mats, night]);
+  useEffect(() => () => { for (const m of blockMats) { m.map?.dispose(); m.dispose(); } }, [blockMats]);
   useEffect(() => {
-    for (const m of [mats.building, mats.roof, mats.road, mats.walk, mats.grass, mats.trunk, mats.leaf, mats.pole]) { m.envMap = env; m.envMapIntensity = night ? 0.15 : 0.75; m.needsUpdate = true; }
-    return () => { Object.values(mats).forEach((m) => (m as THREE.Material).dispose?.()); };
-  }, [mats, env, night]);
+    for (const m of [mats.building, mats.roof, mats.road, mats.walk, mats.grass, mats.trunk, mats.leaf, mats.pole, ...blockMats]) {
+      m.envMap = env; m.envMapIntensity = night ? 0.15 : 0.75;
+      // until the sky's reflections have loaded, light each surface by its own colour so nothing shows as a black shape
+      if (!env && !night) { m.emissive = m.color.clone().multiplyScalar(0.55); m.emissiveIntensity = 1; if (m.map) m.emissiveMap = m.map; }
+      else if (!night) { m.emissive.setRGB(0, 0, 0); m.emissiveMap = null; }
+      m.needsUpdate = true;
+    }
+  }, [mats, blockMats, env, night]);
+  useEffect(() => () => { Object.values(mats).forEach((m) => (m as THREE.Material).dispose?.()); }, [mats]);
 
   const geo = useMemo(() => ({ box: new THREE.BoxGeometry(1, 1, 1), leaf: new THREE.IcosahedronGeometry(1, 1), trunk: new THREE.CylinderGeometry(0.12, 0.18, 1, 8), pole: new THREE.CylinderGeometry(0.07, 0.09, 1, 8) }), []);
   const roadMesh = (w: number, l: number, pos: [number, number, number], rotY = 0, key: string) => {
@@ -86,8 +99,7 @@ const District: React.FC<{ mode: Mode; env: THREE.Texture | null; lite: boolean 
       {roadMesh(12, 220, [82, -0.02, -40], 0, 'right')}
       {/* office blocks */}
       {data.blocks.map((b, i) => {
-        const t = mats.facade.clone(); t.repeat.set(Math.round(b.w / 3.2), Math.round(b.h / 3.6)); t.needsUpdate = true;
-        const m = mats.building.clone(); m.map = t; if (night) m.emissiveMap = t;
+        const m = blockMats[i];
         return (
           <group key={i} position={[b.x, 0, b.z]}>
             <mesh geometry={geo.box} material={m} position={[0, b.h / 2, 0]} scale={[b.w, b.h, b.d]} />

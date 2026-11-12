@@ -30,7 +30,7 @@ const WorldFinale: React.FC<{ id: ProductId; onOther: () => void }> = ({ id, onO
         </div>
         <div className="-mt-10 p-6 sm:p-8">
           <span className="relative grid h-12 w-12 place-items-center rounded-[14px] text-white shadow-lg" style={{ background: p.tint }}><Icon size={22} /></span>
-          <h2 className="mt-4 text-[28px] font-bold leading-tight tracking-tight text-ink sm:text-[34px]">From manual to digital with {p.name}</h2>
+          <h2 className="mt-4 text-[28px] font-bold leading-tight tracking-tight text-ink sm:text-[34px]">Reach more customers with {p.name}</h2>
           <ul className="mt-4 grid gap-2 sm:grid-cols-2">
             {p.points.map((pt) => <li key={pt.title} className="flex items-start gap-2 text-[15px] text-ink"><Check size={17} className="mt-0.5 shrink-0 text-accent" />{pt.title}</li>)}
           </ul>
@@ -62,12 +62,13 @@ const Home: React.FC = () => {
         label={`A walk through the Oliskey headquarters${room ? ` into the ${productById(room).name} world` : ''}`}>
         {/* 1 · the entrance */}
         <StopBlock tall shade>
-          <div className="relative w-full max-w-[640px]">
+          <div className="relative w-full max-w-[640px] md:max-w-[min(640px,46vw)]">
             
             <div className="scene-panel relative z-10 p-6 md:border-0 md:bg-transparent md:p-0 md:shadow-none md:backdrop-blur-0">
               <p className="eyebrow">Welcome to Oliskey</p>
-              <h1 className="mt-3 text-[30px] font-bold leading-[1.06] tracking-[-0.03em] text-ink md:mt-4 md:text-display">We turn manual work into digital business.</h1>
-              <p className="mt-3 max-w-[520px] text-[15px] leading-relaxed text-muted md:mt-5 md:text-lead">Oliskey moves schools, transport operators and traders from paper and local reach to online systems — so they work faster and reach more customers.</p>
+              <h1 className="mt-3 text-[30px] font-bold leading-[1.06] tracking-[-0.03em] text-ink md:mt-4 md:text-[clamp(2.4rem,3.7vw,3.6rem)] md:leading-[1.04]">Bring your business to the world and reach more customers.</h1>
+              <p className="mt-3 text-[17px] font-semibold tracking-[-0.2px] text-ink md:mt-5 md:text-[22px]">Work smarter. Grow your business.</p>
+              <p className="mt-2 max-w-[520px] text-[15px] leading-relaxed text-muted md:mt-3 md:text-[17px] md:text-ink/75">Oliskey puts schools, transport operators and traders online, with an app for every role.</p>
               <div className="mt-5 flex flex-wrap gap-3 md:mt-8">
                 <Link to="/get-started" className="btn-primary">Create your account<ArrowRight size={16} /></Link>
                 <a href="#showroom" className="btn-secondary">Explore the products</a>
@@ -80,9 +81,9 @@ const Home: React.FC = () => {
         {/* 2 · at the glass doors: choose a world before going in */}
         <StopBlock id="showroom" align="center">
           <Panel className="md:w-[520px]">
-            <p className="eyebrow">From manual to digital</p>
+            <p className="eyebrow">Work smarter, grow your business</p>
             <h2 className="mt-3 text-[28px] font-bold leading-tight tracking-tight text-ink sm:text-[32px]">Choose the world you want to explore.</h2>
-            <p className="mt-3 text-[16px] leading-relaxed text-muted">Each Oliskey product turns paper, notebooks and phone calls into one clear system. Pick a world, keep scrolling — the doors open and you walk in.</p>
+            <p className="mt-3 text-[16px] leading-relaxed text-muted">Each Oliskey product brings your business online, so you reach more customers and grow. Pick a world, keep scrolling — the doors open and you walk in.</p>
             <div className="mt-5 grid grid-cols-2 gap-2" role="group" aria-label="Worlds">
               {PRODUCTS.map((p) => {
                 const Icon = p.icon;
@@ -131,7 +132,7 @@ const Home: React.FC = () => {
       {/* after the walk: the other worlds, then the account call to action (details live on each product's own page) */}
       <section className="relative bg-page py-20 md:py-28">
         <div className="page-x">
-          <div data-reveal><SectionHead eyebrow="Oliskey worlds" title={room ? 'Explore another world' : 'Every product is a world'} lead="Each one turns a manual way of working into a digital one." /></div>
+          <div data-reveal><SectionHead eyebrow="Oliskey worlds" title={room ? 'Explore another world' : 'Every product is a world'} lead="Each one brings a business to the world, so it reaches more customers, works smarter and grows." /></div>
           <div className="mt-12 grid gap-5 sm:grid-cols-2">{PRODUCTS.filter((p) => p.id !== room).map((p) => <div key={p.id} data-reveal><ProductTile p={p} /></div>)}</div>
         </div>
       </section>

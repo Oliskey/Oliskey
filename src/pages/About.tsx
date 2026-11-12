@@ -15,7 +15,7 @@ const About: React.FC = () => {
           {[
             ['What we believe', 'Good software removes steps. If a screen needs explaining, we simplify it.'],
             ['How we work', 'We start from how a school, an operator or a learner really works today, then build the shortest path to the result.'],
-            ['What we make', 'Products for education, transport and trading practice, and new tools from Oliskey Labs.'],
+            ['What we make', 'Products for education, transport and trading practice, and Oliskey Lab, which builds, connects and grows any business online.'],
           ].map(([t, d]) => (
             <div key={t} data-reveal><h2 className="text-[19px] font-semibold text-ink">{t}</h2><p className="mt-3 text-[16px] leading-relaxed text-muted">{d}</p></div>
           ))}

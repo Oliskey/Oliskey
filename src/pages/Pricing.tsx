@@ -41,7 +41,7 @@ const Pricing: React.FC = () => {
           {[
             [fleet.name, 'Pricing depends on the size of your fleet. Message us and we will set you up.', <Link key="f" to="/contact?topic=quote&product=fleet" className="btn-secondary">Get a quote</Link>],
             [alpha.name, 'Practice runs on demo credits. Open the app to start.', <a key="a" href={alpha.app!.url} target="_blank" rel="noreferrer" className="btn-secondary">Open Oliskey Alpha<ArrowUpRight size={16} /></a>],
-            ['Oliskey Labs', 'Custom software and research projects are priced per project.', <Link key="l" to="/contact?topic=partnership&product=labs" className="btn-secondary">Talk to us</Link>],
+            ['Oliskey Lab', 'Plans for businesses are being finalised — try the demo, or talk to us about custom work.', <Link key="l" to="/contact?topic=partnership&product=labs" className="btn-secondary">Talk to us</Link>],
           ].map(([n, d, a]) => (
             <div key={n as string} data-reveal className="flex flex-col gap-4 bg-raised p-6 sm:flex-row sm:items-center sm:justify-between">
               <div><p className="text-[17px] font-semibold text-ink">{n}</p><p className="mt-1 text-[15px] text-muted">{d}</p></div>{a}

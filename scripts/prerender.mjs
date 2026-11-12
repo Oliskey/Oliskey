@@ -28,7 +28,7 @@ const PRODUCTS = [
   { path: '/school', name: 'Oliskey School', app: 'https://app.oliskey.com/', cat: 'EducationalApplication', sub: 'School management software', os: 'Web, Android, iOS', free: true },
   { path: '/fleet', name: 'Oliskey Fleet', app: 'https://tricycles.oliskey.com/', cat: 'BusinessApplication', sub: 'Tricycle and fleet management software', os: 'Web' },
   { path: '/alpha', name: 'Oliskey Alpha', app: 'https://alpha.oliskey.com/', cat: 'FinanceApplication', sub: 'Trading practice and market learning app', os: 'Web, Android, iOS' },
-  { path: '/labs', name: 'Oliskey Labs', cat: null, sub: 'Research and new technology' },
+  { path: '/labs', name: 'Oliskey Lab', cat: 'BusinessApplication', sub: 'Build, connect and grow your business online' },
 ];
 const ORG = { '@type': 'Organization', '@id': 'https://www.oliskey.com/#organization', name: 'Oliskey', legalName: 'Oliskeylee Ltd.', url: 'https://www.oliskey.com/',
   slogan: 'Bring your business to the world and reach more customers. Work smarter. Grow your business.',

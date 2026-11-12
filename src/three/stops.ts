@@ -57,7 +57,8 @@ export const ROOM_STOPS: Record<'school' | 'fleet' | 'alpha' | 'labs', Stop[]> =
     via('school-door2', [9.2, 32.6, 2.15]),
     via('school-office', [9.2, 34.0, 2.15]),
     { id: 'admin', cut: true, desk: s([7.0, 36.0, 2.0], [1.8, 38.7, 1.3], 52), phone: s([7.4, 35.6, 2.0], [2.0, 38.7, 1.4], 68) },
-    { id: 'parent', cut: true, desk: s([-5.4, 35.2, 1.9], [-9.6, 38.9, 1.2], 50), phone: s([-5.2, 34.9, 1.95], [-9.5, 38.9, 1.3], 66) },
+    // over the parent's shoulder at home: the real parent dashboard on his phone (and on his computer)
+    { id: 'parent', cut: true, drop: 0.1, desk: s([-9.12, 39.02, 2.12], [-9.31, 38.63, 1.58], 50), phone: s([-9.1, 39.05, 2.1], [-9.31, 38.63, 1.6], 60) },
   ],
   fleet: [
     { id: 'room', desk: s([-4.5, 45.4, 2.7], [5, 56, 0.9], 54), phone: s([-4.8, 45.0, 2.6], [4.5, 56, 1.8], 74) },

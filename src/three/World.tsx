@@ -61,6 +61,8 @@ export function screenImage(name: string, mode: Mode): string | null {
   const v = mode === 'day' ? 'light' : 'dark';
   if (name.startsWith('logo_')) return '/hq/tex/logo_sign.webp';
   // the School world: each role on its own dashboard (the admin screens show the real app)
+  if (name === 'screen_school_mob_parent') return '/hq/tex/school_mob_parent.webp';
+  if (name === 'screen_school_mob_student') return '/hq/tex/school_mob_student.webp';
   if (name.startsWith('screen_school_tab')) return '/hq/tex/school_student.webp';
   if (name.startsWith('screen_school_teacher')) return '/hq/tex/school_teacher.webp';
   if (name.startsWith('screen_school_parent')) return '/hq/tex/school_parent.webp';

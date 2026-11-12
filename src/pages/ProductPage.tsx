@@ -7,6 +7,7 @@ import { ROOM_STOPS } from '../three/stops';
 import ProductSheet from '../components/ProductSheet';
 import ProductTile from '../components/ProductTile';
 import ThemedImage from '../components/ThemedImage';
+import ScreenGallery from '../components/ScreenGallery';
 import CTA from '../components/CTA';
 import { SectionHead } from '../components/Section';
 import { PRODUCTS, productById, type ProductId } from '../lib/products';
@@ -38,6 +39,15 @@ const ProductPage: React.FC<{ id: ProductId }> = ({ id }) => {
           <div data-reveal className="mt-8 flex flex-wrap gap-3">{primary}{secondary}</div>
         </div>
       </section>
+
+      {p.screens && (
+        <section className="border-t border-line py-20 md:py-28">
+          <div className="page-x">
+            <div data-reveal><SectionHead eyebrow="Every role, its own screen" title={`Who uses ${p.name}, and how`} lead="Real screens from the app, with sample data." /></div>
+            <div data-reveal><ScreenGallery name={p.name} screens={p.screens} /></div>
+          </div>
+        </section>
+      )}
 
       <section className="border-t border-line bg-surface py-20 md:py-24">
         <div className="page-x">
